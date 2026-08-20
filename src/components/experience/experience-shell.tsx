@@ -14,14 +14,6 @@ const WorldCanvas = dynamic(
   { ssr: false },
 );
 
-function Arrow() {
-  return (
-    <svg viewBox="0 0 18 18" aria-hidden="true">
-      <path d="M4 14 14 4M7 4h7v7" fill="none" stroke="currentColor" strokeWidth="1.2" />
-    </svg>
-  );
-}
-
 function RevealWords({ text }: { text: string }) {
   return (
     <span data-words aria-label={text}>
@@ -37,6 +29,17 @@ function RevealWords({ text }: { text: string }) {
   );
 }
 
+function EditorialLabel({ jp, en, index }: { jp: string; en: string; index: string }) {
+  return (
+    <div className="editorial-label" data-fade>
+      <span>{index}</span>
+      <b>{jp}</b>
+      <i />
+      <small>{en}</small>
+    </div>
+  );
+}
+
 export function ExperienceShell() {
   const root = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,8 +50,9 @@ export function ExperienceShell() {
     gsap.registerPlugin(ScrollTrigger);
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const lenis = reduced ? null : new Lenis({ lerp: 0.07, smoothWheel: true });
+    const lenis = reduced ? null : new Lenis({ lerp: 0.065, smoothWheel: true });
     let frame = 0;
+
     const raf = (time: number) => {
       lenis?.raf(time);
       frame = requestAnimationFrame(raf);
@@ -64,10 +68,10 @@ export function ExperienceShell() {
           {
             yPercent: 0,
             opacity: 1,
-            stagger: 0.055,
-            duration: 1,
+            stagger: 0.045,
+            duration: 1.05,
             ease: "power4.out",
-            scrollTrigger: { trigger: element, start: "top 88%", once: true },
+            scrollTrigger: { trigger: element, start: "top 86%", once: true },
           },
         );
       });
@@ -76,33 +80,28 @@ export function ExperienceShell() {
         if (reduced) return;
         gsap.fromTo(
           element,
-          { y: 28, opacity: 0, filter: "blur(10px)" },
+          { y: 24, opacity: 0, filter: "blur(9px)" },
           {
             y: 0,
             opacity: 1,
             filter: "blur(0px)",
-            duration: 1.1,
+            duration: 1.15,
             ease: "power4.out",
-            scrollTrigger: { trigger: element, start: "top 88%", once: true },
+            scrollTrigger: { trigger: element, start: "top 87%", once: true },
           },
         );
       });
 
       gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((element) => {
         if (reduced) return;
-        const amount = Number(element.dataset.parallax ?? 8);
+        const amount = Number(element.dataset.parallax ?? 7);
         gsap.fromTo(
           element,
-          { yPercent: amount * 0.5 },
+          { yPercent: amount * 0.55 },
           {
-            yPercent: -amount * 0.5,
+            yPercent: -amount * 0.55,
             ease: "none",
-            scrollTrigger: {
-              trigger: element,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
-            },
+            scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: true },
           },
         );
       });
@@ -110,24 +109,25 @@ export function ExperienceShell() {
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
-          start: "top 48%",
+          start: "top 52%",
           end: "bottom 48%",
           onToggle: ({ isActive }) => isActive && setActive(section.id),
         });
       });
 
       if (!reduced) {
-        gsap.to("[data-akari-hero]", {
-          yPercent: -5,
-          xPercent: 2,
+        gsap.to("[data-hero-character]", {
+          yPercent: -10,
+          xPercent: 4,
+          scale: 1.04,
           ease: "none",
           scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
         });
-        gsap.to("[data-hero-title]", {
-          yPercent: -22,
-          opacity: 0.2,
+        gsap.to("[data-hero-copy]", {
+          yPercent: -24,
+          opacity: 0.12,
           ease: "none",
-          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom 20%", scrub: true },
+          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom 16%", scrub: true },
         });
       }
     }, root);
@@ -143,22 +143,17 @@ export function ExperienceShell() {
   return (
     <div ref={root} className="site-shell">
       <WorldCanvas />
-      <div className="vignette" aria-hidden="true" />
+      <div className="atmosphere-vignette" aria-hidden="true" />
       <div className="film-grain" aria-hidden="true" />
 
       <header className="site-nav">
         <Link href="#top" className="brand-mark" aria-label="Tsukihara — início">
-          <span className="brand-moon" />
           <span>TSUKIHARA</span>
           <small>月の原</small>
         </Link>
         <nav className="nav-index" aria-label="Navegação principal">
           {chapterNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={active === item.href.slice(1) ? "is-active" : ""}
-            >
+            <Link key={item.href} href={item.href} className={active === item.href.slice(1) ? "is-active" : ""}>
               {item.label}
             </Link>
           ))}
@@ -170,8 +165,7 @@ export function ExperienceShell() {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
         >
-          <span>{menuOpen ? "Close" : "Menu"}</span>
-          <i />
+          {menuOpen ? "Close" : "Menu"}
         </button>
       </header>
 
@@ -189,13 +183,8 @@ export function ExperienceShell() {
       )}
 
       <aside className="chapter-rail" aria-label="Progresso dos capítulos">
-        {["top", "akari", "realms", "bonds", "eclipse"].map((id, index) => (
-          <Link
-            key={id}
-            href={`#${id}`}
-            aria-label={`Ir para capítulo ${index}`}
-            className={active === id ? "is-active" : ""}
-          >
+        {["top", "akari", "realms", "bonds", "eclipse"].map((id) => (
+          <Link key={id} href={`#${id}`} aria-label={`Ir para ${id}`} className={active === id ? "is-active" : ""}>
             <i />
           </Link>
         ))}
@@ -203,251 +192,167 @@ export function ExperienceShell() {
 
       <main className="story">
         <section id="top" data-section className="hero">
-          <div className="hero-wash" />
           <div className="hero-jp" aria-hidden="true">
             月蝕ノ記憶
           </div>
-          <div className="hero-character" data-akari-hero>
+          <div className="hero-character" data-hero-character>
             <Image
               src="/images/akari-no-rei.webp"
               alt="Akari no Rei"
               fill
               priority
               className="object-contain object-bottom"
-              sizes="(max-width: 760px) 78vw, 38vw"
+              sizes="(max-width: 760px) 86vw, 42vw"
             />
           </div>
-          <div className="hero-copy" data-hero-title>
+          <div className="hero-copy" data-hero-copy>
             <p className="micro-label" data-fade>
-              AN ORIGINAL ACTION ADVENTURE
+              月の原 · BENEATH THE MOON
             </p>
-            <h1 className="hero-title">
-              <RevealWords text="Where the moon remembers every vow." />
+            <div className="hero-logo" data-fade>
+              <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={620} height={350} priority />
+            </div>
+            <h1>
+              <RevealWords text="A vow. A blade. A moon that should never have turned red." />
             </h1>
             <p className="hero-deck" data-fade>
-              Enter sacred temples, drowned valleys and ruined iron as Akari walks toward an eclipse
-              that changes everything it touches.
+              A cinematic action-adventure through sacred realms, forgotten memories and the awakening of Akari no Rei.
             </p>
+            <a href="#akari" className="enter-world" data-fade>
+              <span>Enter the eclipse</span>
+              <i />
+            </a>
           </div>
-          <div className="hero-logo" data-fade>
+          <div className="hero-footnote" data-fade>
+            <span>AN ORIGINAL GAME IN DEVELOPMENT</span>
+            <span>SCROLL · 01 / 05</span>
+          </div>
+        </section>
+
+        <section id="akari" data-section className="character-chapter character-chapter-akari">
+          <div className="chapter-ghost" aria-hidden="true">
+            朱莉
+          </div>
+          <div className="character-art character-art-left" data-parallax="9">
             <Image
-              src="/images/tsukihara-logo.webp"
-              alt="Tsukihara"
-              width={620}
-              height={350}
-              priority
+              src="/images/akari-no-rei.webp"
+              alt="Akari no Rei"
+              fill
+              className="object-contain object-bottom"
+              sizes="(max-width: 760px) 82vw, 42vw"
             />
           </div>
-          <div className="hero-meta" data-fade>
-            <span>In development</span>
-            <span>Scroll to enter</span>
-          </div>
-          <a className="hero-preview" href="#realms" data-fade>
-            <span className="preview-image">
-              <Image
-                src="/images/hanamori.webp"
-                alt="Hanamori"
-                fill
-                className="object-cover"
-                sizes="240px"
-              />
-            </span>
-            <span className="preview-caption">
-              <b>Hanamori</b>
-              <small>First realm</small>
-            </span>
-          </a>
-        </section>
-
-        <section id="akari" data-section className="chapter akari-chapter">
-          <div className="chapter-rule">
-            <span>朱莉 — AKARI</span>
-            <i />
-            <span>THE PROTAGONIST</span>
-          </div>
-          <div className="akari-layout">
-            <div className="akari-statement">
-              <h2>
-                <RevealWords text="She carries a blade into a world already breaking." />
-              </h2>
-              <p data-fade>
-                Akari is the visual and emotional center of Tsukihara. Her path crosses memory, duty
-                and the awakening of a power that changes the shape of every realm around her.
-              </p>
-              <div className="akari-state-line" data-fade>
-                <span>
-                  <small>01</small> Standard
-                </span>
-                <i />
-                <span>
-                  <small>02</small> Awakening
-                </span>
-                <i />
-                <span>
-                  <small>03</small> Akari no Rei
-                </span>
-              </div>
-            </div>
-            <div className="akari-figure" data-parallax="8">
-              <span className="akari-kanji" aria-hidden="true">
-                朱莉
-              </span>
-              <Image
-                src="/images/akari-no-rei.webp"
-                alt="Akari no Rei"
-                fill
-                className="object-contain object-bottom"
-                sizes="(max-width: 760px) 80vw, 36vw"
-              />
-            </div>
-            <div className="character-notes" data-fade>
-              <div>
-                <span>Weapon</span>
-                <b>Blade</b>
-              </div>
-              <div>
-                <span>Path</span>
-                <b>Moonlit realms</b>
-              </div>
-              <div>
-                <span>State</span>
-                <b>Akari no Rei</b>
-              </div>
-              <div>
-                <span>Motif</span>
-                <b>Vermilion / Sakura</b>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="realms" data-section className="chapter realms-chapter">
-          <div className="realms-intro">
-            <span className="section-side-note">世界 — WORLD</span>
+          <div className="character-copy character-copy-right">
+            <EditorialLabel jp="朱莉" en="AKARI NO REI" index="01" />
             <h2>
-              <RevealWords text="Three different memories of the same moon." />
+              <RevealWords text="The blade that walks between light and eclipse." />
             </h2>
             <p data-fade>
-              Each realm carries its own architecture, weather, vertical rhythm and emotional
-              temperature.
+              Akari carries more than a sword. Her journey crosses memory, duty and an awakening that changes the shape of every realm she touches.
             </p>
-          </div>
-
-          <div className="realm-mosaic">
-            {realms.map((realm, index) => (
-              <article
-                key={realm.id}
-                id={realm.id}
-                className={`realm-panel realm-panel-${index + 1}`}
-                data-parallax={index === 0 ? "4" : "6"}
-              >
-                <div className="realm-media">
-                  <Image
-                    src={realm.image}
-                    alt={realm.title}
-                    fill
-                    className="object-cover"
-                    sizes={index === 0 ? "64vw" : "36vw"}
-                  />
-                  <span className="realm-grade" />
-                </div>
-                <div className="realm-copy">
-                  <span className="realm-index">0{index + 1}</span>
-                  <p>{realm.kanji}</p>
-                  <h3>{realm.title}</h3>
-                  <small>{realm.label}</small>
-                  <div>{realm.copy}</div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="world-note" data-fade>
-            <span>WORLD DIRECTION</span>
-            <p>Beautiful enough to invite you forward. Haunted enough to make you hesitate.</p>
+            <dl className="character-meta" data-fade>
+              <div>
+                <dt>Weapon</dt>
+                <dd>Blade</dd>
+              </div>
+              <div>
+                <dt>Motif</dt>
+                <dd>Vermilion · Sakura</dd>
+              </div>
+              <div>
+                <dt>State</dt>
+                <dd>Akari no Rei</dd>
+              </div>
+            </dl>
           </div>
         </section>
 
-        <section id="bonds" data-section className="chapter bonds-chapter">
-          <div className="bonds-title">
-            <span className="section-side-note">絆 — BONDS</span>
+        <section id="bonds" data-section className="character-chapter character-chapter-haku">
+          <div className="chapter-ghost chapter-ghost-right" aria-hidden="true">
+            白
+          </div>
+          <div className="character-copy character-copy-left">
+            <EditorialLabel jp="白" en="HAKU · GUARDIAN SPIRIT" index="02" />
             <h2>
               <RevealWords text="Some spirits choose who they will follow." />
             </h2>
             <p data-fade>
-              Haku is guardian, omen and witness — one of the presences bound to Akari&apos;s path
-              as the eclipse draws closer.
+              Guardian, omen and witness — Haku is one of the presences bound to Akari&apos;s path as the eclipse moves closer.
             </p>
           </div>
-          <div className="haku-spread" data-parallax="5">
-            <div className="haku-image">
-              <Image
-                src="/images/haku-eclipse.webp"
-                alt="Haku beneath the eclipse"
-                fill
-                className="object-cover"
-                sizes="(max-width: 760px) 92vw, 58vw"
-              />
-              <span />
-            </div>
-            <div className="haku-caption" data-fade>
-              <b>Haku</b>
-              <small>Guardian spirit · 白</small>
-              <p>The quiet before the world changes.</p>
-            </div>
+          <div className="haku-frame" data-parallax="7">
+            <Image
+              src="/images/haku-eclipse.webp"
+              alt="Haku beneath the eclipse"
+              fill
+              className="object-cover"
+              sizes="(max-width: 760px) 92vw, 52vw"
+            />
+            <span className="frame-cross" aria-hidden="true" />
+          </div>
+        </section>
+
+        <section id="realms" data-section className="realms-chapter">
+          <div className="realms-heading">
+            <EditorialLabel jp="九界" en="THREE CANTOS OF THE NINE REALMS" index="03" />
+            <h2>
+              <RevealWords text="Every place remembers a different version of the moon." />
+            </h2>
+          </div>
+          <div className="realm-stack">
+            {realms.map((realm, index) => (
+              <article className={`realm-spread realm-spread-${index + 1}`} key={realm.id} id={realm.id}>
+                <div className="realm-image" data-parallax={index % 2 === 0 ? "5" : "7"}>
+                  <Image src={realm.image} alt={realm.title} fill className="object-cover" sizes="(max-width: 760px) 94vw, 66vw" />
+                  <span />
+                </div>
+                <div className="realm-caption" data-fade>
+                  <small>0{index + 1} · {realm.kanji}</small>
+                  <h3>{realm.title}</h3>
+                  <b>{realm.label}</b>
+                  <p>{realm.copy}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
         <section id="eclipse" data-section className="eclipse-chapter">
-          <div className="eclipse-disc" aria-hidden="true">
-            <i />
-            <b />
-          </div>
           <div className="eclipse-copy">
-            <span className="section-side-note">月蝕 — ECLIPSE</span>
+            <EditorialLabel jp="月蝕" en="THE ECLIPSE" index="04" />
             <h2>
-              <RevealWords text="When the moon turns red, every vow is tested." />
+              <RevealWords text="When the moon closes, every vow is tested." />
             </h2>
             <p data-fade>
-              Tsukihara is currently in development. New characters, gameplay, music and the first
-              trailer will arrive here as the world takes shape.
+              The eclipse is not a chapter added at the end of Tsukihara. It is the force that has been following Akari through the entire journey.
             </p>
             <div className="closing-actions" data-fade>
-              <span className="coming-action">
+              <span>
                 <b>Wishlist on Steam</b>
                 <small>Coming soon</small>
               </span>
-              <a href="#top">
-                <span>Return to the beginning</span>
-                <Arrow />
-              </a>
+              <a href="#top">Return to the beginning</a>
             </div>
           </div>
-          <div className="eclipse-akari" data-parallax="4">
+          <div className="eclipse-akari" data-parallax="5">
             <Image
               src="/images/akari-no-rei.webp"
-              alt="Akari no Rei"
+              alt="Akari beneath the eclipse"
               fill
               className="object-contain object-bottom"
-              sizes="(max-width: 760px) 78vw, 36vw"
+              sizes="(max-width: 760px) 80vw, 38vw"
             />
+          </div>
+          <div className="eclipse-jp" aria-hidden="true">
+            終章
           </div>
         </section>
       </main>
 
       <footer className="site-footer">
-        <div className="footer-manifesto">
-          <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={400} height={225} />
-          <p>
-            A moonlit action-adventure about memory, duty and the things that awaken when sacred
-            places stop being silent.
-          </p>
-        </div>
-        <div className="footer-base">
-          <span>TSUKIHARA — IN DEVELOPMENT</span>
-          <span>月の原</span>
-          <span>2026</span>
-        </div>
+        <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={360} height={203} />
+        <p>An original game currently in development.</p>
+        <span>© 2026 TSUKIHARA · BENEATH THE MOON</span>
       </footer>
     </div>
   );
