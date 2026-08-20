@@ -11,6 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-08-20-tsukihara-cinematic-site-design.md`
 
 ## Global Constraints
+
 - Do not reuse or redistribute Kage source code or artwork.
 - Use canonical Tsukihara assets only for the initial visual identity.
 - Keep motion narrative and support `prefers-reduced-motion`.
