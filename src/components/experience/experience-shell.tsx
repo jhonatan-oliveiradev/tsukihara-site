@@ -1,227 +1,343 @@
 "use client";
 
-import Image from "next/image";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { chapterNav, realms } from "@/content/game";
+import { chapterNav, characters, realms } from "@/content/game";
 
 const WorldCanvas = dynamic(
-  () => import("@/components/experience/world-canvas").then((mod) => mod.WorldCanvas),
+  () => import("@/components/experience/world-canvas").then((module) => module.WorldCanvas),
   { ssr: false },
 );
+
+function Arrow() {
+  return (
+    <svg viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M4 14 14 4M7 4h7v7" fill="none" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
 
 export function ExperienceShell() {
   const root = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive] = useState("top");
 
   useEffect(() => {
     if (!root.current) return;
-
     gsap.registerPlugin(ScrollTrigger);
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const lenis = reduceMotion ? null : new Lenis({ lerp: 0.075, smoothWheel: true });
-    let raf = 0;
-
-    const tick = (time: number) => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lenis = reduced ? null : new Lenis({ lerp: 0.07, smoothWheel: true });
+    let frame = 0;
+    const raf = (time: number) => {
       lenis?.raf(time);
-      raf = requestAnimationFrame(tick);
+      frame = requestAnimationFrame(raf);
     };
-
-    if (lenis) raf = requestAnimationFrame(tick);
+    if (lenis) frame = requestAnimationFrame(raf);
 
     const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
+      gsap.utils.toArray<HTMLElement>("[data-words]").forEach((element) => {
+        const text = element.textContent?.trim() ?? "";
+        element.textContent = "";
+        const words = text.split(/\s+/);
+        words.forEach((word, index) => {
+          const mask = document.createElement("span");
+          mask.className = "word-mask";
+          const span = document.createElement("span");
+          span.className = "word-unit";
+          span.textContent = word + (index < words.length - 1 ? "\u00a0" : "");
+          mask.appendChild(span);
+          element.appendChild(mask);
+        });
+        if (reduced) return;
+        gsap.fromTo(
+          element.querySelectorAll(".word-unit"),
+          { yPercent: 112, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            stagger: 0.055,
+            duration: 1,
+            ease: "power4.out",
+            scrollTrigger: { trigger: element, start: "top 88%", once: true },
+          },
+        );
+      });
+
+      gsap.utils.toArray<HTMLElement>("[data-fade]").forEach((element) => {
+        if (reduced) return;
         gsap.fromTo(
           element,
-          { y: reduceMotion ? 0 : 34, opacity: 0 },
+          { y: 28, opacity: 0, filter: "blur(10px)" },
           {
             y: 0,
             opacity: 1,
-            duration: reduceMotion ? 0.01 : 1.05,
-            ease: "power3.out",
-            scrollTrigger: { trigger: element, start: "top 84%", once: true },
+            filter: "blur(0px)",
+            duration: 1.1,
+            ease: "power4.out",
+            scrollTrigger: { trigger: element, start: "top 88%", once: true },
           },
         );
       });
 
-      gsap.utils.toArray<HTMLElement>("[data-scene]").forEach((section) => {
-        const media = section.querySelector<HTMLElement>("[data-scene-media]");
-        if (!media || reduceMotion) return;
+      gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((element) => {
+        if (reduced) return;
+        const amount = Number(element.dataset.parallax ?? 8);
         gsap.fromTo(
-          media,
-          { yPercent: 8, scale: 1.07 },
+          element,
+          { yPercent: amount * 0.55 },
           {
-            yPercent: -6,
-            scale: 1,
+            yPercent: -amount * 0.55,
             ease: "none",
-            scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: true },
+            scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: true },
           },
         );
       });
+
+      gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top 48%",
+          end: "bottom 48%",
+          onToggle: ({ isActive }) => isActive && setActive(section.id),
+        });
+      });
+
+      if (!reduced) {
+        gsap.to("[data-akari-hero]", {
+          yPercent: -7,
+          xPercent: 3,
+          scale: 1.035,
+          ease: "none",
+          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
+        });
+        gsap.to("[data-hero-title]", {
+          yPercent: -28,
+          opacity: 0.22,
+          ease: "none",
+          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom 20%", scrub: true },
+        });
+      }
     }, root);
 
     return () => {
       ctx.revert();
       lenis?.destroy();
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(frame);
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
   return (
-    <div ref={root} className="relative isolate overflow-clip bg-ink text-bone">
+    <div ref={root} className="site-shell">
       <WorldCanvas />
-      <div className="film-grain pointer-events-none fixed inset-0 z-40" aria-hidden="true" />
+      <div className="vignette" aria-hidden="true" />
+      <div className="film-grain" aria-hidden="true" />
 
-      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-5 md:px-10 md:py-7">
-        <Link href="#top" className="group inline-flex items-center gap-3" aria-label="Tsukihara home">
-          <span className="font-display text-[0.76rem] tracking-[0.34em] text-bone/90">TSUKIHARA</span>
-          <span className="h-px w-8 bg-vermilion transition-all duration-500 group-hover:w-12" />
+      <header className="site-nav">
+        <Link href="#top" className="brand-mark" aria-label="Tsukihara — início">
+          <span className="brand-moon" />
+          <span>TSUKIHARA</span>
+          <small>月の原</small>
         </Link>
-
-        <nav className="hidden items-center gap-7 md:flex" aria-label="Primary navigation">
+        <nav className="nav-index" aria-label="Navegação principal">
           {chapterNav.map((item) => (
-            <Link key={item.href} className="nav-link" href={item.href}>
+            <Link key={item.href} href={item.href} className={active === item.href.slice(1) ? "is-active" : ""}>
               {item.label}
             </Link>
           ))}
         </nav>
-
-        <button
-          type="button"
-          className="nav-link md:hidden"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          onClick={() => setMenuOpen((value) => !value)}
-        >
-          {menuOpen ? "Close" : "Menu"}
+        <button className="menu-button" type="button" onClick={() => setMenuOpen((value) => !value)} aria-expanded={menuOpen} aria-controls="mobile-menu">
+          <span>{menuOpen ? "Close" : "Menu"}</span>
+          <i />
         </button>
       </header>
 
       {menuOpen && (
-        <div id="mobile-nav" className="fixed inset-0 z-40 grid place-items-center bg-ink/95 backdrop-blur-xl md:hidden">
-          <nav className="flex flex-col items-center gap-7" aria-label="Mobile navigation">
-            {chapterNav.map((item) => (
-              <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)} className="font-display text-4xl tracking-tight">
-                {item.label}
+        <div id="mobile-menu" className="mobile-menu">
+          <nav aria-label="Navegação mobile">
+            {chapterNav.map((item, index) => (
+              <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
+                <span>0{index + 1}</span>{item.label}
               </Link>
             ))}
           </nav>
         </div>
       )}
 
-      <main className="relative z-10">
-        <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden px-5 pb-10 pt-28 md:px-10 md:pb-12">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(151,34,34,0.2),transparent_32%),linear-gradient(to_bottom,transparent_30%,#08070b_94%)]" />
-          <div className="absolute inset-y-0 right-[-18%] w-[95%] opacity-55 md:right-[-5%] md:w-[68%]">
-            <Image src="/images/akari-no-rei.webp" alt="Akari no Rei" fill priority className="object-contain object-bottom" sizes="(max-width: 768px) 100vw, 70vw" />
+      <aside className="chapter-rail" aria-label="Progresso dos capítulos">
+        {["top", "akari", "realms", "bonds", "eclipse"].map((id, index) => (
+          <Link key={id} href={`#${id}`} aria-label={`Ir para capítulo ${index}`} className={active === id ? "is-active" : ""}>
+            <i />
+          </Link>
+        ))}
+      </aside>
+
+      <main className="story">
+        <section id="top" data-section className="hero">
+          <div className="hero-wash" />
+          <div className="hero-jp" aria-hidden="true">月蝕ノ記憶</div>
+          <div className="hero-character" data-akari-hero>
+            <Image src="/images/akari-no-rei-cutout.webp" alt="Akari no Rei" fill priority quality={95} className="object-contain object-bottom" sizes="(max-width: 760px) 86vw, 48vw" />
           </div>
-          <div className="relative grid w-full gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-end">
-            <div>
-              <p data-reveal className="mb-5 text-[0.67rem] uppercase tracking-[0.46em] text-bone/45">月の原 — Beneath the moon</p>
-              <h1 data-reveal className="font-display max-w-[8ch] text-[clamp(4.8rem,13vw,12rem)] leading-[0.75] tracking-[-0.065em] text-bone">
-                Tsuki<br />hara
-              </h1>
-            </div>
-            <div data-reveal className="max-w-sm justify-self-end pb-1 md:pb-4">
-              <p className="text-sm leading-7 text-bone/62 md:text-base">
-                A cinematic action-adventure through sacred realms, forgotten vows and a moon that should never have turned red.
+          <div className="hero-copy" data-hero-title>
+            <p className="micro-label" data-fade>AN ORIGINAL ACTION ADVENTURE</p>
+            <h1 className="hero-title" data-words>Where the moon remembers every vow.</h1>
+            <p className="hero-deck" data-fade>
+              Enter a world of sacred temples, drowned valleys and ruined iron — and follow Akari toward an eclipse that changes everything it touches.
+            </p>
+          </div>
+          <div className="hero-logo" data-fade>
+            <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={620} height={350} priority quality={95} />
+          </div>
+          <div className="hero-meta" data-fade>
+            <span>In development</span>
+            <span>Scroll to enter</span>
+          </div>
+          <a className="hero-preview" href="#realms" data-fade>
+            <span className="preview-image">
+              <Image src="/images/akari-moon.webp" alt="Akari under the moon" fill quality={92} className="object-cover" sizes="280px" />
+            </span>
+            <span className="preview-caption"><b>Prologue</b><small>Under the crimson moon</small></span>
+          </a>
+        </section>
+
+        <section id="akari" data-section className="chapter akari-chapter">
+          <div className="chapter-rule"><span>朱莉 — AKARI</span><i /><span>THE PROTAGONIST</span></div>
+          <div className="akari-layout">
+            <div className="akari-statement">
+              <p className="micro-label" data-fade>BETWEEN LIGHT & ECLIPSE</p>
+              <h2 data-words>She carries a blade into a world already breaking.</h2>
+              <p data-fade>
+                Akari is the visual and emotional center of Tsukihara. Her silhouette is restrained; her transformation is not. The deeper she travels, the more the world around her begins to answer back.
               </p>
-              <a href="#akari" className="mt-8 inline-flex items-center gap-4 text-[0.68rem] uppercase tracking-[0.36em] text-bone/80">
-                Enter the moonlit realm <span aria-hidden="true">↓</span>
-              </a>
             </div>
+            <div className="akari-figure" data-parallax="10">
+              <span className="akari-kanji" aria-hidden="true">朱莉</span>
+              <Image src="/images/akari-standard.webp" alt="Akari" fill quality={95} className="object-contain object-bottom" sizes="(max-width: 760px) 92vw, 42vw" />
+            </div>
+            <div className="character-notes" data-fade>
+              <div><span>Weapon</span><b>Blade</b></div>
+              <div><span>Path</span><b>Moonlit realms</b></div>
+              <div><span>State</span><b>Akari no Rei</b></div>
+              <div><span>Motif</span><b>Vermilion / Sakura</b></div>
+            </div>
+          </div>
+          <div className="transformation-strip" data-fade>
+            <figure>
+              <Image src="/images/akari-standard.webp" alt="Akari standard" fill quality={92} className="object-contain object-bottom" sizes="240px" />
+              <figcaption><span>Standard</span><small>01</small></figcaption>
+            </figure>
+            <span className="transformation-line"><i /></span>
+            <figure>
+              <Image src="/images/akari-exalted.webp" alt="Akari exalted" fill quality={92} className="object-contain object-bottom" sizes="240px" />
+              <figcaption><span>Awakened</span><small>02</small></figcaption>
+            </figure>
+            <span className="transformation-line"><i /></span>
+            <figure>
+              <Image src="/images/akari-no-rei-cutout.webp" alt="Akari no Rei" fill quality={92} className="object-contain object-bottom" sizes="240px" />
+              <figcaption><span>No Rei</span><small>03</small></figcaption>
+            </figure>
           </div>
         </section>
 
-        <section id="akari" data-scene className="section-shell min-h-[120svh] items-center">
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#08070b_2%,transparent_35%,#08070b_98%)]" />
-          <div data-scene-media className="absolute right-[-10%] top-[8%] h-[82%] w-[72%] opacity-65 md:right-[3%] md:w-[47%]">
-            <Image src="/images/akari-no-rei.webp" alt="Akari, the protagonist of Tsukihara" fill className="object-contain object-center" sizes="(max-width: 768px) 80vw, 50vw" />
-          </div>
-          <div className="section-grid relative">
-            <p className="chapter-index">01 / 主人公</p>
-            <div className="max-w-2xl" data-reveal>
-              <p className="chapter-kicker">Akari — 朱莉</p>
-              <h2 className="chapter-title">The blade that walks between light and eclipse.</h2>
-              <p className="chapter-copy max-w-xl">
-                Akari carries more than a sword. Her journey crosses memory, duty and the awakening of a power that changes the shape of every realm she touches.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section id="realms" className="relative py-28 md:py-44">
-          <div className="section-grid mb-20 md:mb-32">
-            <p className="chapter-index">02—04 / 世界</p>
-            <div data-reveal>
-              <p className="chapter-kicker">The realms</p>
-              <h2 className="chapter-title max-w-4xl">Every place remembers a different version of the moon.</h2>
-            </div>
+        <section id="realms" data-section className="chapter realms-chapter">
+          <div className="realms-intro">
+            <p className="micro-label" data-fade>THE WORLD OF TSUKIHARA</p>
+            <h2 data-words>Three realms. Three different memories of the same moon.</h2>
+            <p data-fade>Each region has its own weather, vertical rhythm, architecture and emotional temperature.</p>
           </div>
 
-          <div className="space-y-32 md:space-y-48">
+          <div className="realm-mosaic">
             {realms.map((realm, index) => (
-              <article key={realm.id} id={realm.id} data-scene className="section-shell min-h-[96svh] items-end pb-16 md:pb-24">
-                <div data-scene-media className="absolute inset-[8%_0_0_0] overflow-hidden md:inset-[5%_5%_0_22%]">
-                  <Image src={realm.image} alt={`${realm.title}, a realm in Tsukihara`} fill className="object-cover" sizes="100vw" />
-                  <div className="absolute inset-0 bg-[linear-gradient(90deg,#08070b_0%,transparent_45%,transparent_75%,#08070b_100%),linear-gradient(to_top,#08070b_2%,transparent_50%)]" />
+              <article key={realm.id} id={realm.id} className={`realm-panel realm-panel-${index + 1}`} data-parallax={index === 0 ? "5" : "8"}>
+                <div className="realm-media">
+                  <Image src={realm.image} alt={realm.title} fill quality={95} className="object-cover" sizes={index === 0 ? "75vw" : "42vw"} />
+                  <span className="realm-grade" />
                 </div>
-                <div className="section-grid relative">
-                  <p className="chapter-index">{realm.index} / {realm.kanji}</p>
-                  <div data-reveal className={index % 2 === 0 ? "max-w-xl" : "max-w-xl md:ml-auto"}>
-                    <p className="chapter-kicker">{realm.subtitle}</p>
-                    <h3 className="font-display text-[clamp(4rem,8vw,8.5rem)] leading-[0.78] tracking-[-0.055em]">{realm.title}</h3>
-                    <p className="chapter-copy mt-6 max-w-lg">{realm.description}</p>
-                  </div>
+                <div className="realm-copy">
+                  <span className="realm-index">0{index + 1}</span>
+                  <p>{realm.kanji}</p>
+                  <h3>{realm.title}</h3>
+                  <small>{realm.label}</small>
+                  <div>{realm.copy}</div>
                 </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="world-note" data-fade>
+            <span>WORLD DIRECTION</span>
+            <p>From blossom-lit sanctuaries to collapsed iron ruins, Tsukihara should feel beautiful enough to invite you forward and haunted enough to make you hesitate.</p>
+          </div>
+        </section>
+
+        <section id="bonds" data-section className="chapter bonds-chapter">
+          <div className="bonds-backdrop" data-parallax="5">
+            <Image src="/images/haku-eclipse.webp" alt="Haku beneath the eclipse" fill quality={95} className="object-cover" sizes="100vw" />
+            <span />
+          </div>
+          <div className="bonds-title">
+            <p className="micro-label" data-fade>SPIRITS · ALLIES · OMENS</p>
+            <h2 data-words>No journey through Tsukihara is walked alone.</h2>
+          </div>
+          <div className="character-rail">
+            {characters.map((character, index) => (
+              <article key={character.name} data-fade style={{ "--i": index } as CSSProperties}>
+                <div className="character-art">
+                  <span className="character-kanji">{character.kanji}</span>
+                  <Image src={character.image} alt={character.name} fill quality={92} className="object-contain object-bottom" sizes="(max-width: 760px) 62vw, 22vw" />
+                </div>
+                <div className="character-caption"><span>{character.name}</span><small>{character.role}</small></div>
               </article>
             ))}
           </div>
         </section>
 
-        <section id="bonds" data-scene className="section-shell min-h-[115svh] items-center">
-          <div data-scene-media className="absolute inset-y-[8%] right-0 w-full md:right-[5%] md:w-[62%]">
-            <Image src="/images/haku-eclipse.webp" alt="Haku beneath the eclipse" fill className="object-cover md:object-contain" sizes="(max-width: 768px) 100vw, 65vw" />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,#08070b_0%,transparent_58%),linear-gradient(to_top,#08070b_0%,transparent_40%,#08070b_100%)]" />
+        <section className="chapter antagonists">
+          <div className="antagonist-figure antagonist-lady" data-parallax="7">
+            <Image src="/images/lady-tsukino.webp" alt="Lady Tsukino" fill quality={94} className="object-contain object-bottom" sizes="40vw" />
           </div>
-          <div className="section-grid relative">
-            <p className="chapter-index">05 / 絆</p>
-            <div data-reveal className="max-w-xl">
-              <p className="chapter-kicker">Bonds</p>
-              <h2 className="chapter-title">Some spirits choose who they will follow.</h2>
-              <p className="chapter-copy max-w-md">Haku is one of the presences bound to Akari&apos;s path — guardian, omen and witness to the coming eclipse.</p>
-            </div>
+          <div className="antagonist-figure antagonist-emperor" data-parallax="9">
+            <Image src="/images/faceless-emperor.webp" alt="The Faceless Emperor" fill quality={94} className="object-contain object-bottom" sizes="40vw" />
           </div>
-        </section>
-
-        <section id="eclipse" className="relative flex min-h-[110svh] items-center overflow-hidden px-5 py-28 md:px-10">
-          <div className="absolute left-1/2 top-1/2 h-[58vw] max-h-[760px] w-[58vw] max-w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7d1518]/70 shadow-[0_0_140px_rgba(139,31,31,0.22)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#08070b_64%)]" />
-          <div className="relative mx-auto w-full max-w-[1500px] text-center" data-reveal>
-            <p className="chapter-kicker">月蝕 — The eclipse</p>
-            <h2 className="font-display mx-auto max-w-[10ch] text-[clamp(4.6rem,12vw,12rem)] leading-[0.78] tracking-[-0.07em]">When the moon turns, every vow is tested.</h2>
+          <div className="antagonist-copy">
+            <span className="jp-vertical" aria-hidden="true">月影ノ敵</span>
+            <p className="micro-label" data-fade>BEYOND THE SHRINES</p>
+            <h2 data-words>The eclipse has faces. Not all of them are human.</h2>
+            <p data-fade>Lady Tsukino and the Faceless Emperor belong to the darker edge of the world — figures revealed as the journey moves from wonder into threat.</p>
           </div>
         </section>
 
-        <footer className="relative border-t border-bone/10 px-5 py-12 md:px-10 md:py-16">
-          <div className="mx-auto grid max-w-[1500px] gap-10 md:grid-cols-[1fr_auto] md:items-end">
-            <div>
-              <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={280} height={158} className="h-auto w-40 object-contain object-left brightness-0 invert md:w-52" />
-              <p className="mt-5 max-w-md text-sm leading-6 text-bone/45">An original game project currently in development. Follow the journey as the world of Tsukihara takes shape.</p>
-            </div>
-            <div className="flex flex-wrap gap-x-8 gap-y-3 text-[0.66rem] uppercase tracking-[0.32em] text-bone/58">
-              <span>Steam — coming soon</span>
-              <span>Trailer — coming soon</span>
+        <section id="eclipse" data-section className="eclipse-chapter">
+          <div className="eclipse-disc" aria-hidden="true"><i /><b /></div>
+          <div className="eclipse-copy">
+            <p className="micro-label" data-fade>月蝕 — THE ECLIPSE</p>
+            <h2 data-words>When the moon turns red, every vow is tested.</h2>
+            <p data-fade>Tsukihara is currently in development. This site will evolve alongside the game — new characters, gameplay, music and the first trailer will arrive here.</p>
+            <div className="closing-actions" data-fade>
+              <span className="coming-action"><b>Wishlist on Steam</b><small>Coming soon</small></span>
+              <a href="#top"><span>Return to the beginning</span><Arrow /></a>
             </div>
           </div>
-        </footer>
+          <div className="eclipse-akari" data-parallax="4">
+            <Image src="/images/akari-no-rei-cutout.webp" alt="Akari no Rei" fill quality={95} className="object-contain object-bottom" sizes="52vw" />
+          </div>
+        </section>
       </main>
+
+      <footer className="site-footer">
+        <div className="footer-manifesto">
+          <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={400} height={225} quality={95} />
+          <p>A moonlit action-adventure about memory, duty and the things that awaken when sacred places stop being silent.</p>
+        </div>
+        <div className="footer-base"><span>TSUKIHARA — IN DEVELOPMENT</span><span>月の原</span><span>2026</span></div>
+      </footer>
     </div>
   );
 }
