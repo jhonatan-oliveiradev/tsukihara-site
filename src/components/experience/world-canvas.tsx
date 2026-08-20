@@ -8,7 +8,17 @@ const ink = new THREE.Color("#07070a");
 const moon = new THREE.Color("#c53632");
 const ember = new THREE.Color("#d99a61");
 
-function Mountain({ z, y, scale, opacity }: { z: number; y: number; scale: number; opacity: number }) {
+function Mountain({
+  z,
+  y,
+  scale,
+  opacity,
+}: {
+  z: number;
+  y: number;
+  scale: number;
+  opacity: number;
+}) {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-8, -2);
@@ -40,9 +50,23 @@ function Mountain({ z, y, scale, opacity }: { z: number; y: number; scale: numbe
   );
 }
 
-function Torii({ position, scale = 1, opacity = 0.8 }: { position: [number, number, number]; scale?: number; opacity?: number }) {
+function Torii({
+  position,
+  scale = 1,
+  opacity = 0.8,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  opacity?: number;
+}) {
   const material = useMemo(
-    () => new THREE.MeshBasicMaterial({ color: "#5a1719", transparent: true, opacity, depthWrite: false }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: "#5a1719",
+        transparent: true,
+        opacity,
+        depthWrite: false,
+      }),
     [opacity],
   );
 
@@ -67,7 +91,8 @@ function Torii({ position, scale = 1, opacity = 0.8 }: { position: [number, numb
 function Lantern({ x, z, phase }: { x: number; z: number; phase: number }) {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }) => {
-    if (light.current) light.current.intensity = 0.6 + Math.sin(clock.elapsedTime * 1.8 + phase) * 0.12;
+    if (light.current)
+      light.current.intensity = 0.6 + Math.sin(clock.elapsedTime * 1.8 + phase) * 0.12;
   });
 
   return (
@@ -140,7 +165,13 @@ function Petals() {
       {petals.map((p, i) => (
         <mesh key={i} position={[p.x, p.y, p.z]} rotation={[0.4, p.r, p.r * 0.4]}>
           <planeGeometry args={[p.s * 2.4, p.s]} />
-          <meshBasicMaterial color="#e6b8c2" transparent opacity={0.34} side={THREE.DoubleSide} depthWrite={false} />
+          <meshBasicMaterial
+            color="#e6b8c2"
+            transparent
+            opacity={0.34}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
       ))}
     </group>
@@ -167,7 +198,8 @@ function StoryWorld() {
     if (rig.current) {
       rig.current.position.y = THREE.MathUtils.lerp(0, 1.4, p);
       rig.current.position.x = Math.sin(p * Math.PI * 2) * 0.45;
-      rig.current.rotation.y = Math.sin(p * Math.PI) * 0.08 + Math.sin(clock.elapsedTime * 0.04) * 0.01;
+      rig.current.rotation.y =
+        Math.sin(p * Math.PI) * 0.08 + Math.sin(clock.elapsedTime * 0.04) * 0.01;
     }
   });
 

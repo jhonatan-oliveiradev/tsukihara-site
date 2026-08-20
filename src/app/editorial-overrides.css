@@ -3,8 +3,8 @@
   margin-bottom: 1.2rem;
   color: var(--bone-dim);
   font-family: var(--display);
-  font-size: .72rem;
-  letter-spacing: .18em;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
@@ -14,7 +14,7 @@
 .bonds-title h2,
 .eclipse-copy h2 {
   font-size: clamp(3.25rem, 6.2vw, 6rem);
-  letter-spacing: -.035em;
+  letter-spacing: -0.035em;
 }
 
 .akari-state-line {
@@ -24,26 +24,32 @@
   gap: 1rem;
   margin-top: 2.8rem;
   color: var(--bone-dim);
-  font-size: .62rem;
-  letter-spacing: .12em;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .akari-state-line span {
   display: inline-flex;
   align-items: baseline;
-  gap: .5rem;
+  gap: 0.5rem;
   white-space: nowrap;
 }
 
-.akari-state-line small { color: var(--vermilion); font-size: .52rem; }
-.akari-state-line i { height: 1px; background: var(--line); }
+.akari-state-line small {
+  color: var(--vermilion);
+  font-size: 0.52rem;
+}
+.akari-state-line i {
+  height: 1px;
+  background: var(--line);
+}
 
 .haku-spread {
   width: min(74rem, 100%);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(14rem, .55fr);
+  grid-template-columns: minmax(0, 1.45fr) minmax(14rem, 0.55fr);
   align-items: end;
   gap: clamp(1.5rem, 4vw, 4rem);
 }
@@ -60,8 +66,9 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 54%, rgb(7 7 10 / .32)),
-    linear-gradient(to top, rgb(7 7 10 / .72), transparent 42%);
+  background:
+    linear-gradient(90deg, transparent 54%, rgb(7 7 10 / 0.32)),
+    linear-gradient(to top, rgb(7 7 10 / 0.72), transparent 42%);
   pointer-events: none;
 }
 
@@ -72,7 +79,7 @@
   z-index: 2;
   width: 5.5rem;
   aspect-ratio: 1;
-  border: 1px solid rgb(230 224 215 / .24);
+  border: 1px solid rgb(230 224 215 / 0.24);
   border-radius: 50%;
 }
 
@@ -82,12 +89,18 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  background: rgb(230 224 215 / .28);
+  background: rgb(230 224 215 / 0.28);
   transform: translate(-50%, -50%);
 }
 
-.haku-image > span::before { width: 140%; height: 1px; }
-.haku-image > span::after { width: 1px; height: 140%; }
+.haku-image > span::before {
+  width: 140%;
+  height: 1px;
+}
+.haku-image > span::after {
+  width: 1px;
+  height: 140%;
+}
 
 .haku-caption {
   padding: 1.2rem 0;
@@ -100,15 +113,15 @@
   font-family: var(--display);
   font-size: clamp(2.3rem, 4vw, 4rem);
   font-weight: 400;
-  line-height: .95;
+  line-height: 0.95;
 }
 
 .haku-caption small {
   display: block;
-  margin-top: .7rem;
+  margin-top: 0.7rem;
   color: var(--muted);
-  font-size: .55rem;
-  letter-spacing: .18em;
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
@@ -121,23 +134,54 @@
 }
 
 /* The source images are intentionally framed rather than stretched across the viewport. */
-.hero-character { width: min(38vw, 37rem); right: 10%; }
-.akari-figure { max-width: 37rem; width: 100%; justify-self: center; }
-.eclipse-akari { width: min(36vw, 35rem); right: 8%; }
-.realm-mosaic { max-width: 82rem; }
+.hero-character {
+  width: min(38vw, 37rem);
+  right: 10%;
+}
+.akari-figure {
+  max-width: 37rem;
+  width: 100%;
+  justify-self: center;
+}
+.eclipse-akari {
+  width: min(36vw, 35rem);
+  right: 8%;
+}
+.realm-mosaic {
+  max-width: 82rem;
+}
 
 @media (max-width: 780px) {
   .hero-title,
   .akari-statement h2,
   .realms-intro h2,
   .bonds-title h2,
-  .eclipse-copy h2 { font-size: clamp(3rem, 13vw, 5rem); }
+  .eclipse-copy h2 {
+    font-size: clamp(3rem, 13vw, 5rem);
+  }
 
-  .hero-character { width: 90vw; right: -26%; }
-  .akari-state-line { grid-template-columns: 1fr; gap: .65rem; }
-  .akari-state-line i { width: 3rem; }
-  .haku-spread { grid-template-columns: 1fr; }
-  .haku-image { min-height: 60svh; }
-  .haku-caption p { margin-top: 1.5rem; }
-  .eclipse-akari { width: 86vw; right: -22%; }
+  .hero-character {
+    width: 90vw;
+    right: -26%;
+  }
+  .akari-state-line {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+  .akari-state-line i {
+    width: 3rem;
+  }
+  .haku-spread {
+    grid-template-columns: 1fr;
+  }
+  .haku-image {
+    min-height: 60svh;
+  }
+  .haku-caption p {
+    margin-top: 1.5rem;
+  }
+  .eclipse-akari {
+    width: 86vw;
+    right: -22%;
+  }
 }
