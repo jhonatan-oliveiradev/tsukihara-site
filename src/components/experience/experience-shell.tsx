@@ -22,6 +22,18 @@ function Arrow() {
   );
 }
 
+function RevealWords({ text }: { text: string }) {
+  return (
+    <span data-words aria-label={text}>
+      {text.split(/\s+/).map((word, index, words) => (
+        <span className="word-mask" aria-hidden="true" key={`${word}-${index}`}>
+          <span className="word-unit">{word}{index < words.length - 1 ? "\u00a0" : ""}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function ExperienceShell() {
   const root = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,31 +54,19 @@ export function ExperienceShell() {
 
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-words]").forEach((element) => {
-        const text = element.textContent?.trim() ?? "";
-        element.textContent = "";
-        text.split(/\s+/).forEach((word, index, words) => {
-          const mask = document.createElement("span");
-          mask.className = "word-mask";
-          const span = document.createElement("span");
-          span.className = "word-unit";
-          span.textContent = word + (index < words.length - 1 ? "\u00a0" : "");
-          mask.appendChild(span);
-          element.appendChild(mask);
-        });
-        if (!reduced) {
-          gsap.fromTo(
-            element.querySelectorAll(".word-unit"),
-            { yPercent: 112, opacity: 0 },
-            {
-              yPercent: 0,
-              opacity: 1,
-              stagger: 0.055,
-              duration: 1,
-              ease: "power4.out",
-              scrollTrigger: { trigger: element, start: "top 88%", once: true },
-            },
-          );
-        }
+        if (reduced) return;
+        gsap.fromTo(
+          element.querySelectorAll(".word-unit"),
+          { yPercent: 112, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            stagger: 0.055,
+            duration: 1,
+            ease: "power4.out",
+            scrollTrigger: { trigger: element, start: "top 88%", once: true },
+          },
+        );
       });
 
       gsap.utils.toArray<HTMLElement>("[data-fade]").forEach((element) => {
@@ -183,7 +183,7 @@ export function ExperienceShell() {
           </div>
           <div className="hero-copy" data-hero-title>
             <p className="micro-label" data-fade>AN ORIGINAL ACTION ADVENTURE</p>
-            <h1 className="hero-title" data-words>Where the moon remembers every vow.</h1>
+            <h1 className="hero-title"><RevealWords text="Where the moon remembers every vow." /></h1>
             <p className="hero-deck" data-fade>
               Enter sacred temples, drowned valleys and ruined iron as Akari walks toward an eclipse that changes everything it touches.
             </p>
@@ -202,7 +202,7 @@ export function ExperienceShell() {
           <div className="chapter-rule"><span>朱莉 — AKARI</span><i /><span>THE PROTAGONIST</span></div>
           <div className="akari-layout">
             <div className="akari-statement">
-              <h2 data-words>She carries a blade into a world already breaking.</h2>
+              <h2><RevealWords text="She carries a blade into a world already breaking." /></h2>
               <p data-fade>
                 Akari is the visual and emotional center of Tsukihara. Her path crosses memory, duty and the awakening of a power that changes the shape of every realm around her.
               </p>
@@ -226,7 +226,7 @@ export function ExperienceShell() {
         <section id="realms" data-section className="chapter realms-chapter">
           <div className="realms-intro">
             <span className="section-side-note">世界 — WORLD</span>
-            <h2 data-words>Three different memories of the same moon.</h2>
+            <h2><RevealWords text="Three different memories of the same moon." /></h2>
             <p data-fade>Each realm carries its own architecture, weather, vertical rhythm and emotional temperature.</p>
           </div>
 
@@ -254,7 +254,7 @@ export function ExperienceShell() {
         <section id="bonds" data-section className="chapter bonds-chapter">
           <div className="bonds-title">
             <span className="section-side-note">絆 — BONDS</span>
-            <h2 data-words>Some spirits choose who they will follow.</h2>
+            <h2><RevealWords text="Some spirits choose who they will follow." /></h2>
             <p data-fade>Haku is guardian, omen and witness — one of the presences bound to Akari&apos;s path as the eclipse draws closer.</p>
           </div>
           <div className="haku-spread" data-parallax="5">
@@ -270,7 +270,7 @@ export function ExperienceShell() {
           <div className="eclipse-disc" aria-hidden="true"><i /><b /></div>
           <div className="eclipse-copy">
             <span className="section-side-note">月蝕 — ECLIPSE</span>
-            <h2 data-words>When the moon turns red, every vow is tested.</h2>
+            <h2><RevealWords text="When the moon turns red, every vow is tested." /></h2>
             <p data-fade>Tsukihara is currently in development. New characters, gameplay, music and the first trailer will arrive here as the world takes shape.</p>
             <div className="closing-actions" data-fade>
               <span className="coming-action"><b>Wishlist on Steam</b><small>Coming soon</small></span>
