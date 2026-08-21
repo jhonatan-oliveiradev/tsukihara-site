@@ -14,17 +14,7 @@ function pageProgress() {
   return THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
 }
 
-function Ridge({
-  z,
-  y,
-  opacity,
-  scale = 1,
-}: {
-  z: number;
-  y: number;
-  opacity: number;
-  scale?: number;
-}) {
+function Ridge({ z, y, opacity, scale = 1 }: { z: number; y: number; opacity: number; scale?: number }) {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12, -2.5);
@@ -56,15 +46,7 @@ function Ridge({
   );
 }
 
-function Torii({
-  position,
-  scale = 1,
-  opacity = 1,
-}: {
-  position: [number, number, number];
-  scale?: number;
-  opacity?: number;
-}) {
+function Torii({ position, scale = 1, opacity = 1 }: { position: [number, number, number]; scale?: number; opacity?: number }) {
   const material = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -76,6 +58,7 @@ function Torii({
       }),
     [opacity],
   );
+
   return (
     <group position={position} scale={scale}>
       <mesh position={[-1.1, 0, 0]} material={material}>
@@ -126,12 +109,14 @@ function Shrine() {
 function Lantern({ x, z, phase }: { x: number; z: number; phase: number }) {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }) => {
-    if (light.current)
+    if (light.current) {
       light.current.intensity =
         1.1 +
         Math.sin(clock.elapsedTime * 2.1 + phase) * 0.18 +
         Math.sin(clock.elapsedTime * 5.4 + phase) * 0.05;
+    }
   });
+
   return (
     <group position={[x, -1.15, z]}>
       <mesh>
@@ -157,14 +142,8 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
     if (group.current) {
       group.current.position.lerp(shot.moon, 0.055);
       const breath = 1 + Math.sin(clock.elapsedTime * 0.22) * 0.018;
-      group.current.scale.lerp(
-        new THREE.Vector3(
-          shot.moonScale * breath,
-          shot.moonScale * breath,
-          shot.moonScale * breath,
-        ),
-        0.06,
-      );
+      const scale = shot.moonScale * breath;
+      group.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.06);
     }
     if (shadow.current) shadow.current.position.x = THREE.MathUtils.lerp(-4.2, 0.5, shot.eclipse);
     if (halo.current) halo.current.rotation.z = clock.elapsedTime * 0.008;
@@ -188,19 +167,7 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
   );
 }
 
-function PetalField({
-  count,
-  z,
-  speed,
-  opacity,
-  tint,
-}: {
-  count: number;
-  z: number;
-  speed: number;
-  opacity: number;
-  tint: string;
-}) {
+function PetalField({ count, z, speed, opacity, tint }: { count: number; z: number; speed: number; opacity: number; tint: string }) {
   const group = useRef<THREE.Group>(null);
   const petals = useMemo(
     () =>
@@ -224,19 +191,9 @@ function PetalField({
   return (
     <group ref={group} position={[0, 0, z]}>
       {petals.map((petal, i) => (
-        <mesh
-          key={i}
-          position={[petal.x, petal.y, (i % 7) * -0.09]}
-          rotation={[0.6, petal.r, petal.phase]}
-        >
+        <mesh key={i} position={[petal.x, petal.y, (i % 7) * -0.09]} rotation={[0.6, petal.r, petal.phase]}>
           <planeGeometry args={[petal.s * 2.6, petal.s]} />
-          <meshBasicMaterial
-            color={tint}
-            transparent
-            opacity={opacity}
-            side={THREE.DoubleSide}
-            depthWrite={false}
-          />
+          <meshBasicMaterial color={tint} transparent opacity={opacity} side={THREE.DoubleSide} depthWrite={false} />
         </mesh>
       ))}
     </group>
@@ -244,10 +201,11 @@ function PetalField({
 }
 
 function PointerEmbers() {
-  const points = useRef<THREE.Points>(null);
-  const positions = useMemo(() => new Float32Array(36 * 3), []);
+  const attribute = useRef<THREE.BufferAttribute>(null);
+
   useFrame(({ pointer, clock }) => {
-    if (!points.current) return;
+    if (!attribute.current) return;
+    const positions = attribute.current.array as Float32Array;
     for (let i = 0; i < 36; i += 1) {
       const idx = i * 3;
       positions[idx] = pointer.x * 4.6 + Math.sin(clock.elapsedTime * 1.3 + i) * (i / 36) * 1.6;
@@ -255,13 +213,13 @@ function PointerEmbers() {
         pointer.y * 2.8 + Math.cos(clock.elapsedTime * 1.1 + i * 0.7) * (i / 36) * 1.1;
       positions[idx + 2] = -2.3 - i * 0.08;
     }
-    const attribute = points.current.geometry.getAttribute("position") as THREE.BufferAttribute;
-    attribute.needsUpdate = true;
+    attribute.current.needsUpdate = true;
   });
+
   return (
-    <points ref={points}>
+    <points>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute ref={attribute} attach="attributes-position" args={[new Float32Array(36 * 3), 3]} />
       </bufferGeometry>
       <pointsMaterial
         color="#bb2730"
@@ -275,9 +233,10 @@ function PointerEmbers() {
   );
 }
 
-function Director() {
+function Director({ fogRef }: { fogRef: React.RefObject<THREE.FogExp2 | null> }) {
   const progress = useRef(0);
-  const { camera, scene } = useThree();
+  const world = useRef<THREE.Group>(null);
+  const { camera } = useThree();
   const lookAt = useRef(new THREE.Vector3(0, 0.5, -8));
 
   useFrame(({ clock }) => {
@@ -287,15 +246,18 @@ function Director() {
     camera.position.lerp(shot.position, 0.055);
     lookAt.current.lerp(shot.lookAt, 0.055);
     camera.lookAt(lookAt.current);
-    if (scene.fog instanceof THREE.FogExp2)
-      scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, shot.fog, 0.04);
-    scene.rotation.y =
-      Math.sin(progress.current * Math.PI * 1.6) * 0.035 +
-      Math.sin(clock.elapsedTime * 0.04) * 0.006;
+    if (fogRef.current) {
+      fogRef.current.density = THREE.MathUtils.lerp(fogRef.current.density, shot.fog, 0.04);
+    }
+    if (world.current) {
+      world.current.rotation.y =
+        Math.sin(progress.current * Math.PI * 1.6) * 0.035 +
+        Math.sin(clock.elapsedTime * 0.04) * 0.006;
+    }
   });
 
   return (
-    <>
+    <group ref={world}>
       <EclipseMoon progress={progress} />
       <Ridge z={-20} y={-2.5} opacity={0.9} scale={1.3} />
       <Ridge z={-14} y={-2.3} opacity={0.76} scale={1.08} />
@@ -309,6 +271,21 @@ function Director() {
       <PetalField count={34} z={-6} speed={0.15} opacity={0.28} tint="#d8abb7" />
       <PetalField count={24} z={-2.3} speed={0.27} opacity={0.42} tint="#b92e36" />
       <PointerEmbers />
+    </group>
+  );
+}
+
+function SceneContents() {
+  const fogRef = useRef<THREE.FogExp2>(null);
+
+  return (
+    <>
+      <color attach="background" args={[INK]} />
+      <fogExp2 ref={fogRef} attach="fog" args={["#05090d", 0.018]} />
+      <ambientLight intensity={0.24} color="#6e7b8e" />
+      <directionalLight position={[-4, 8, 3]} intensity={0.8} color="#8296b4" />
+      <pointLight position={[0, 2.6, -8.2]} intensity={2.1} distance={18} color="#8e141a" />
+      <Director fogRef={fogRef} />
     </>
   );
 }
@@ -321,12 +298,7 @@ export function WorldCanvas() {
         camera={{ position: [0, 1.2, 11.8], fov: 36, near: 0.2, far: 120 }}
         gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
       >
-        <color attach="background" args={[INK]} />
-        <fogExp2 attach="fog" args={["#05090d", 0.018]} />
-        <ambientLight intensity={0.24} color="#6e7b8e" />
-        <directionalLight position={[-4, 8, 3]} intensity={0.8} color="#8296b4" />
-        <pointLight position={[0, 2.6, -8.2]} intensity={2.1} distance={18} color="#8e141a" />
-        <Director />
+        <SceneContents />
       </Canvas>
     </div>
   );
