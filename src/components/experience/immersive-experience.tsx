@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { HeroParallaxScene } from "@/components/experience/hero-parallax-scene";
 import { realms } from "@/content/game";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
@@ -102,12 +103,6 @@ export function ImmersiveExperience() {
       if (!reduced) {
         gsap.to("[data-hero-word]", {
           xPercent: -10,
-          ease: "none",
-          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
-        });
-        gsap.to("[data-hero-akari]", {
-          yPercent: -8,
-          xPercent: 3,
           ease: "none",
           scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
         });
@@ -276,6 +271,7 @@ export function ImmersiveExperience() {
 
       <main className="ix-story">
         <section id="top" data-section className="ix-hero">
+          <HeroParallaxScene />
           <div className="ix-hero-copy">
             <p className="ix-eyebrow" data-reveal>
               <b>朱莉</b> {copy.hero.eyebrow}
@@ -284,16 +280,6 @@ export function ImmersiveExperience() {
               <RevealWords text={copy.hero.title} />
             </h1>
             <p data-reveal>{copy.hero.body}</p>
-          </div>
-          <div className="ix-hero-akari" data-hero-akari>
-            <Image
-              src="/images/akari-no-rei.webp"
-              alt="Akari no Rei"
-              fill
-              priority
-              className="object-contain object-bottom"
-              sizes="(max-width:760px) 80vw, 38vw"
-            />
           </div>
           <div className="ix-hero-logo" data-reveal>
             <Image
