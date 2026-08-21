@@ -81,7 +81,8 @@ export const immersiveCopy = {
       label: "04 — ECOS",
       title: "O mundo não entrega respostas. Ele deixa rastros para quem decide procurá-las.",
       titleJp: "世界は答えを与えない。探す者に痕跡を残す。",
-      intro: "Os ecos de Tsukihara aparecem em lugares, símbolos, espíritos e ruínas. Juntos, eles revelam por que o eclipse retornou — e por que Akari está ligada a ele.",
+      intro:
+        "Os ecos de Tsukihara aparecem em lugares, símbolos, espíritos e ruínas. Juntos, eles revelam por que o eclipse retornou — e por que Akari está ligada a ele.",
       items: [
         [
           "01",
@@ -202,7 +203,8 @@ export const immersiveCopy = {
       label: "04 — ECHOES",
       title: "The world does not hand you answers. It leaves traces for those willing to search.",
       titleJp: "世界は答えを与えない。探す者に痕跡を残す。",
-      intro: "Tsukihara's echoes surface through places, symbols, spirits and ruins. Together they reveal why the eclipse returned — and why Akari is bound to it.",
+      intro:
+        "Tsukihara's echoes surface through places, symbols, spirits and ruins. Together they reveal why the eclipse returned — and why Akari is bound to it.",
       items: [
         [
           "01",

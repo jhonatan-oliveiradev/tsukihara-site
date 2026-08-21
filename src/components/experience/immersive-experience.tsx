@@ -308,7 +308,11 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-manifesto">
             <h2>
-              <JpRevealText jp={copy.threshold.titleJp} text={copy.threshold.title} locale={locale} />
+              <JpRevealText
+                jp={copy.threshold.titleJp}
+                text={copy.threshold.title}
+                locale={locale}
+              />
             </h2>
             <div data-reveal>
               <p>{copy.threshold.body}</p>
@@ -339,7 +343,11 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-realms-intro">
             <h2>
-              <JpRevealText jp={copy.realmsIntro.titleJp} text={copy.realmsIntro.title} locale={locale} />
+              <JpRevealText
+                jp={copy.realmsIntro.titleJp}
+                text={copy.realmsIntro.title}
+                locale={locale}
+              />
             </h2>
             <p data-reveal>{copy.realmsIntro.body}</p>
           </div>
