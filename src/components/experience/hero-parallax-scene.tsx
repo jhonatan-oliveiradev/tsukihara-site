@@ -23,7 +23,8 @@ export function HeroParallaxScene() {
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    const hero = root?.closest<HTMLElement>(".ix-hero");
+    if (!root || !hero) return;
 
     const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobileQuery = window.matchMedia("(max-width: 680px)");
@@ -50,10 +51,10 @@ export function HeroParallaxScene() {
     };
 
     const updateScroll = () => {
-      const rect = root.getBoundingClientRect();
+      const rect = hero.getBoundingClientRect();
       const viewport = window.innerHeight;
-      const travel = Math.max(rect.height + viewport * 0.52, 1);
-      scrollTarget = clamp((-rect.top + viewport * 0.05) / travel, 0, 1);
+      const travel = Math.max(rect.height + viewport * 0.48, 1);
+      scrollTarget = clamp((-rect.top + viewport * 0.04) / travel, 0, 1);
     };
 
     const updatePointer = (event: PointerEvent) => {
@@ -75,7 +76,7 @@ export function HeroParallaxScene() {
       pointerCurrent.y = damp(pointerCurrent.y, pointerTarget.y, 0.055);
       scrollCurrent = damp(scrollCurrent, scrollTarget, 0.052);
 
-      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.46, 0.69);
+      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.48, 0.73);
       opacityCurrent = damp(opacityCurrent, targetOpacity, 0.065);
       root.style.opacity = opacityCurrent.toFixed(3);
 
