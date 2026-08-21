@@ -1,0 +1,119 @@
+name: Visual overhaul QA
+
+on:
+  push:
+    branches:
+      - feat/immersive-overhaul-main
+
+jobs:
+  visual:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-next.log 2>&1 &
+          echo $! > /tmp/tsukihara-next.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-next.log
+          exit 1
+      - name: Capture visual states
+        run: |
+          mkdir -p qa
+          cat > qa/capture.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+
+          async function waitForEntry(page) {
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForSelector('.ix-entry', { state: 'visible', timeout: 30000 });
+            await page.locator('.ix-entry-actions button').nth(1).click();
+            await page.waitForTimeout(1400);
+          }
+
+          async function captureDesktop(browser) {
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+            await waitForEntry(page);
+            const docWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+            if (docWidth > 1440) throw new Error(`desktop horizontal overflow: ${docWidth}`);
+
+            await page.screenshot({ path: 'qa/01-hero-top.png' });
+            await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.62));
+            await page.waitForTimeout(900);
+            await page.screenshot({ path: 'qa/02-hero-mid.png' });
+            await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.02));
+            await page.waitForTimeout(900);
+            await page.screenshot({ path: 'qa/03-hero-handoff.png' });
+
+            const targets = [
+              ['#gate', '04-kintsugi-start.png', 0.08],
+              ['#gate', '05-kintsugi-mid.png', 0.66],
+              ['#realms', '06-realms.png', 0.12],
+              ['.ix-trailer-overhaul', '07-trailer.png', 0.18],
+              ['#akari', '08-akari.png', 0.12],
+              ['#lore', '09-pillars.png', 0.12],
+              ['#eclipse', '10-epilogue.png', 0.16],
+            ];
+            for (const [selector, file, ratio] of targets) {
+              const top = await page.locator(selector).evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+              const height = await page.locator(selector).evaluate((el) => el.getBoundingClientRect().height);
+              await page.evaluate(({ y }) => window.scrollTo(0, y), { y: top + height * ratio });
+              await page.waitForTimeout(1100);
+              await page.screenshot({ path: `qa/${file}` });
+            }
+            await page.close();
+          }
+
+          async function captureViewport(browser, width, height, file) {
+            const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+            await waitForEntry(page);
+            const docWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+            if (docWidth > width + 1) throw new Error(`${width}px horizontal overflow: ${docWidth}`);
+            await page.screenshot({ path: `qa/${file}`, fullPage: true });
+            await page.close();
+          }
+
+          async function captureReduced(browser) {
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+            await waitForEntry(page);
+            await page.locator('#gate').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: 'qa/14-reduced-motion-kintsugi.png' });
+            await page.close();
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true, args: ['--use-angle=swiftshader', '--enable-webgl'] });
+            await captureDesktop(browser);
+            await captureViewport(browser, 390, 844, '11-mobile-full.png');
+            await captureViewport(browser, 768, 1024, '12-tablet-full.png');
+            await captureViewport(browser, 2560, 1080, '13-ultrawide-full.png');
+            await captureReduced(browser);
+            fs.writeFileSync('qa/qa-complete.txt', 'Visual QA completed without horizontal overflow.');
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node qa/capture.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: immersive-overhaul-qa
+          path: qa
+          retention-days: 5
