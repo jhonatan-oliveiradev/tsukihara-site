@@ -65,13 +65,19 @@ jobs:
 
             const buttons = page.locator('.ix-gateway-actions button');
             if (await buttons.count() < 2) throw new Error('Expected sound and silent entry choices');
-            await buttons.nth(1).click();
+            await buttons.nth(1).evaluate((button) => button.click());
 
-            await page.waitForFunction(
-              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'revealing',
-              null,
-              { timeout: 5000 },
-            );
+            const observed = [];
+            for (const delay of [0, 40, 120, 320, 760, 1180]) {
+              if (delay) await page.waitForTimeout(delay - observed.reduce((sum, item) => sum + item.waited, 0));
+              const phase = await page.evaluate(() => document.querySelector('.ix-entry-gateway')?.dataset.phase ?? 'ready');
+              observed.push({ waited: delay - observed.reduce((sum, item) => sum + item.waited, 0), delay, phase });
+              if (phase === 'revealing') break;
+            }
+            if (!observed.some((item) => item.phase === 'revealing')) {
+              throw new Error(`Gateway never entered revealing state: ${JSON.stringify(observed)}`);
+            }
+
             const revealingState = await page.evaluate(() => {
               const layer = document.querySelector('.ix-experience-layer');
               const style = layer ? getComputedStyle(layer) : null;
