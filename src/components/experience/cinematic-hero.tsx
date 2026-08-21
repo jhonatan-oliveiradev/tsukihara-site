@@ -39,13 +39,7 @@ export function CinematicHero({ copy, locale }: CinematicHeroProps) {
         </div>
 
         <div className="ix-hero-logo ix-hero-logo-overhaul" data-hero-logo>
-          <Image
-            src="/assets_hq/logotipo.png"
-            alt="Tsukihara"
-            width={520}
-            height={293}
-            priority
-          />
+          <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={520} height={293} priority />
         </div>
 
         <div className="ix-hero-word ix-hero-word-overhaul" data-hero-word aria-hidden="true">

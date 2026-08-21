@@ -26,10 +26,12 @@
 ### Task 1: Add shader dependency and reusable shader image wrapper
 
 **Files:**
+
 - Modify: `package.json`
 - Create: `src/components/experience/shader-image.tsx`
 
 **Interfaces:**
+
 - Produces: `ShaderImageProps` and `ShaderImage` for character/realm image treatments.
 
 - [ ] Add `@paper-design/shaders-react` to dependencies.
@@ -41,12 +43,14 @@
 ### Task 2: Rebuild the hero as a pinned cinematic stage
 
 **Files:**
+
 - Create: `src/components/experience/cinematic-hero.tsx`
 - Modify: `src/components/experience/hero-parallax-scene.tsx`
 - Modify: `src/components/experience/hero-parallax-config.ts`
 - Create: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `CinematicHero({ copy, locale })` renders `#top` and uses the existing `HeroParallaxScene` as the layered stage.
 
 - [ ] Extend hero parallax config with foreground layers from `secret-pathways-assets` where useful.
@@ -60,11 +64,13 @@
 ### Task 3: Build the Kintsugi Lunar restoration chapter
 
 **Files:**
+
 - Create: `src/components/experience/kintsugi-chapter.tsx`
 - Modify: `src/content/immersive-copy.ts`
 - Modify: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `KintsugiChapter({ copy, locale })` renders `#gate` and exposes `[data-kintsugi-progress]` elements for the global GSAP timeline.
 
 - [ ] Use an HQ Hanamori environment image as the base scene.
@@ -76,11 +82,13 @@
 ### Task 4: Replace the oversized realm grid with a compact realm atlas
 
 **Files:**
+
 - Create: `src/components/experience/realm-atlas.tsx`
 - Modify: `src/content/game.ts`
 - Modify: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `RealmAtlas({ copy })` renders `#realms` using the three current realm records.
 
 - [ ] Keep Hanamori, Mizukyo and Kurogane HQ imagery.
@@ -92,10 +100,12 @@
 ### Task 5: Elevate the gameplay trailer chapter
 
 **Files:**
+
 - Create: `src/components/experience/trailer-chapter.tsx`
 - Modify: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `TrailerChapter({ copy, locale })` renders the gameplay video chapter.
 
 - [ ] Use `/assets_hq/video_battle.mp4` as the dominant visual field.
@@ -106,10 +116,12 @@
 ### Task 6: Create premium Akari character spotlight
 
 **Files:**
+
 - Create: `src/components/experience/character-spotlight.tsx`
 - Modify: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `CharacterSpotlight({ copy, locale })` renders `#akari`.
 
 - [ ] Use `AKARI_NO_REI_CANONICAL_MODEL_V02.png` as the canonical art.
@@ -121,11 +133,13 @@
 ### Task 7: Replace lore cards with experience pillars
 
 **Files:**
+
 - Create: `src/components/experience/experience-pillars.tsx`
 - Modify: `src/content/immersive-copy.ts`
 - Modify: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `ExperiencePillars({ copy })` renders `#lore`.
 
 - [ ] Replace generic lore cards with five game-system chapters: Kintsugi Lunar, isometric overworld, 2.5D Metroidvania, combat/bosses, Haku & Mochi/secrets.
@@ -135,10 +149,12 @@
 ### Task 8: Build an authored cinematic epilogue/footer
 
 **Files:**
+
 - Create: `src/components/experience/cinematic-epilogue.tsx`
 - Modify: `src/app/immersive-overhaul.css`
 
 **Interfaces:**
+
 - `CinematicEpilogue({ copy })` renders `#eclipse` and final navigation/footer controls.
 
 - [ ] Combine the final narrative section and footer into one composed ending.
@@ -149,12 +165,14 @@
 ### Task 9: Refactor shell and global motion orchestration
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 - Modify: `src/app/layout.tsx`
 - Modify: `src/app/immersive-v2.css`
 - Modify: `src/app/immersive-polish.css`
 
 **Interfaces:**
+
 - `ImmersiveExperience` retains locale/audio/menu state and composes all new chapter components.
 
 - [ ] Replace existing inline section markup with the new chapter components.
@@ -166,6 +184,7 @@
 ### Task 10: Full verification and visual QA
 
 **Files:**
+
 - Temporary QA workflow only if Vercel preview is unavailable; remove it before final PR state.
 
 - [ ] Run `npm run format:check`.

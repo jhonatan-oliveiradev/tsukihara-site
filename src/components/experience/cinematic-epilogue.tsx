@@ -14,7 +14,13 @@ export function CinematicEpilogue({ copy, locale }: CinematicEpilogueProps) {
   return (
     <section id="eclipse" data-section className="ix-epilogue">
       <div className="ix-epilogue-moon" aria-hidden="true">
-        <Image src="/assets_hq/Blood_Moon.png" alt="" fill sizes="48vw" className="object-contain" />
+        <Image
+          src="/assets_hq/Blood_Moon.png"
+          alt=""
+          fill
+          sizes="48vw"
+          className="object-contain"
+        />
       </div>
       <Image
         src="/secret-pathways-assets/foreground/png/sakura-branch.webp"

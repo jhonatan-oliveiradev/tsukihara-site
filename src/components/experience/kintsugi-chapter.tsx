@@ -79,11 +79,7 @@ export function KintsugiChapter({ copy, locale }: KintsugiChapterProps) {
             <span>月継</span>
           </div>
           <h2>
-            <JpRevealText
-              jp={copy.threshold.titleJp}
-              text={copy.threshold.title}
-              locale={locale}
-            />
+            <JpRevealText jp={copy.threshold.titleJp} text={copy.threshold.title} locale={locale} />
           </h2>
           <p data-reveal>{copy.threshold.body}</p>
           <div className="ix-kintsugi-choice" data-reveal>

@@ -116,12 +116,7 @@ export function ImmersiveExperience() {
           { left: "99%", opacity: 1, ease: "none" },
           0.05,
         )
-        .fromTo(
-          "[data-kintsugi-line]",
-          { scaleY: 0.04 },
-          { scaleY: 1, ease: "none" },
-          0.12,
-        );
+        .fromTo("[data-kintsugi-line]", { scaleY: 0.04 }, { scaleY: 1, ease: "none" }, 0.12);
 
       gsap.fromTo(
         "[data-trailer-video]",

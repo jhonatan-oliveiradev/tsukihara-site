@@ -91,7 +91,13 @@
 .ix-hero-parallax::after {
   z-index: 14;
   background:
-    linear-gradient(90deg, rgba(2, 3, 6, 0.97) 0%, rgba(2, 3, 6, 0.8) 27%, rgba(2, 3, 6, 0.23) 50%, transparent 70%),
+    linear-gradient(
+      90deg,
+      rgba(2, 3, 6, 0.97) 0%,
+      rgba(2, 3, 6, 0.8) 27%,
+      rgba(2, 3, 6, 0.23) 50%,
+      transparent 70%
+    ),
     linear-gradient(180deg, transparent 57%, rgba(2, 3, 6, 0.72) 92%, #030407 100%);
 }
 
@@ -529,7 +535,9 @@
 
 .ix-realm-stage-meta strong {
   color: rgba(196, 64, 74, 0.72);
-  font: 400 clamp(2rem, 3vw, 4rem)/1 "Yu Mincho", serif;
+  font:
+    400 clamp(2rem, 3vw, 4rem)/1 "Yu Mincho",
+    serif;
 }
 
 .ix-realm-stage-copy {
@@ -624,7 +632,9 @@
 }
 
 .ix-realm-index em {
-  font: normal 400 1.6rem/1 "Yu Mincho", serif;
+  font:
+    normal 400 1.6rem/1 "Yu Mincho",
+    serif;
   color: rgba(173, 57, 67, 0.38);
 }
 
@@ -752,7 +762,9 @@
 }
 
 .ix-trailer-caption strong {
-  font: 400 clamp(3rem, 7vw, 8rem)/0.8 "Yu Mincho", serif;
+  font:
+    400 clamp(3rem, 7vw, 8rem)/0.8 "Yu Mincho",
+    serif;
   color: rgba(193, 61, 72, 0.36);
 }
 
@@ -788,9 +800,7 @@
   min-height: 110svh;
   padding: clamp(8rem, 14vh, 12rem) clamp(20px, 5vw, 92px);
   overflow: hidden;
-  background:
-    radial-gradient(circle at 27% 45%, rgba(124, 20, 30, 0.13), transparent 28%),
-    #040508;
+  background: radial-gradient(circle at 27% 45%, rgba(124, 20, 30, 0.13), transparent 28%), #040508;
 }
 
 .ix-character-kanji {
@@ -798,7 +808,9 @@
   left: 1vw;
   top: 10vh;
   color: rgba(145, 31, 42, 0.1);
-  font: 400 clamp(13rem, 30vw, 35rem)/0.8 "Yu Mincho", serif;
+  font:
+    400 clamp(13rem, 30vw, 35rem)/0.8 "Yu Mincho",
+    serif;
   pointer-events: none;
 }
 
@@ -980,7 +992,9 @@
   display: block;
   margin-bottom: 0.35rem;
   color: rgba(163, 52, 62, 0.56);
-  font: 400 1.15rem/1 "Yu Mincho", serif;
+  font:
+    400 1.15rem/1 "Yu Mincho",
+    serif;
 }
 
 .ix-pillar-title h3 {
@@ -1010,7 +1024,9 @@
   opacity: 0.06;
   filter: grayscale(0.5);
   pointer-events: none;
-  transition: opacity 500ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 500ms ease,
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ix-pillar:hover .ix-pillar-asset {
@@ -1058,7 +1074,9 @@
   right: 1vw;
   bottom: 18vh;
   color: rgba(134, 28, 39, 0.09);
-  font: 400 clamp(13rem, 29vw, 34rem)/0.8 "Yu Mincho", serif;
+  font:
+    400 clamp(13rem, 29vw, 34rem)/0.8 "Yu Mincho",
+    serif;
   pointer-events: none;
 }
 
@@ -1323,7 +1341,12 @@
 
   .ix-kintsugi-stage::after {
     background:
-      linear-gradient(180deg, rgba(3, 4, 7, 0.8) 0%, rgba(3, 4, 7, 0.34) 55%, rgba(3, 4, 7, 0.84) 100%),
+      linear-gradient(
+        180deg,
+        rgba(3, 4, 7, 0.8) 0%,
+        rgba(3, 4, 7, 0.34) 55%,
+        rgba(3, 4, 7, 0.84) 100%
+      ),
       linear-gradient(90deg, rgba(3, 4, 7, 0.64), transparent 72%);
   }
 
