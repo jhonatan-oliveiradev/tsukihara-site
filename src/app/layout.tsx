@@ -6,6 +6,7 @@ import "./immersive-polish.css";
 import "./cinematic-handoff.css";
 import "./immersive-overhaul.css";
 import "./hero-eclipse-sequence.css";
+import "./hero-scene-refinement.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Eclipse of the Nine Realms",
