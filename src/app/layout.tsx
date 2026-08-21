@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./immersive-v2.css";
+import "./hero-parallax.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Sob a Lua / Beneath the Moon",
