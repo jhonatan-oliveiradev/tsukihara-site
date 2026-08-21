@@ -34,8 +34,9 @@ jobs:
           const { chromium } = require('playwright');
 
           (async () => {
+            const viewportHeight = 900;
             const browser = await chromium.launch({ headless: true });
-            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+            const page = await browser.newPage({ viewport: { width: 1440, height: viewportHeight } });
             const failures = [];
 
             page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`));
@@ -60,7 +61,7 @@ jobs:
             const hero = page.locator('.th-hero');
             const top = await hero.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
             for (const fraction of [0.1, 0.3, 0.5, 0.7, 0.9]) {
-              await page.evaluate(({ y }) => window.scrollTo(0, y), { y: top + window.innerHeight * 3 * fraction });
+              await page.evaluate(({ y }) => window.scrollTo(0, y), { y: top + viewportHeight * 3 * fraction });
               await page.waitForTimeout(350);
             }
 
