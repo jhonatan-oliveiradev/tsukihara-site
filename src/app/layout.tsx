@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import "./editorial-overrides.css";
-import "./kage-port.css";
+import "./immersive-v2.css";
 
 export const metadata: Metadata = {
-  title: "Tsukihara — Beneath the Moon",
+  title: "Tsukihara — Sob a Lua / Beneath the Moon",
   description:
-    "Enter Tsukihara, a cinematic action-adventure shaped by moonlight, ancient shrines and the path of Akari.",
+    "Atravesse o universo de Tsukihara com Akari em uma experiência cinematográfica entre santuários, espíritos e um eclipse que transforma tudo o que toca.",
 };
 
 export const viewport: Viewport = {
@@ -16,7 +15,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body>{children}</body>
     </html>
   );
