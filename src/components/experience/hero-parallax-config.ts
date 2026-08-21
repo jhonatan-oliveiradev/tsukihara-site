@@ -1,11 +1,5 @@
 export type HeroParallaxLayerId =
-  | "moon"
-  | "temple"
-  | "mist"
-  | "sakura"
-  | "ground"
-  | "characters"
-  | "petals";
+  "moon" | "temple" | "mist" | "sakura" | "ground" | "characters" | "petals";
 
 export type HeroParallaxLayer = {
   id: HeroParallaxLayerId;

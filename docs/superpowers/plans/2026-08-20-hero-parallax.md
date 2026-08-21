@@ -11,6 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-08-20-hero-parallax-design.md`
 
 ## Global Constraints
+
 - Preserve all existing header, copy, monumental title, logo, locale and audio functionality.
 - Do not mirror or modify source character assets.
 - Desktop layer order and depth values must match the approved spec exactly.
@@ -25,9 +26,11 @@
 ### Task 1: Bring parallax assets into the feature branch
 
 **Files:**
+
 - Add: `public/parallax/*.png` from `main`
 
 **Interfaces:**
+
 - Produces: stable public asset URLs under `/parallax/`.
 
 - [ ] Copy the seven existing blobs from `main` into `feat/immersive-world-i18n-audio` without changing their content.
@@ -36,9 +39,11 @@
 ### Task 2: Add centralized hero layer configuration
 
 **Files:**
+
 - Create: `src/components/experience/hero-parallax-config.ts`
 
 **Interfaces:**
+
 - Produces: `HeroParallaxLayer` and `heroParallaxLayers`.
 
 - [ ] Define typed metadata for id, asset, depth, loading priority, className and motion amplitude.
@@ -48,9 +53,11 @@
 ### Task 3: Implement `HeroParallaxScene`
 
 **Files:**
+
 - Create: `src/components/experience/hero-parallax-scene.tsx`
 
 **Interfaces:**
+
 - Consumes: `heroParallaxLayers`.
 - Produces: `<HeroParallaxScene />`.
 
@@ -65,9 +72,11 @@
 ### Task 4: Integrate the scene into the current hero
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 
 **Interfaces:**
+
 - Consumes: `HeroParallaxScene`.
 
 - [ ] Insert `<HeroParallaxScene />` inside `#top` behind the hero UI layers.
@@ -78,9 +87,11 @@
 ### Task 5: Add responsive composition styles
 
 **Files:**
+
 - Modify: `src/app/immersive-v2.css`
 
 **Interfaces:**
+
 - Defines the full visual composition for `HeroParallaxScene`.
 
 - [ ] Add a clipping scene root with no horizontal overflow and visual layers below UI text.
@@ -93,9 +104,11 @@
 ### Task 6: Verify quality and visual constraints
 
 **Files:**
+
 - No source changes unless verification identifies a real issue.
 
 **Interfaces:**
+
 - Produces: evidence that the hero is safe to review visually.
 
 - [ ] Run `npm run format:check`.
