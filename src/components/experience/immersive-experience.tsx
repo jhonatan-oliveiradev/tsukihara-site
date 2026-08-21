@@ -7,7 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { FallingSakura } from "@/components/experience/falling-sakura";
 import { HeroParallaxScene } from "@/components/experience/hero-parallax-scene";
+import { JpRevealText } from "@/components/experience/jp-reveal-text";
+import { NavLabelSwap } from "@/components/experience/nav-label-swap";
 import { realms } from "@/content/game";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
@@ -15,21 +18,6 @@ const ImmersiveWorld = dynamic(
   () => import("@/components/experience/immersive-world").then((module) => module.ImmersiveWorld),
   { ssr: false },
 );
-
-function RevealWords({ text }: { text: string }) {
-  return (
-    <span data-words aria-label={text}>
-      {text.split(/\s+/).map((word, index, words) => (
-        <span className="word-mask" aria-hidden="true" key={`${word}-${index}`}>
-          <span className="word-unit">
-            {word}
-            {index < words.length - 1 ? "\u00a0" : ""}
-          </span>
-        </span>
-      ))}
-    </span>
-  );
-}
 
 function Arrow() {
   return (
@@ -62,21 +50,6 @@ export function ImmersiveExperience() {
     if (lenis) frame = requestAnimationFrame(raf);
 
     const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>("[data-words]").forEach((element) => {
-        if (reduced) return;
-        gsap.fromTo(
-          element.querySelectorAll(".word-unit"),
-          { yPercent: 112, opacity: 0 },
-          {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.05,
-            stagger: 0.045,
-            ease: "power4.out",
-            scrollTrigger: { trigger: element, start: "top 88%", once: true },
-          },
-        );
-      });
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
         if (reduced) return;
         gsap.fromTo(
@@ -111,15 +84,32 @@ export function ImmersiveExperience() {
           if (!image) return;
           gsap.fromTo(
             image,
-            { scale: 1.08 },
+            { scale: 1.08, yPercent: -2 },
             {
               scale: 1,
+              yPercent: 3,
               ease: "none",
               scrollTrigger: {
                 trigger: media,
                 start: "top bottom",
                 end: "bottom top",
                 scrub: true,
+              },
+            },
+          );
+        });
+        gsap.utils.toArray<HTMLElement>("[data-scroll-kanji]").forEach((kanji, index) => {
+          gsap.fromTo(
+            kanji,
+            { yPercent: index % 2 ? -8 : 8 },
+            {
+              yPercent: index % 2 ? 10 : -10,
+              ease: "none",
+              scrollTrigger: {
+                trigger: kanji.closest("section") ?? kanji,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.2,
               },
             },
           );
@@ -170,11 +160,11 @@ export function ImmersiveExperience() {
   };
 
   const nav = [
-    ["gate", copy.nav.threshold],
-    ["realms", copy.nav.realms],
-    ["akari", copy.nav.akari],
-    ["lore", copy.nav.lore],
-    ["eclipse", copy.nav.eclipse],
+    ["gate", copy.nav.threshold, copy.navJp.threshold],
+    ["realms", copy.nav.realms, copy.navJp.realms],
+    ["akari", copy.nav.akari, copy.navJp.akari],
+    ["lore", copy.nav.lore, copy.navJp.lore],
+    ["eclipse", copy.nav.eclipse, copy.navJp.eclipse],
   ] as const;
 
   return (
@@ -183,6 +173,7 @@ export function ImmersiveExperience() {
       <ImmersiveWorld />
       <div className="ix-vignette" aria-hidden="true" />
       <div className="ix-grain" aria-hidden="true" />
+      <FallingSakura />
 
       {!entered && (
         <div className="ix-entry">
@@ -215,9 +206,9 @@ export function ImmersiveExperience() {
           <small>月の原</small>
         </Link>
         <nav className="ix-nav" aria-label="Main navigation">
-          {nav.map(([id, label]) => (
+          {nav.map(([id, label, jp]) => (
             <Link key={id} href={`#${id}`} className={active === id ? "is-active" : ""}>
-              {label}
+              <NavLabelSwap primary={label} secondary={jp} />
             </Link>
           ))}
         </nav>
@@ -260,10 +251,11 @@ export function ImmersiveExperience() {
 
       {menuOpen && (
         <div className="ix-mobile-menu">
-          {nav.map(([id, label], index) => (
+          {nav.map(([id, label, jp], index) => (
             <Link key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
               <span>0{index + 1}</span>
-              {label}
+              <b>{label}</b>
+              <small lang="ja">{jp}</small>
             </Link>
           ))}
         </div>
@@ -272,12 +264,15 @@ export function ImmersiveExperience() {
       <main className="ix-story">
         <section id="top" data-section className="ix-hero">
           <HeroParallaxScene />
+          <div className="ix-kanji-ghost ix-kanji-hero" data-scroll-kanji aria-hidden="true">
+            月蝕
+          </div>
           <div className="ix-hero-copy">
             <p className="ix-eyebrow" data-reveal>
               <b>朱莉</b> {copy.hero.eyebrow}
             </p>
             <h1>
-              <RevealWords text={copy.hero.title} />
+              <JpRevealText jp={copy.hero.titleJp} text={copy.hero.title} locale={locale} />
             </h1>
             <p data-reveal>{copy.hero.body}</p>
           </div>
@@ -303,6 +298,9 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="gate" data-section className="ix-section ix-threshold">
+          <div className="ix-kanji-ghost ix-kanji-gate" data-scroll-kanji aria-hidden="true">
+            門
+          </div>
           <div className="ix-section-label">
             <span>{copy.threshold.label}</span>
             <i />
@@ -310,7 +308,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-manifesto">
             <h2>
-              <RevealWords text={copy.threshold.title} />
+              <JpRevealText jp={copy.threshold.titleJp} text={copy.threshold.title} locale={locale} />
             </h2>
             <div data-reveal>
               <p>{copy.threshold.body}</p>
@@ -331,6 +329,9 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="realms" data-section className="ix-section ix-realms">
+          <div className="ix-kanji-ghost ix-kanji-realms" data-scroll-kanji aria-hidden="true">
+            九国
+          </div>
           <div className="ix-section-label">
             <span>{copy.realmsIntro.label}</span>
             <i />
@@ -338,7 +339,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-realms-intro">
             <h2>
-              <RevealWords text={copy.realmsIntro.title} />
+              <JpRevealText jp={copy.realmsIntro.titleJp} text={copy.realmsIntro.title} locale={locale} />
             </h2>
             <p data-reveal>{copy.realmsIntro.body}</p>
           </div>
@@ -373,6 +374,9 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="akari" data-section className="ix-section ix-akari">
+          <div className="ix-kanji-ghost ix-kanji-akari" data-scroll-kanji aria-hidden="true">
+            朱莉
+          </div>
           <div className="ix-akari-art">
             <span aria-hidden="true">朱莉</span>
             <Image
@@ -388,7 +392,7 @@ export function ImmersiveExperience() {
               {copy.akari.eyebrow}
             </p>
             <h2>
-              <RevealWords text={copy.akari.title} />
+              <JpRevealText jp={copy.akari.titleJp} text={copy.akari.title} locale={locale} />
             </h2>
             <p data-reveal>{copy.akari.body}</p>
             <div className="ix-specs" data-reveal>
@@ -400,6 +404,9 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="lore" data-section className="ix-section ix-lore">
+          <div className="ix-kanji-ghost ix-kanji-lore" data-scroll-kanji aria-hidden="true">
+            残響
+          </div>
           <div className="ix-section-label">
             <span>{copy.lore.label}</span>
             <i />
@@ -407,7 +414,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-lore-intro">
             <h2>
-              <RevealWords text={copy.lore.title} />
+              <JpRevealText jp={copy.lore.titleJp} text={copy.lore.title} locale={locale} />
             </h2>
             <p data-reveal>{copy.lore.intro}</p>
           </div>
@@ -426,12 +433,15 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="eclipse" data-section className="ix-afterlight">
+          <div className="ix-kanji-ghost ix-kanji-eclipse" data-scroll-kanji aria-hidden="true">
+            月蝕
+          </div>
           <div className="ix-after-copy">
             <p className="ix-eyebrow" data-reveal>
               {copy.eclipse.label}
             </p>
             <h2>
-              <RevealWords text={copy.eclipse.title} />
+              <JpRevealText jp={copy.eclipse.titleJp} text={copy.eclipse.title} locale={locale} />
             </h2>
             <p data-reveal>{copy.eclipse.body}</p>
             <div className="ix-after-actions" data-reveal>
