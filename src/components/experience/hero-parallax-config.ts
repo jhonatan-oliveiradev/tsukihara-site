@@ -1,5 +1,5 @@
 export type HeroParallaxLayerId =
-  "moon" | "temple" | "mist" | "sakura" | "ground" | "characters" | "petals";
+  "moon" | "temple" | "mist" | "sakura" | "ground" | "characters" | "ruins" | "grass" | "petals";
 
 export type HeroParallaxLayer = {
   id: HeroParallaxLayerId;
@@ -15,9 +15,9 @@ export type HeroParallaxLayer = {
 export const heroParallaxLayers: readonly HeroParallaxLayer[] = [
   {
     id: "moon",
-    src: "/parallax/tsukihara-blood-moon-eclipse.png",
+    src: "/assets_hq/Blood_Moon.png",
     depth: 0.02,
-    maxX: 7,
+    maxX: 6,
     maxY: 4,
     priority: true,
   },
@@ -25,48 +25,65 @@ export const heroParallaxLayers: readonly HeroParallaxLayer[] = [
     id: "temple",
     src: "/parallax/tsukihara-distant-temple.png",
     depth: 0.04,
-    maxX: 9,
+    maxX: 8,
     maxY: 5,
   },
   {
     id: "mist",
     src: "/parallax/tsukihara-lunar-mist.png",
     depth: 0.06,
-    maxX: 13,
+    maxX: 12,
     maxY: 7,
-    ambientX: 9,
+    ambientX: 12,
   },
   {
     id: "sakura",
     src: "/parallax/tsukihara-sakura-tree.png",
     depth: 0.08,
-    maxX: 11,
+    maxX: 10,
     maxY: 6,
-    ambientX: 2.5,
-    ambientY: 1.5,
+    ambientX: 3,
+    ambientY: 2,
   },
   {
     id: "ground",
     src: "/parallax/tsukihara-ground.png",
     depth: 0.1,
-    maxX: 18,
+    maxX: 16,
     maxY: 8,
   },
   {
     id: "characters",
     src: "/parallax/tsukihara-characters-web.png",
     depth: 0.12,
-    maxX: 17,
+    maxX: 15,
     maxY: 9,
     priority: true,
+  },
+  {
+    id: "ruins",
+    src: "/secret-pathways-assets/foreground/png/shrine-ruins.webp",
+    depth: 0.16,
+    maxX: 20,
+    maxY: 10,
+    ambientX: 1,
+  },
+  {
+    id: "grass",
+    src: "/secret-pathways-assets/foreground/png/tall-grass.webp",
+    depth: 0.19,
+    maxX: 26,
+    maxY: 12,
+    ambientX: 2,
+    ambientY: 1,
   },
   {
     id: "petals",
     src: "/parallax/tsukihara-petals.png",
     depth: 0.24,
-    maxX: 36,
+    maxX: 34,
     maxY: 14,
-    ambientX: 24,
-    ambientY: 5,
+    ambientX: 28,
+    ambientY: 6,
   },
 ] as const;
