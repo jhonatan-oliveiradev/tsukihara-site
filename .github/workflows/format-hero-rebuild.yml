@@ -20,12 +20,12 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx prettier --write src/app/hero-eclipse-sequence.css src/components/experience/hero/hooks/use-hero-timeline.ts src/components/experience/hero/tsukihara-hero.tsx
+      - run: npx prettier --write src/app/hero-eclipse-sequence.css src/app/hero-scene-refinement.css src/components/experience/hero/hooks/use-hero-timeline.ts src/components/experience/hero/tsukihara-hero.tsx src/app/layout.tsx
       - name: Commit formatting
         run: |
           if git diff --quiet; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/app/hero-eclipse-sequence.css src/components/experience/hero/hooks/use-hero-timeline.ts src/components/experience/hero/tsukihara-hero.tsx
+          git add src/app/hero-eclipse-sequence.css src/app/hero-scene-refinement.css src/components/experience/hero/hooks/use-hero-timeline.ts src/components/experience/hero/tsukihara-hero.tsx src/app/layout.tsx
           git commit -m "style: format hero scene rebuild"
           git push origin HEAD:feat/hero-scene-rebuild
