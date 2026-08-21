@@ -39,9 +39,14 @@ jobs:
 
           async function waitForEntry(page) {
             await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
-            await page.waitForSelector('.ix-entry', { state: 'visible', timeout: 30000 });
-            await page.locator('.ix-entry-actions button').nth(1).click();
-            await page.waitForTimeout(1400);
+            await page.waitForFunction(() => Boolean(document.querySelector('.ix-entry')), null, { timeout: 45000 });
+            await page.evaluate(() => {
+              const buttons = document.querySelectorAll('.ix-entry-actions button');
+              if (!buttons[1]) throw new Error('silent entry button not found');
+              buttons[1].click();
+            });
+            await page.waitForFunction(() => !document.querySelector('.ix-entry'), null, { timeout: 10000 });
+            await page.waitForTimeout(1200);
           }
 
           async function captureDesktop(browser) {
