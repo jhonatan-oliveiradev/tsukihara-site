@@ -1,0 +1,1534 @@
+.ix-overhaul-shell {
+  --ink: #030407;
+  --ink-soft: #08090d;
+  --ivory: #eee7dc;
+  --muted: rgba(238, 231, 220, 0.58);
+  --crimson: #a72e38;
+  --crimson-bright: #d9515d;
+  --gold: #c8a46d;
+  font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  background: var(--ink);
+}
+
+.ix-story-overhaul {
+  position: relative;
+  z-index: 6;
+  overflow: clip;
+}
+
+.ix-story-overhaul h1,
+.ix-story-overhaul h2,
+.ix-story-overhaul h3,
+.ix-epilogue-footer,
+.ix-header,
+.ix-section-label {
+  font-family: var(--display), Cinzel, Georgia, serif;
+}
+
+.ix-shader-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ix-shader-image-base,
+.ix-shader-image-effect,
+.ix-shader-image-effect > div,
+.ix-shader-image-effect canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ix-shader-image-effect {
+  z-index: 2;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.ix-shader-image.is-active .ix-shader-image-effect {
+  opacity: 0.28;
+}
+
+/* HERO */
+.ix-hero-overhaul {
+  position: relative;
+  display: block;
+  min-height: 205svh;
+  padding: 0;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.ix-hero-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  background: #030407;
+}
+
+.ix-hero-parallax {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  will-change: opacity;
+}
+
+.ix-hero-parallax::before {
+  background:
+    radial-gradient(circle at 72% 31%, rgba(156, 24, 35, 0.22), transparent 23%),
+    radial-gradient(circle at 52% 80%, rgba(66, 73, 88, 0.12), transparent 30%),
+    linear-gradient(180deg, #040508 0%, #05070a 55%, #020306 100%);
+}
+
+.ix-hero-parallax::after {
+  z-index: 14;
+  background:
+    linear-gradient(90deg, rgba(2, 3, 6, 0.97) 0%, rgba(2, 3, 6, 0.8) 27%, rgba(2, 3, 6, 0.23) 50%, transparent 70%),
+    linear-gradient(180deg, transparent 57%, rgba(2, 3, 6, 0.72) 92%, #030407 100%);
+}
+
+.ix-hero-light {
+  position: absolute;
+  z-index: 13;
+  right: 7vw;
+  top: 4vh;
+  width: 52vw;
+  height: 78vh;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 54% 35%, rgba(185, 43, 54, 0.15), transparent 59%);
+  mix-blend-mode: screen;
+}
+
+.ix-hero-ink {
+  position: absolute;
+  z-index: 16;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent 35%, #030407 94%);
+}
+
+.ix-parallax-moon {
+  z-index: 2;
+  width: clamp(250px, 31vw, 620px);
+  aspect-ratio: 1;
+  right: clamp(16vw, 20vw, 24vw);
+  top: clamp(54px, 11vh, 120px);
+  opacity: 0.9;
+  filter: drop-shadow(0 0 70px rgba(177, 25, 38, 0.24));
+}
+
+.ix-parallax-temple {
+  z-index: 3;
+  width: clamp(520px, 51vw, 1020px);
+  height: 45vh;
+  right: 12vw;
+  bottom: 14vh;
+  opacity: 0.38;
+}
+
+.ix-parallax-temple .ix-parallax-image {
+  object-position: center bottom;
+}
+
+.ix-parallax-mist {
+  z-index: 4;
+  width: 78vw;
+  height: 50vh;
+  right: -5vw;
+  top: 25vh;
+  opacity: 0.44;
+}
+
+.ix-parallax-sakura {
+  z-index: 5;
+  width: min(57vw, 1160px);
+  height: 95vh;
+  right: -7vw;
+  top: -1vh;
+}
+
+.ix-parallax-ground {
+  z-index: 7;
+  width: min(74vw, 1500px);
+  height: 42vh;
+  right: -5vw;
+  bottom: -1vh;
+}
+
+.ix-parallax-characters {
+  z-index: 10;
+  width: clamp(690px, 55vw, 1120px);
+  height: 89vh;
+  right: -1vw;
+  bottom: 1vh;
+  filter: drop-shadow(0 30px 42px rgba(0, 0, 0, 0.45));
+}
+
+.ix-parallax-ruins {
+  z-index: 11;
+  width: clamp(250px, 21vw, 430px);
+  height: 42vh;
+  right: -4vw;
+  bottom: 0;
+  opacity: 0.58;
+}
+
+.ix-parallax-ruins .ix-parallax-image {
+  object-position: right bottom;
+}
+
+.ix-parallax-grass {
+  z-index: 12;
+  width: 54vw;
+  height: 27vh;
+  right: -9vw;
+  bottom: -4vh;
+  opacity: 0.76;
+}
+
+.ix-parallax-grass .ix-parallax-image {
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.ix-parallax-petals {
+  z-index: 15;
+  inset: -7vh -5vw;
+  opacity: 0.5;
+}
+
+.ix-hero-copy-overhaul {
+  position: absolute;
+  z-index: 24;
+  top: clamp(120px, 16vh, 185px);
+  left: clamp(24px, 4.2vw, 78px);
+  width: min(42vw, 650px);
+  max-width: none;
+}
+
+.ix-hero-copy-overhaul h1 {
+  max-width: 9.5ch;
+  font-size: clamp(3.6rem, 6.35vw, 7.7rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  color: var(--ivory);
+  text-shadow: 0 12px 42px rgba(0, 0, 0, 0.28);
+}
+
+.ix-hero-body {
+  max-width: 49ch;
+  margin-top: 1.45rem;
+  color: rgba(238, 231, 220, 0.62) !important;
+  font-size: clamp(0.84rem, 0.95vw, 1rem) !important;
+  line-height: 1.8 !important;
+}
+
+.ix-hero-signature {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 2rem;
+  color: rgba(238, 231, 220, 0.43);
+  font-size: 0.57rem;
+  letter-spacing: 0.24em;
+}
+
+.ix-hero-signature i {
+  width: 54px;
+  height: 1px;
+  background: rgba(199, 67, 76, 0.58);
+}
+
+.ix-hero-logo-overhaul {
+  z-index: 22;
+  top: 10vh;
+  left: 51%;
+  width: min(270px, 19vw);
+  opacity: 0.36;
+}
+
+.ix-hero-word-overhaul {
+  z-index: 9;
+  left: -1vw;
+  bottom: 1vh;
+  font-size: clamp(7rem, 18vw, 22rem);
+  line-height: 0.74;
+  color: rgba(232, 230, 223, 0.48);
+  mix-blend-mode: screen;
+}
+
+.ix-scroll-cue-overhaul {
+  z-index: 25;
+  bottom: 4.5vh;
+  left: clamp(24px, 4.2vw, 78px);
+  right: auto;
+}
+
+/* KINTSUGI */
+.ix-kintsugi {
+  position: relative;
+  z-index: 8;
+  min-height: 185svh;
+  background: #030407;
+}
+
+.ix-kintsugi-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ix-kintsugi-scene,
+.ix-kintsugi-restored,
+.ix-kintsugi-scene > img:not(.ix-kintsugi-lantern):not(.ix-kintsugi-grass) {
+  position: absolute;
+  inset: 0;
+}
+
+.ix-kintsugi-scene {
+  z-index: 1;
+}
+
+.ix-kintsugi-forgotten,
+.ix-kintsugi-restored-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.ix-kintsugi-forgotten {
+  filter: grayscale(0.76) brightness(0.35) saturate(0.46) contrast(1.15);
+  transform: scale(1.035);
+}
+
+.ix-kintsugi-restored {
+  z-index: 2;
+  clip-path: inset(0 100% 0 0);
+  overflow: hidden;
+}
+
+.ix-kintsugi-restored::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 55%, rgba(218, 74, 82, 0.08));
+  mix-blend-mode: screen;
+}
+
+.ix-kintsugi-seam {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  width: clamp(46px, 5vw, 90px);
+  transform: translateX(-50%);
+  opacity: 0;
+  filter: drop-shadow(0 0 22px rgba(227, 96, 100, 0.7));
+}
+
+.ix-kintsugi-warp {
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+
+.ix-kintsugi-lantern {
+  position: absolute;
+  z-index: 6;
+  left: -4vw;
+  bottom: -7vh;
+  width: min(24vw, 420px);
+  height: auto;
+  opacity: 0.74;
+  filter: brightness(0.7) drop-shadow(0 18px 30px rgba(0, 0, 0, 0.48));
+}
+
+.ix-kintsugi-grass {
+  position: absolute;
+  z-index: 7;
+  right: -8vw;
+  bottom: -9vh;
+  width: min(64vw, 1100px);
+  height: auto;
+  opacity: 0.55;
+}
+
+.ix-kintsugi-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(3, 4, 7, 0.88) 0%, rgba(3, 4, 7, 0.4) 36%, transparent 66%),
+    linear-gradient(180deg, rgba(3, 4, 7, 0.08), rgba(3, 4, 7, 0.72) 92%);
+}
+
+.ix-kintsugi-copy {
+  position: absolute;
+  z-index: 10;
+  left: clamp(24px, 5vw, 88px);
+  top: 50%;
+  width: min(620px, 43vw);
+  transform: translateY(-50%);
+}
+
+.ix-kintsugi-copy h2 {
+  margin: 1.5rem 0 1.3rem;
+  max-width: 12ch;
+  font-size: clamp(3rem, 5.2vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.96;
+  color: var(--ivory);
+}
+
+.ix-kintsugi-copy > p {
+  max-width: 49ch;
+  color: var(--muted);
+  line-height: 1.85;
+}
+
+.ix-kintsugi-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  color: rgba(238, 231, 220, 0.46);
+  font: 500 0.6rem/1 var(--display);
+  letter-spacing: 0.2em;
+}
+
+.ix-kintsugi-choice i {
+  width: 70px;
+  height: 1px;
+  background: var(--crimson-bright);
+}
+
+.ix-kintsugi-progress {
+  position: absolute;
+  z-index: 10;
+  right: 3vw;
+  top: 17vh;
+  bottom: 14vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: rgba(238, 231, 220, 0.3);
+  font-family: "Yu Mincho", serif;
+}
+
+.ix-kintsugi-progress i {
+  width: 1px;
+  flex: 1;
+  transform-origin: top;
+  background: linear-gradient(#84202b, #e7c2a3, #84202b);
+}
+
+/* REALMS */
+.ix-realm-atlas {
+  position: relative;
+  z-index: 9;
+  padding: clamp(7rem, 13vh, 11rem) clamp(20px, 4.5vw, 84px);
+  background: #040508;
+}
+
+.ix-realm-atlas-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+  gap: clamp(2rem, 7vw, 9rem);
+  align-items: end;
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+}
+
+.ix-realm-atlas-head .ix-section-label {
+  grid-column: 1 / -1;
+}
+
+.ix-realm-atlas-head h2 {
+  margin: 0;
+  max-width: 13ch;
+  font-size: clamp(3rem, 5.4vw, 6.4rem);
+  font-weight: 400;
+  line-height: 0.96;
+  color: var(--ivory);
+}
+
+.ix-realm-atlas-head > p {
+  margin: 0 0 0.4rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.ix-realm-atlas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.28fr);
+  gap: clamp(1rem, 2.4vw, 2.8rem);
+  min-height: min(68vh, 760px);
+}
+
+.ix-realm-stage {
+  position: relative;
+  min-height: min(68vh, 760px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #05070a;
+}
+
+.ix-realm-stage-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.035);
+  transition:
+    opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-realm-stage-layer.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ix-realm-stage-vignette {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 50%, rgba(2, 3, 6, 0.32)),
+    linear-gradient(180deg, transparent 50%, rgba(2, 3, 6, 0.82) 100%);
+}
+
+.ix-realm-stage-meta {
+  position: absolute;
+  z-index: 4;
+  left: 2rem;
+  top: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.ix-realm-stage-meta span {
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+}
+
+.ix-realm-stage-meta strong {
+  color: rgba(196, 64, 74, 0.72);
+  font: 400 clamp(2rem, 3vw, 4rem)/1 "Yu Mincho", serif;
+}
+
+.ix-realm-stage-copy {
+  position: absolute;
+  z-index: 4;
+  left: 2rem;
+  right: 2rem;
+  bottom: 2rem;
+  max-width: 560px;
+}
+
+.ix-realm-stage-copy small {
+  color: #c75a61;
+  font-size: 0.59rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ix-realm-stage-copy h3 {
+  margin: 0.4rem 0 0.8rem;
+  font-size: clamp(2.4rem, 4vw, 5rem);
+  font-weight: 400;
+  color: #f0ebe4;
+}
+
+.ix-realm-stage-copy p {
+  margin: 0;
+  max-width: 58ch;
+  color: rgba(238, 231, 220, 0.68);
+  line-height: 1.7;
+}
+
+.ix-realm-index {
+  display: grid;
+  align-content: stretch;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ix-realm-index button {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+  padding: 1.4rem 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: rgba(238, 231, 220, 0.42);
+  text-align: left;
+  cursor: pointer;
+  transition: color 300ms ease;
+}
+
+.ix-realm-index button::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 1px;
+  background: #b43a45;
+  transition: width 550ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-realm-index button.is-active {
+  color: #eee7dc;
+}
+
+.ix-realm-index button.is-active::before {
+  width: 100%;
+}
+
+.ix-realm-index button > span {
+  font-size: 0.56rem;
+  color: #a03d46;
+}
+
+.ix-realm-index b {
+  display: block;
+  font-family: var(--display);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.ix-realm-index small {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.6rem;
+  color: rgba(238, 231, 220, 0.36);
+}
+
+.ix-realm-index em {
+  font: normal 400 1.6rem/1 "Yu Mincho", serif;
+  color: rgba(173, 57, 67, 0.38);
+}
+
+/* TRAILER */
+.ix-trailer-overhaul {
+  position: relative;
+  z-index: 9;
+  padding: clamp(8rem, 16vh, 14rem) clamp(20px, 4.5vw, 84px);
+  overflow: hidden;
+  background: #020306;
+}
+
+.ix-trailer-overhaul-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.4fr);
+  gap: clamp(2rem, 8vw, 10rem);
+  align-items: end;
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+}
+
+.ix-trailer-overhaul-head h2 {
+  max-width: 11ch;
+  margin: 0;
+  font-size: clamp(3.2rem, 5.7vw, 7rem);
+  font-weight: 400;
+  line-height: 0.94;
+  color: var(--ivory);
+}
+
+.ix-trailer-overhaul-head > p {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.ix-trailer-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8.5;
+  overflow: hidden;
+  background: #030407;
+}
+
+.ix-trailer-canvas video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center;
+  filter: saturate(1.07) contrast(1.05) brightness(0.84);
+}
+
+.ix-trailer-canvas::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(2, 3, 6, 0.1), rgba(2, 3, 6, 0.58) 95%),
+    radial-gradient(circle at 50% 50%, transparent 58%, rgba(2, 3, 6, 0.52));
+}
+
+.ix-trailer-veil {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  background: #05070a;
+  transform-origin: right;
+}
+
+.ix-trailer-frame-lines {
+  position: absolute;
+  z-index: 5;
+  inset: 1.5rem;
+  pointer-events: none;
+}
+
+.ix-trailer-frame-lines i {
+  position: absolute;
+  display: block;
+  background: rgba(236, 226, 216, 0.38);
+}
+
+.ix-trailer-frame-lines i:nth-child(1),
+.ix-trailer-frame-lines i:nth-child(2) {
+  width: 52px;
+  height: 1px;
+}
+
+.ix-trailer-frame-lines i:nth-child(3),
+.ix-trailer-frame-lines i:nth-child(4) {
+  width: 1px;
+  height: 52px;
+}
+
+.ix-trailer-frame-lines i:nth-child(1) {
+  left: 0;
+  top: 0;
+}
+.ix-trailer-frame-lines i:nth-child(2) {
+  right: 0;
+  bottom: 0;
+}
+.ix-trailer-frame-lines i:nth-child(3) {
+  left: 0;
+  top: 0;
+}
+.ix-trailer-frame-lines i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+}
+
+.ix-trailer-caption {
+  position: absolute;
+  z-index: 5;
+  left: 2.2rem;
+  right: 2.2rem;
+  bottom: 2rem;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  color: rgba(238, 231, 220, 0.62);
+  font: 500 0.58rem/1 var(--display);
+  letter-spacing: 0.18em;
+}
+
+.ix-trailer-caption strong {
+  font: 400 clamp(3rem, 7vw, 8rem)/0.8 "Yu Mincho", serif;
+  color: rgba(193, 61, 72, 0.36);
+}
+
+.ix-trailer-ruins,
+.ix-trailer-stones {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.ix-trailer-ruins {
+  right: -7vw;
+  bottom: -9vh;
+  width: min(34vw, 620px);
+  height: auto;
+  opacity: 0.58;
+}
+
+.ix-trailer-stones {
+  left: -8vw;
+  bottom: -12vh;
+  width: min(54vw, 940px);
+  height: auto;
+  opacity: 0.38;
+}
+
+/* CHARACTER */
+.ix-character-spotlight {
+  position: relative;
+  z-index: 9;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.8fr);
+  min-height: 110svh;
+  padding: clamp(8rem, 14vh, 12rem) clamp(20px, 5vw, 92px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 27% 45%, rgba(124, 20, 30, 0.13), transparent 28%),
+    #040508;
+}
+
+.ix-character-kanji {
+  position: absolute;
+  left: 1vw;
+  top: 10vh;
+  color: rgba(145, 31, 42, 0.1);
+  font: 400 clamp(13rem, 30vw, 35rem)/0.8 "Yu Mincho", serif;
+  pointer-events: none;
+}
+
+.ix-character-stage {
+  position: relative;
+  min-height: 82svh;
+}
+
+.ix-character-main,
+.ix-character-echo {
+  position: absolute;
+  inset: 0 4% 0 0;
+}
+
+.ix-character-main {
+  z-index: 4;
+  filter: drop-shadow(0 30px 54px rgba(0, 0, 0, 0.48));
+}
+
+.ix-character-echo {
+  z-index: 3;
+  transform: translate3d(-4%, 1%, 0) scale(1.025);
+  opacity: 0.45;
+  filter: blur(0.4px);
+}
+
+.ix-character-echo .ix-shader-image-effect {
+  opacity: 0.62;
+}
+
+.ix-character-keyframes {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  bottom: 1.5rem;
+  width: min(28vw, 470px);
+  height: 15vh;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+}
+
+.ix-character-mochi {
+  position: absolute;
+  z-index: 7;
+  right: 2%;
+  bottom: 2.5rem;
+  width: clamp(105px, 11vw, 190px);
+  aspect-ratio: 1;
+}
+
+.ix-character-mochi span {
+  position: absolute;
+  right: 0;
+  bottom: -1.1rem;
+  color: rgba(238, 231, 220, 0.38);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
+.ix-character-copy {
+  position: relative;
+  z-index: 8;
+  align-self: center;
+  padding-left: clamp(1rem, 4vw, 5rem);
+}
+
+.ix-character-copy h2 {
+  max-width: 10ch;
+  margin: 0.7rem 0 1.3rem;
+  font-size: clamp(3rem, 5vw, 6.3rem);
+  font-weight: 400;
+  line-height: 0.94;
+  color: var(--ivory);
+}
+
+.ix-character-copy > p {
+  max-width: 48ch;
+  color: var(--muted);
+  line-height: 1.82;
+}
+
+.ix-character-specs {
+  margin-top: 2.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.ix-character-specs > div {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ix-character-specs span {
+  color: #9e3842;
+  font-size: 0.56rem;
+}
+
+.ix-character-specs b {
+  font-family: var(--display);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  color: rgba(238, 231, 220, 0.65);
+}
+
+/* PILLARS */
+.ix-pillars {
+  position: relative;
+  z-index: 9;
+  padding: clamp(8rem, 15vh, 13rem) clamp(20px, 5vw, 92px);
+  background: #020306;
+}
+
+.ix-pillars-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.4fr);
+  gap: clamp(2rem, 8vw, 10rem);
+  align-items: end;
+  margin-bottom: 4rem;
+}
+
+.ix-pillars-head .ix-section-label {
+  grid-column: 1 / -1;
+}
+
+.ix-pillars-head h2 {
+  margin: 0;
+  max-width: 12ch;
+  font-size: clamp(3rem, 5.2vw, 6.4rem);
+  font-weight: 400;
+  line-height: 0.95;
+  color: var(--ivory);
+}
+
+.ix-pillars-head > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.ix-pillars-list {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ix-pillar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.18fr) minmax(240px, 0.34fr) minmax(260px, 0.48fr);
+  gap: clamp(1rem, 3vw, 4rem);
+  align-items: center;
+  min-height: 150px;
+  padding: 1.8rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.ix-pillar-index {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ix-pillar-index span {
+  color: #ad3f49;
+  font-size: 0.58rem;
+}
+
+.ix-pillar-index i {
+  width: min(7vw, 100px);
+  height: 1px;
+  transform-origin: left;
+  background: rgba(174, 56, 66, 0.62);
+}
+
+.ix-pillar-title small {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: rgba(163, 52, 62, 0.56);
+  font: 400 1.15rem/1 "Yu Mincho", serif;
+}
+
+.ix-pillar-title h3 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 2.5rem);
+  font-weight: 400;
+  color: rgba(238, 231, 220, 0.9);
+}
+
+.ix-pillar > p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  max-width: 64ch;
+  color: rgba(238, 231, 220, 0.54);
+  line-height: 1.75;
+}
+
+.ix-pillar-asset {
+  position: absolute;
+  z-index: 1;
+  right: 1vw;
+  top: 50%;
+  width: min(22vw, 320px);
+  height: auto;
+  transform: translateY(-50%);
+  opacity: 0.06;
+  filter: grayscale(0.5);
+  pointer-events: none;
+  transition: opacity 500ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-pillar:hover .ix-pillar-asset {
+  opacity: 0.14;
+  transform: translateY(-50%) translateX(-2%);
+}
+
+/* EPILOGUE */
+.ix-epilogue {
+  position: relative;
+  z-index: 9;
+  min-height: 115svh;
+  padding: clamp(9rem, 17vh, 15rem) clamp(20px, 5vw, 92px) 2rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 76% 41%, rgba(128, 18, 29, 0.14), transparent 27%),
+    linear-gradient(180deg, #020306, #050407 72%, #030205);
+}
+
+.ix-epilogue-moon {
+  position: absolute;
+  z-index: 1;
+  right: 8vw;
+  top: 8vh;
+  width: min(36vw, 660px);
+  aspect-ratio: 1;
+  opacity: 0.34;
+  filter: drop-shadow(0 0 90px rgba(154, 25, 37, 0.22));
+}
+
+.ix-epilogue-branch {
+  position: absolute;
+  z-index: 4;
+  right: -9vw;
+  top: -10vh;
+  width: min(52vw, 900px);
+  height: auto;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.ix-epilogue-kanji {
+  position: absolute;
+  z-index: 2;
+  right: 1vw;
+  bottom: 18vh;
+  color: rgba(134, 28, 39, 0.09);
+  font: 400 clamp(13rem, 29vw, 34rem)/0.8 "Yu Mincho", serif;
+  pointer-events: none;
+}
+
+.ix-epilogue-copy {
+  position: relative;
+  z-index: 6;
+  width: min(700px, 52vw);
+  padding-top: 9vh;
+}
+
+.ix-epilogue-copy h2 {
+  max-width: 10ch;
+  margin: 0.75rem 0 1.4rem;
+  font-size: clamp(3.8rem, 6.6vw, 8rem);
+  font-weight: 400;
+  line-height: 0.9;
+  color: var(--ivory);
+}
+
+.ix-epilogue-copy > p {
+  max-width: 54ch;
+  color: var(--muted);
+  line-height: 1.85;
+}
+
+.ix-epilogue-signature {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 2.3rem;
+  color: rgba(238, 231, 220, 0.38);
+  font-size: 0.57rem;
+  letter-spacing: 0.18em;
+}
+
+.ix-epilogue-signature i {
+  width: 72px;
+  height: 1px;
+  background: rgba(178, 55, 66, 0.52);
+}
+
+.ix-epilogue-akari {
+  position: absolute;
+  z-index: 5;
+  right: 4vw;
+  bottom: 4rem;
+  width: min(38vw, 700px);
+  height: 72vh;
+  opacity: 0.72;
+  filter: drop-shadow(0 28px 46px rgba(0, 0, 0, 0.55));
+}
+
+.ix-epilogue-footer {
+  position: absolute;
+  z-index: 8;
+  left: clamp(20px, 5vw, 92px);
+  right: clamp(20px, 5vw, 92px);
+  bottom: 1.8rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(238, 231, 220, 0.5);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+}
+
+.ix-epilogue-footer > div,
+.ix-epilogue-footer nav {
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+}
+
+.ix-epilogue-footer a {
+  color: inherit;
+  transition: color 250ms ease;
+}
+
+.ix-epilogue-footer a:hover {
+  color: #f1e8de;
+}
+
+@media (max-width: 980px) {
+  .ix-hero-overhaul {
+    min-height: 175svh;
+  }
+
+  .ix-hero-copy-overhaul {
+    width: min(55vw, 540px);
+  }
+
+  .ix-hero-copy-overhaul h1 {
+    font-size: clamp(3.2rem, 7.2vw, 5.7rem);
+  }
+
+  .ix-parallax-characters {
+    width: 64vw;
+    right: -4vw;
+  }
+
+  .ix-parallax-moon {
+    right: 8vw;
+  }
+
+  .ix-parallax-ruins {
+    width: 26vw;
+  }
+
+  .ix-kintsugi-copy {
+    width: min(58vw, 560px);
+  }
+
+  .ix-realm-atlas-head,
+  .ix-trailer-overhaul-head,
+  .ix-pillars-head {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .ix-realm-atlas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ix-realm-index {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ix-realm-index button {
+    min-width: 0;
+    grid-template-columns: auto 1fr;
+  }
+
+  .ix-realm-index em {
+    display: none;
+  }
+
+  .ix-character-spotlight {
+    grid-template-columns: 1fr 0.86fr;
+  }
+
+  .ix-character-keyframes {
+    width: 38vw;
+  }
+
+  .ix-pillar {
+    grid-template-columns: minmax(80px, 0.16fr) minmax(220px, 0.35fr) 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .ix-story-overhaul {
+    overflow: hidden;
+  }
+
+  .ix-hero-overhaul {
+    min-height: 132svh;
+  }
+
+  .ix-hero-stage {
+    height: 100svh;
+  }
+
+  .ix-hero-copy-overhaul {
+    top: 16vh;
+    left: 20px;
+    width: calc(100vw - 40px);
+  }
+
+  .ix-hero-copy-overhaul h1 {
+    max-width: 10ch;
+    font-size: clamp(2.8rem, 13vw, 4.4rem);
+  }
+
+  .ix-hero-body {
+    max-width: 34ch;
+    font-size: 0.76rem !important;
+  }
+
+  .ix-hero-signature,
+  .ix-hero-logo-overhaul,
+  .ix-parallax-temple,
+  .ix-parallax-ruins {
+    display: none;
+  }
+
+  .ix-parallax-moon {
+    width: 52vw;
+    right: -3vw;
+    top: 20vh;
+    opacity: 0.64;
+  }
+
+  .ix-parallax-mist {
+    width: 110vw;
+    right: -34vw;
+    top: 38vh;
+    opacity: 0.28;
+  }
+
+  .ix-parallax-sakura {
+    width: 96vw;
+    height: 58vh;
+    right: -35vw;
+    top: 4vh;
+    opacity: 0.8;
+  }
+
+  .ix-parallax-ground {
+    width: 120vw;
+    height: 30vh;
+    right: -30vw;
+    bottom: -2vh;
+  }
+
+  .ix-parallax-characters {
+    width: 92vw;
+    height: 54vh;
+    right: -11vw;
+    bottom: 2.5vh;
+  }
+
+  .ix-parallax-grass {
+    width: 110vw;
+    height: 18vh;
+    right: -28vw;
+    bottom: -3vh;
+  }
+
+  .ix-hero-word-overhaul {
+    bottom: 1vh;
+    font-size: 29vw;
+    opacity: 0.34;
+  }
+
+  .ix-scroll-cue-overhaul {
+    left: 20px;
+    bottom: 2vh;
+  }
+
+  .ix-kintsugi {
+    min-height: 135svh;
+  }
+
+  .ix-kintsugi-copy {
+    top: 20vh;
+    left: 20px;
+    width: calc(100vw - 40px);
+    transform: none;
+  }
+
+  .ix-kintsugi-copy h2 {
+    max-width: 11ch;
+    font-size: clamp(2.7rem, 12vw, 4.2rem);
+  }
+
+  .ix-kintsugi-copy > p {
+    max-width: 36ch;
+    font-size: 0.78rem;
+  }
+
+  .ix-kintsugi-stage::after {
+    background:
+      linear-gradient(180deg, rgba(3, 4, 7, 0.8) 0%, rgba(3, 4, 7, 0.34) 55%, rgba(3, 4, 7, 0.84) 100%),
+      linear-gradient(90deg, rgba(3, 4, 7, 0.64), transparent 72%);
+  }
+
+  .ix-kintsugi-lantern {
+    width: 38vw;
+    opacity: 0.44;
+  }
+
+  .ix-kintsugi-progress {
+    right: 12px;
+  }
+
+  .ix-realm-atlas,
+  .ix-trailer-overhaul,
+  .ix-character-spotlight,
+  .ix-pillars,
+  .ix-epilogue {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .ix-realm-atlas-head h2,
+  .ix-trailer-overhaul-head h2,
+  .ix-pillars-head h2 {
+    font-size: clamp(2.7rem, 11.5vw, 4rem);
+  }
+
+  .ix-realm-atlas-grid {
+    min-height: auto;
+  }
+
+  .ix-realm-stage {
+    min-height: 62svh;
+  }
+
+  .ix-realm-stage-copy {
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 1.2rem;
+  }
+
+  .ix-realm-stage-copy h3 {
+    font-size: 2.6rem;
+  }
+
+  .ix-realm-stage-copy p {
+    max-width: 38ch;
+    font-size: 0.76rem;
+  }
+
+  .ix-realm-index {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .ix-realm-index button {
+    flex: 0 0 76vw;
+    scroll-snap-align: start;
+    padding-right: 1rem;
+  }
+
+  .ix-trailer-canvas {
+    aspect-ratio: 9 / 13;
+  }
+
+  .ix-trailer-caption {
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 1.2rem;
+  }
+
+  .ix-trailer-caption strong {
+    font-size: 22vw;
+  }
+
+  .ix-trailer-ruins {
+    width: 68vw;
+    right: -25vw;
+  }
+
+  .ix-character-spotlight {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    padding-top: 8rem;
+  }
+
+  .ix-character-stage {
+    order: 2;
+    min-height: 68svh;
+  }
+
+  .ix-character-copy {
+    order: 1;
+    padding-left: 0;
+    margin-bottom: 2rem;
+  }
+
+  .ix-character-copy h2 {
+    font-size: clamp(2.8rem, 12vw, 4.2rem);
+  }
+
+  .ix-character-keyframes {
+    width: 68vw;
+    height: 11vh;
+  }
+
+  .ix-character-mochi {
+    width: 24vw;
+  }
+
+  .ix-pillars-head {
+    margin-bottom: 2rem;
+  }
+
+  .ix-pillar {
+    grid-template-columns: 58px 1fr;
+    gap: 1rem;
+    min-height: 0;
+    padding: 1.5rem 0;
+  }
+
+  .ix-pillar > p {
+    grid-column: 2;
+    font-size: 0.78rem;
+  }
+
+  .ix-pillar-asset {
+    width: 54vw;
+  }
+
+  .ix-epilogue {
+    min-height: 104svh;
+    padding-top: 9rem;
+  }
+
+  .ix-epilogue-copy {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .ix-epilogue-copy h2 {
+    font-size: clamp(3rem, 13vw, 4.7rem);
+  }
+
+  .ix-epilogue-moon {
+    width: 66vw;
+    right: -17vw;
+    top: 11vh;
+  }
+
+  .ix-epilogue-akari {
+    right: -13vw;
+    bottom: 4rem;
+    width: 72vw;
+    height: 44vh;
+    opacity: 0.48;
+  }
+
+  .ix-epilogue-branch {
+    width: 84vw;
+    right: -34vw;
+  }
+
+  .ix-epilogue-footer {
+    left: 20px;
+    right: 20px;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .ix-epilogue-footer nav {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-hero-overhaul,
+  .ix-kintsugi {
+    min-height: 100svh;
+  }
+
+  .ix-hero-stage,
+  .ix-kintsugi-stage {
+    position: relative;
+    top: auto;
+  }
+
+  .ix-kintsugi-restored {
+    clip-path: inset(0 0 0 0) !important;
+  }
+
+  .ix-kintsugi-seam,
+  .ix-shader-image-effect {
+    display: none !important;
+  }
+
+  .ix-trailer-veil {
+    display: none;
+  }
+
+  .ix-realm-stage-layer,
+  .ix-pillar-asset {
+    transition: none;
+  }
+}
