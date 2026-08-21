@@ -29,7 +29,8 @@ jobs:
           exit 1
       - name: Exercise hero runtime
         run: |
-          cat > /tmp/runtime-smoke.cjs <<'NODE'
+          mkdir -p qa
+          cat > qa/runtime-smoke.cjs <<'NODE'
           const { chromium } = require('playwright');
 
           (async () => {
@@ -72,4 +73,4 @@ jobs:
             process.exit(1);
           });
           NODE
-          node /tmp/runtime-smoke.cjs
+          node qa/runtime-smoke.cjs
