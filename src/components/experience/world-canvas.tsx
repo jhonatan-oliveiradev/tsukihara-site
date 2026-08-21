@@ -14,14 +14,34 @@ function pageProgress() {
   return THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
 }
 
-function Ridge({ z, y, opacity, scale = 1 }: { z: number; y: number; opacity: number; scale?: number }) {
+function Ridge({
+  z,
+  y,
+  opacity,
+  scale = 1,
+}: {
+  z: number;
+  y: number;
+  opacity: number;
+  scale?: number;
+}) {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12, -2.5);
     const peaks = [
-      [-10.5, -0.7], [-8.7, 0.55], [-7, -0.35], [-5.4, 1.15], [-3.5, 0.1],
-      [-1.7, 1.5], [0, 0.35], [1.8, 1.05], [3.5, 0.05], [5.1, 1.45],
-      [7.2, 0.18], [9.1, 0.75], [11, -0.55],
+      [-10.5, -0.7],
+      [-8.7, 0.55],
+      [-7, -0.35],
+      [-5.4, 1.15],
+      [-3.5, 0.1],
+      [-1.7, 1.5],
+      [0, 0.35],
+      [1.8, 1.05],
+      [3.5, 0.05],
+      [5.1, 1.45],
+      [7.2, 0.18],
+      [9.1, 0.75],
+      [11, -0.55],
     ];
     peaks.forEach(([x, py]) => shape.lineTo(x, py));
     shape.lineTo(12, -2.5);
@@ -36,17 +56,40 @@ function Ridge({ z, y, opacity, scale = 1 }: { z: number; y: number; opacity: nu
   );
 }
 
-function Torii({ position, scale = 1, opacity = 1 }: { position: [number, number, number]; scale?: number; opacity?: number }) {
+function Torii({
+  position,
+  scale = 1,
+  opacity = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  opacity?: number;
+}) {
   const material = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: "#5c0e13", roughness: 0.62, metalness: 0.08, transparent: opacity < 1, opacity }),
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#5c0e13",
+        roughness: 0.62,
+        metalness: 0.08,
+        transparent: opacity < 1,
+        opacity,
+      }),
     [opacity],
   );
   return (
     <group position={position} scale={scale}>
-      <mesh position={[-1.1, 0, 0]} material={material}><boxGeometry args={[0.19, 3.2, 0.2]} /></mesh>
-      <mesh position={[1.1, 0, 0]} material={material}><boxGeometry args={[0.19, 3.2, 0.2]} /></mesh>
-      <mesh position={[0, 1.62, 0]} material={material}><boxGeometry args={[3.1, 0.2, 0.24]} /></mesh>
-      <mesh position={[0, 1.25, 0]} material={material}><boxGeometry args={[2.5, 0.12, 0.17]} /></mesh>
+      <mesh position={[-1.1, 0, 0]} material={material}>
+        <boxGeometry args={[0.19, 3.2, 0.2]} />
+      </mesh>
+      <mesh position={[1.1, 0, 0]} material={material}>
+        <boxGeometry args={[0.19, 3.2, 0.2]} />
+      </mesh>
+      <mesh position={[0, 1.62, 0]} material={material}>
+        <boxGeometry args={[3.1, 0.2, 0.24]} />
+      </mesh>
+      <mesh position={[0, 1.25, 0]} material={material}>
+        <boxGeometry args={[2.5, 0.12, 0.17]} />
+      </mesh>
     </group>
   );
 }
@@ -54,16 +97,27 @@ function Torii({ position, scale = 1, opacity = 1 }: { position: [number, number
 function Shrine() {
   return (
     <group position={[0, -1.75, -10.3]}>
-      <mesh position={[0, 1.2, 0]}><boxGeometry args={[6.2, 2.7, 2.5]} /><meshStandardMaterial color="#12090a" roughness={0.72} /></mesh>
-      <mesh position={[0, 2.65, 0.05]} rotation={[0, 0, Math.PI / 4]} scale={[4.7, 0.24, 1.65]}>
-        <boxGeometry args={[1, 1, 1]} /><meshStandardMaterial color="#0a0c0f" roughness={0.86} />
+      <mesh position={[0, 1.2, 0]}>
+        <boxGeometry args={[6.2, 2.7, 2.5]} />
+        <meshStandardMaterial color="#12090a" roughness={0.72} />
       </mesh>
-      <mesh position={[0, 1.35, 1.28]}><boxGeometry args={[4.25, 1.55, 0.08]} /><meshStandardMaterial color="#5a1617" emissive="#2a0708" emissiveIntensity={0.7} /></mesh>
+      <mesh position={[0, 2.65, 0.05]} rotation={[0, 0, Math.PI / 4]} scale={[4.7, 0.24, 1.65]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="#0a0c0f" roughness={0.86} />
+      </mesh>
+      <mesh position={[0, 1.35, 1.28]}>
+        <boxGeometry args={[4.25, 1.55, 0.08]} />
+        <meshStandardMaterial color="#5a1617" emissive="#2a0708" emissiveIntensity={0.7} />
+      </mesh>
       {[-1.55, -0.52, 0.52, 1.55].map((x) => (
-        <mesh key={x} position={[x, 1.35, 1.34]}><boxGeometry args={[0.07, 1.45, 0.06]} /><meshBasicMaterial color="#c27147" /></mesh>
+        <mesh key={x} position={[x, 1.35, 1.34]}>
+          <boxGeometry args={[0.07, 1.45, 0.06]} />
+          <meshBasicMaterial color="#c27147" />
+        </mesh>
       ))}
       <mesh position={[0, -0.12, 2.35]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[3.5, 11]} /><meshStandardMaterial color="#141216" roughness={0.8} />
+        <planeGeometry args={[3.5, 11]} />
+        <meshStandardMaterial color="#141216" roughness={0.8} />
       </mesh>
     </group>
   );
@@ -72,12 +126,22 @@ function Shrine() {
 function Lantern({ x, z, phase }: { x: number; z: number; phase: number }) {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }) => {
-    if (light.current) light.current.intensity = 1.1 + Math.sin(clock.elapsedTime * 2.1 + phase) * 0.18 + Math.sin(clock.elapsedTime * 5.4 + phase) * 0.05;
+    if (light.current)
+      light.current.intensity =
+        1.1 +
+        Math.sin(clock.elapsedTime * 2.1 + phase) * 0.18 +
+        Math.sin(clock.elapsedTime * 5.4 + phase) * 0.05;
   });
   return (
     <group position={[x, -1.15, z]}>
-      <mesh><boxGeometry args={[0.12, 1.1, 0.12]} /><meshBasicMaterial color="#151317" /></mesh>
-      <mesh position={[0, 0.62, 0]}><boxGeometry args={[0.42, 0.5, 0.42]} /><meshBasicMaterial color="#d88a55" transparent opacity={0.78} /></mesh>
+      <mesh>
+        <boxGeometry args={[0.12, 1.1, 0.12]} />
+        <meshBasicMaterial color="#151317" />
+      </mesh>
+      <mesh position={[0, 0.62, 0]}>
+        <boxGeometry args={[0.42, 0.5, 0.42]} />
+        <meshBasicMaterial color="#d88a55" transparent opacity={0.78} />
+      </mesh>
       <pointLight ref={light} position={[0, 0.62, 0.2]} color={AMBER} distance={5} decay={2.1} />
     </group>
   );
@@ -93,7 +157,14 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
     if (group.current) {
       group.current.position.lerp(shot.moon, 0.055);
       const breath = 1 + Math.sin(clock.elapsedTime * 0.22) * 0.018;
-      group.current.scale.lerp(new THREE.Vector3(shot.moonScale * breath, shot.moonScale * breath, shot.moonScale * breath), 0.06);
+      group.current.scale.lerp(
+        new THREE.Vector3(
+          shot.moonScale * breath,
+          shot.moonScale * breath,
+          shot.moonScale * breath,
+        ),
+        0.06,
+      );
     }
     if (shadow.current) shadow.current.position.x = THREE.MathUtils.lerp(-4.2, 0.5, shot.eclipse);
     if (halo.current) halo.current.rotation.z = clock.elapsedTime * 0.008;
@@ -101,23 +172,45 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
 
   return (
     <group ref={group} position={[4.8, 4.5, -18]}>
-      <mesh ref={halo} scale={1.3}><circleGeometry args={[2.55, 128]} /><meshBasicMaterial color={VERMILION} transparent opacity={0.12} depthWrite={false} /></mesh>
-      <mesh><circleGeometry args={[1.9, 128]} /><meshBasicMaterial color="#c03337" toneMapped={false} /></mesh>
-      <mesh ref={shadow} position={[-4.2, 0.08, 0.025]}><circleGeometry args={[1.93, 128]} /><meshBasicMaterial color="#05070a" /></mesh>
+      <mesh ref={halo} scale={1.3}>
+        <circleGeometry args={[2.55, 128]} />
+        <meshBasicMaterial color={VERMILION} transparent opacity={0.12} depthWrite={false} />
+      </mesh>
+      <mesh>
+        <circleGeometry args={[1.9, 128]} />
+        <meshBasicMaterial color="#c03337" toneMapped={false} />
+      </mesh>
+      <mesh ref={shadow} position={[-4.2, 0.08, 0.025]}>
+        <circleGeometry args={[1.93, 128]} />
+        <meshBasicMaterial color="#05070a" />
+      </mesh>
     </group>
   );
 }
 
-function PetalField({ count, z, speed, opacity, tint }: { count: number; z: number; speed: number; opacity: number; tint: string }) {
+function PetalField({
+  count,
+  z,
+  speed,
+  opacity,
+  tint,
+}: {
+  count: number;
+  z: number;
+  speed: number;
+  opacity: number;
+  tint: string;
+}) {
   const group = useRef<THREE.Group>(null);
   const petals = useMemo(
-    () => Array.from({ length: count }, (_, i) => ({
-      x: ((i * 2.31) % 17) - 8.5,
-      y: ((i * 1.73) % 10) - 4.5,
-      s: 0.035 + (i % 5) * 0.012,
-      r: i * 0.67,
-      phase: i * 0.39,
-    })),
+    () =>
+      Array.from({ length: count }, (_, i) => ({
+        x: ((i * 2.31) % 17) - 8.5,
+        y: ((i * 1.73) % 10) - 4.5,
+        s: 0.035 + (i % 5) * 0.012,
+        r: i * 0.67,
+        phase: i * 0.39,
+      })),
     [count],
   );
 
@@ -131,9 +224,19 @@ function PetalField({ count, z, speed, opacity, tint }: { count: number; z: numb
   return (
     <group ref={group} position={[0, 0, z]}>
       {petals.map((petal, i) => (
-        <mesh key={i} position={[petal.x, petal.y, (i % 7) * -0.09]} rotation={[0.6, petal.r, petal.phase]}>
+        <mesh
+          key={i}
+          position={[petal.x, petal.y, (i % 7) * -0.09]}
+          rotation={[0.6, petal.r, petal.phase]}
+        >
           <planeGeometry args={[petal.s * 2.6, petal.s]} />
-          <meshBasicMaterial color={tint} transparent opacity={opacity} side={THREE.DoubleSide} depthWrite={false} />
+          <meshBasicMaterial
+            color={tint}
+            transparent
+            opacity={opacity}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
       ))}
     </group>
@@ -148,7 +251,8 @@ function PointerEmbers() {
     for (let i = 0; i < 36; i += 1) {
       const idx = i * 3;
       positions[idx] = pointer.x * 4.6 + Math.sin(clock.elapsedTime * 1.3 + i) * (i / 36) * 1.6;
-      positions[idx + 1] = pointer.y * 2.8 + Math.cos(clock.elapsedTime * 1.1 + i * 0.7) * (i / 36) * 1.1;
+      positions[idx + 1] =
+        pointer.y * 2.8 + Math.cos(clock.elapsedTime * 1.1 + i * 0.7) * (i / 36) * 1.1;
       positions[idx + 2] = -2.3 - i * 0.08;
     }
     const attribute = points.current.geometry.getAttribute("position") as THREE.BufferAttribute;
@@ -156,8 +260,17 @@ function PointerEmbers() {
   });
   return (
     <points ref={points}>
-      <bufferGeometry><bufferAttribute attach="attributes-position" args={[positions, 3]} /></bufferGeometry>
-      <pointsMaterial color="#bb2730" size={0.045} transparent opacity={0.34} depthWrite={false} blending={THREE.AdditiveBlending} />
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#bb2730"
+        size={0.045}
+        transparent
+        opacity={0.34}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
     </points>
   );
 }
@@ -174,8 +287,11 @@ function Director() {
     camera.position.lerp(shot.position, 0.055);
     lookAt.current.lerp(shot.lookAt, 0.055);
     camera.lookAt(lookAt.current);
-    if (scene.fog instanceof THREE.FogExp2) scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, shot.fog, 0.04);
-    scene.rotation.y = Math.sin(progress.current * Math.PI * 1.6) * 0.035 + Math.sin(clock.elapsedTime * 0.04) * 0.006;
+    if (scene.fog instanceof THREE.FogExp2)
+      scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, shot.fog, 0.04);
+    scene.rotation.y =
+      Math.sin(progress.current * Math.PI * 1.6) * 0.035 +
+      Math.sin(clock.elapsedTime * 0.04) * 0.006;
   });
 
   return (

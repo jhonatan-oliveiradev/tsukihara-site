@@ -9,17 +9,14 @@ export type ForegroundAsset = {
   sizes?: string;
 };
 
-export function ForegroundStage({
-  id,
-  assets,
-}: {
-  id: string;
-  assets: ForegroundAsset[];
-}) {
+export function ForegroundStage({ id, assets }: { id: string; assets: ForegroundAsset[] }) {
   return (
     <div className="fg-stage" data-fg={id} aria-hidden="true">
       {assets.map((asset) => (
-        <div key={`${id}-${asset.src}-${asset.className}`} className={`fg-piece ${asset.className}`}>
+        <div
+          key={`${id}-${asset.src}-${asset.className}`}
+          className={`fg-piece ${asset.className}`}
+        >
           <Image
             src={asset.src}
             alt={asset.alt ?? ""}

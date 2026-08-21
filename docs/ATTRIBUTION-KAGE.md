@@ -3,6 +3,7 @@
 This project contains an educational Next.js/React port of structural and interaction ideas from **Kage** by Meng To.
 
 Original references:
+
 - https://github.com/MengTo/kage
 - https://mengto.github.io/kage/
 

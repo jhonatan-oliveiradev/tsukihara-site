@@ -23,6 +23,7 @@
 ### Task 1: Scroll director
 
 **Files:**
+
 - Create: `src/experience/kage-port/scroll-path.ts`
 - Modify: `src/components/experience/world-canvas.tsx`
 
@@ -33,6 +34,7 @@
 ### Task 2: Persistent world
 
 **Files:**
+
 - Modify: `src/components/experience/world-canvas.tsx`
 
 - [x] Add layered ridges, shrine geometry and torii at different depths.
@@ -42,6 +44,7 @@
 ### Task 3: Editorial chapter port
 
 **Files:**
+
 - Modify: `src/components/experience/experience-shell.tsx`
 - Modify: `src/content/game.ts`
 - Create: `src/app/kage-port.css`
@@ -54,6 +57,7 @@
 ### Task 4: Asset integration contract
 
 **Files:**
+
 - Create: `src/experience/kage-port/assets.ts`
 - Create: `docs/ATTRIBUTION-KAGE.md`
 
