@@ -44,19 +44,16 @@ export function ImmersiveExperience() {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lenis = reduced ? null : new Lenis({ lerp: 0.055, smoothWheel: true });
-    let frame = 0;
 
-    const raf = (time: number) => {
-      lenis?.raf(time);
-      frame = requestAnimationFrame(raf);
-    };
+    const raf = (time: number) => lenis?.raf(time * 1000);
     const updateScrollTrigger = () => ScrollTrigger.update();
     const resizeLenis = () => lenis?.resize();
 
     if (lenis) {
       lenis.on("scroll", updateScrollTrigger);
       ScrollTrigger.addEventListener("refresh", resizeLenis);
-      frame = requestAnimationFrame(raf);
+      gsap.ticker.add(raf);
+      gsap.ticker.lagSmoothing(0);
     }
 
     const ctx = gsap.context(() => {
@@ -193,9 +190,9 @@ export function ImmersiveExperience() {
       if (lenis) {
         lenis.off("scroll", updateScrollTrigger);
         ScrollTrigger.removeEventListener("refresh", resizeLenis);
+        gsap.ticker.remove(raf);
         lenis.destroy();
       }
-      cancelAnimationFrame(frame);
     };
   }, [locale]);
 

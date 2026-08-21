@@ -52,40 +52,44 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
   return (
     <section ref={rootRef} id="top" data-section className="th-hero">
       <div className="th-hero-stage">
-        <HeroCamera>
-          <HeroScene />
-        </HeroCamera>
+        <div className="th-hero-background-layer" data-hero-background-layer>
+          <HeroCamera>
+            <HeroScene />
+          </HeroCamera>
+        </div>
 
         <div className="th-hero-content" data-hero-content>
-          <div className="th-hero-copy th-hero-copy-intro" data-copy-intro>
-            <p className="ix-eyebrow">
-              <b>月母</b> {copy.hero.eyebrow}
-            </p>
-            <h1>
-              <JpRevealText jp={copy.hero.titleJp} text={copy.hero.title} locale={locale} />
-            </h1>
-            <p className="th-hero-body">{copy.hero.body}</p>
-            <div className="th-hero-signature">
-              <span>AKARI NO REI</span>
-              <i />
-              <span>九つの国</span>
+          <div className="th-hero-copy-layer" data-hero-copy-layer>
+            <div className="th-hero-copy th-hero-copy-intro" data-copy-intro>
+              <p className="ix-eyebrow">
+                <b>月母</b> {copy.hero.eyebrow}
+              </p>
+              <h1>
+                <JpRevealText jp={copy.hero.titleJp} text={copy.hero.title} locale={locale} />
+              </h1>
+              <p className="th-hero-body">{copy.hero.body}</p>
+              <div className="th-hero-signature">
+                <span>AKARI NO REI</span>
+                <i />
+                <span>九つの国</span>
+              </div>
             </div>
-          </div>
 
-          <div className="th-hero-copy th-hero-copy-beat th-hero-copy-omen" data-copy-omen>
-            <p className="ix-eyebrow">
-              <b>忘却</b> {beat.omenEyebrow}
-            </p>
-            <h2>{beat.omenTitle}</h2>
-            <p className="th-hero-body">{beat.omenBody}</p>
-          </div>
+            <div className="th-hero-copy th-hero-copy-beat th-hero-copy-omen" data-copy-omen>
+              <p className="ix-eyebrow">
+                <b>忘却</b> {beat.omenEyebrow}
+              </p>
+              <h2>{beat.omenTitle}</h2>
+              <p className="th-hero-body">{beat.omenBody}</p>
+            </div>
 
-          <div className="th-hero-copy th-hero-copy-beat th-hero-copy-eclipse" data-copy-eclipse>
-            <p className="ix-eyebrow">
-              <b>金継ぎ</b> {beat.eclipseEyebrow}
-            </p>
-            <h2>{beat.eclipseTitle}</h2>
-            <p className="th-hero-body">{beat.eclipseBody}</p>
+            <div className="th-hero-copy th-hero-copy-beat th-hero-copy-eclipse" data-copy-eclipse>
+              <p className="ix-eyebrow">
+                <b>金継ぎ</b> {beat.eclipseEyebrow}
+              </p>
+              <h2>{beat.eclipseTitle}</h2>
+              <p className="th-hero-body">{beat.eclipseBody}</p>
+            </div>
           </div>
 
           <div className="th-hero-logo" data-hero-logo>
@@ -121,6 +125,8 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
             <i />
           </a>
         </div>
+        <div className="th-hero-blackout" data-hero-blackout aria-hidden="true" />
+        <div className="th-hero-eclipse-curtain" data-hero-eclipse-curtain aria-hidden="true" />
       </div>
     </section>
   );

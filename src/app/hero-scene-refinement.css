@@ -5,6 +5,11 @@
     linear-gradient(180deg, #06101c 0%, #050b14 46%, #02050a 100%);
 }
 
+.th-hero-scene {
+  width: 100%;
+  min-width: 100%;
+}
+
 .th-hero-copy h1,
 .th-hero-copy h2,
 .th-hero-word {
@@ -78,11 +83,105 @@
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
 }
 
-@media (min-width: 1921px) {
-  .th-hero-scene {
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+/* Keep the environment plates behind the character so the scene reads in depth. */
+.th-hero-atmosphere {
+  left: 51%;
+  bottom: 18%;
+  width: 88%;
+}
+
+.th-hero-temple {
+  left: 53%;
+  bottom: 12%;
+  width: 70%;
+  opacity: 0.82;
+}
+
+.th-hero-mist-mid {
+  left: 52%;
+  bottom: 7%;
+  width: 91%;
+}
+
+.th-hero-ground {
+  left: auto;
+  right: -2%;
+  bottom: -4%;
+  width: 44%;
+}
+
+.th-hero-ground .th-hero-image {
+  object-position: right bottom;
+}
+
+.th-hero-atmosphere,
+.th-hero-temple,
+.th-hero-mist-mid,
+.th-hero-ground,
+.th-hero-sakura-right {
+  -webkit-mask-image:
+    linear-gradient(90deg, #000 0%, #000 78%, rgba(0, 0, 0, 0.72) 90%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 13%, #000 100%);
+  mask-image:
+    linear-gradient(90deg, #000 0%, #000 78%, rgba(0, 0, 0, 0.72) 90%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 13%, #000 100%);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+}
+
+.th-hero-characters {
+  right: 4%;
+  bottom: 1%;
+  width: clamp(510px, 40%, 760px);
+}
+
+.th-hero-sakura-left,
+.th-hero-sakura-right {
+  bottom: auto;
+  top: 0;
+  width: 54%;
+}
+
+.th-hero-sakura-left {
+  left: 0;
+  transform: translateX(-8%);
+}
+
+.th-hero-sakura-right {
+  top: 0;
+  right: 0;
+  left: auto;
+  width: min(54%, 860px);
+  transform: none;
+  opacity: calc(0.68 + var(--hero-eclipse) * 0.14);
+}
+
+.th-hero-sakura-right .th-hero-image {
+  transform-origin: 100% 0;
+  animation: th-hero-branch-sway 9s ease-in-out infinite alternate;
+}
+
+@keyframes th-hero-branch-sway {
+  from {
+    transform: rotate(-0.35deg) translate3d(0, 0, 0);
   }
+
+  to {
+    transform: rotate(0.35deg) translate3d(-4px, 2px, 0);
+  }
+}
+
+.th-hero-petal-vortex {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+
+.th-hero-petal-sheet {
+  opacity: calc(0.1 + var(--hero-storm) * 0.18);
+}
+
+.th-hero-petal {
+  transform: scale(0.72) rotate(var(--petal-rotate));
 }
 
 @media (max-width: 980px) {
@@ -95,16 +194,38 @@
     width: min(58vw, 480px);
   }
 
-  .th-hero-atmosphere,
-  .th-hero-temple,
-  .th-hero-mist-mid,
-  .th-hero-ground {
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%);
-  }
-
   .th-hero-copy {
     width: min(44vw, 390px);
+  }
+
+  .th-hero-atmosphere {
+    left: 52%;
+    bottom: 17%;
+    width: 92%;
+  }
+
+  .th-hero-temple {
+    left: 55%;
+    bottom: 10%;
+    width: 78%;
+  }
+
+  .th-hero-ground {
+    left: auto;
+    right: -3%;
+    bottom: -2%;
+    width: 50%;
+  }
+
+  .th-hero-sakura-right {
+    top: 0;
+    right: 0;
+    width: 58%;
+  }
+
+  .th-hero-characters {
+    right: 2%;
+    width: min(52vw, 430px);
   }
 }
 
@@ -121,24 +242,40 @@
     width: 220px;
   }
 
+  .th-hero-atmosphere {
+    left: 52%;
+    bottom: 18%;
+    width: 96%;
+  }
+
+  .th-hero-temple {
+    left: 58%;
+    bottom: 11%;
+    width: 84%;
+  }
+
+  .th-hero-ground {
+    left: auto;
+    right: -5%;
+    bottom: -2%;
+    width: 62%;
+  }
+
+  .th-hero-sakura-right {
+    top: 0;
+    right: 0;
+    left: auto;
+    width: 78%;
+  }
+
   .th-hero-characters {
     right: calc((820px - 100vw) / 2 + 10px);
     bottom: 3.2vh;
     width: min(96vw, 390px);
   }
 
-  .th-hero-atmosphere,
-  .th-hero-temple,
-  .th-hero-mist-mid,
-  .th-hero-ground {
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 100%);
-  }
-
   .th-hero-sakura-right {
     opacity: calc(0.58 + var(--hero-eclipse) * 0.28);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 17%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 17%, #000 100%);
   }
 
   .th-hero-copy {
