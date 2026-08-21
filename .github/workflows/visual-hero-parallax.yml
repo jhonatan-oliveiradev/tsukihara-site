@@ -1,9 +1,9 @@
 name: Visual hero parallax
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/hero-cinematic-parallax
+      - main
 
 permissions:
   contents: read
