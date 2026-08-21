@@ -80,12 +80,20 @@ function Moon() {
   useFrame(({ clock }) => {
     if (!moon.current || !shadow.current) return;
     const p = getPageProgress();
-    moon.current.position.x = THREE.MathUtils.lerp(5.4, -0.2, THREE.MathUtils.smoothstep(p, 0, 0.9));
+    moon.current.position.x = THREE.MathUtils.lerp(
+      5.4,
+      -0.2,
+      THREE.MathUtils.smoothstep(p, 0, 0.9),
+    );
     moon.current.position.y = THREE.MathUtils.lerp(3.6, 1.1, p);
     moon.current.position.z = THREE.MathUtils.lerp(-21, -13.8, p);
     const s = THREE.MathUtils.lerp(1, 1.65, THREE.MathUtils.smoothstep(p, 0.55, 1));
     moon.current.scale.setScalar(s * (1 + Math.sin(clock.elapsedTime * 0.14) * 0.008));
-    shadow.current.position.x = THREE.MathUtils.lerp(-4.8, 0.22, THREE.MathUtils.smoothstep(p, 0.18, 0.96));
+    shadow.current.position.x = THREE.MathUtils.lerp(
+      -4.8,
+      0.22,
+      THREE.MathUtils.smoothstep(p, 0.18, 0.96),
+    );
   });
 
   return (
@@ -106,7 +114,17 @@ function Moon() {
   );
 }
 
-function Petals({ count, z, opacity, speed }: { count: number; z: number; opacity: number; speed: number }) {
+function Petals({
+  count,
+  z,
+  opacity,
+  speed,
+}: {
+  count: number;
+  z: number;
+  opacity: number;
+  speed: number;
+}) {
   const group = useRef<THREE.Group>(null);
   const petals = useMemo(
     () =>
@@ -121,7 +139,8 @@ function Petals({ count, z, opacity, speed }: { count: number; z: number; opacit
 
   useFrame(({ clock, pointer }) => {
     if (!group.current) return;
-    group.current.position.x = Math.sin(clock.elapsedTime * speed) * 0.36 + pointer.x * 0.24 * speed;
+    group.current.position.x =
+      Math.sin(clock.elapsedTime * speed) * 0.36 + pointer.x * 0.24 * speed;
     group.current.position.y = Math.sin(clock.elapsedTime * speed * 0.7) * 0.18;
     group.current.rotation.z = Math.sin(clock.elapsedTime * speed * 0.45) * 0.018;
   });
@@ -129,7 +148,11 @@ function Petals({ count, z, opacity, speed }: { count: number; z: number; opacit
   return (
     <group ref={group} position={[0, 0, z]}>
       {petals.map((petal, index) => (
-        <mesh key={index} position={[petal.x, petal.y, -(index % 8) * 0.08]} rotation={[0.55, petal.r, petal.r * 0.38]}>
+        <mesh
+          key={index}
+          position={[petal.x, petal.y, -(index % 8) * 0.08]}
+          rotation={[0.55, petal.r, petal.r * 0.38]}
+        >
           <planeGeometry args={[petal.s * 2.8, petal.s]} />
           <meshBasicMaterial
             color={index % 5 === 0 ? "#a92735" : "#e3b7c2"}
@@ -182,10 +205,15 @@ function Director() {
     camera.lookAt(target.current);
 
     if (fog.current) {
-      fog.current.density = THREE.MathUtils.lerp(0.018, 0.029, THREE.MathUtils.smoothstep(p, 0.45, 1));
+      fog.current.density = THREE.MathUtils.lerp(
+        0.018,
+        0.029,
+        THREE.MathUtils.smoothstep(p, 0.45, 1),
+      );
     }
     if (world.current) {
-      world.current.rotation.y = Math.sin(p * Math.PI * 1.6) * 0.045 + Math.sin(clock.elapsedTime * 0.04) * 0.006;
+      world.current.rotation.y =
+        Math.sin(p * Math.PI * 1.6) * 0.045 + Math.sin(clock.elapsedTime * 0.04) * 0.006;
     }
   });
 
