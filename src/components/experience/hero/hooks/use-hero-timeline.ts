@@ -131,7 +131,11 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(q("[data-moon-halo-normal]"), { opacity: 0.6, scale: 0.95, duration: 0.16 }, 0.12)
         .to(q("[data-hero-stars]"), { opacity: 0.42, duration: 0.16 }, 0.12)
         .to(q("[data-petal-sheet-left]"), { xPercent: 2.5, yPercent: -1, duration: 0.16 }, 0.12)
-        .to(q("[data-moon-shadow]"), { xPercent: 2, opacity: 0.88, duration: 0.28, ease: "power1.inOut" }, 0.25)
+        .to(
+          q("[data-moon-shadow]"),
+          { xPercent: 2, opacity: 0.88, duration: 0.28, ease: "power1.inOut" },
+          0.25,
+        )
         .to(q("[data-moon-after]"), { opacity: 0.58, duration: 0.22 }, 0.29)
         .to(q("[data-moon-before]"), { opacity: 0.6, duration: 0.22 }, 0.29)
         .to(q("[data-sky-crimson]"), { opacity: 0.52, duration: 0.24 }, 0.28)
@@ -143,7 +147,13 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(q("[data-sakura-right-before]"), { opacity: 0.72, duration: 0.22 }, 0.32)
         .to(
           q("[data-hero-camera]"),
-          { xPercent: -0.8, yPercent: -0.45, scale: 1.026, duration: 0.2, transformOrigin: "62% 54%" },
+          {
+            xPercent: -0.8,
+            yPercent: -0.45,
+            scale: 1.026,
+            duration: 0.2,
+            transformOrigin: "62% 54%",
+          },
           0.48,
         )
         .to(q("[data-moon-after]"), { opacity: 1, duration: 0.2 }, 0.48)
@@ -156,18 +166,50 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(q("[data-ground-before]"), { opacity: 0.28, duration: 0.2 }, 0.49)
         .to(q("[data-characters-after]"), { opacity: 0.82, duration: 0.18 }, 0.5)
         .to(q("[data-characters-before]"), { opacity: 0.42, duration: 0.18 }, 0.5)
-        .to(q("[data-character-rim], [data-ground-glow], [data-temple-light]"), { opacity: 0.72, duration: 0.18 }, 0.5)
+        .to(
+          q("[data-character-rim], [data-ground-glow], [data-temple-light]"),
+          { opacity: 0.72, duration: 0.18 },
+          0.5,
+        )
         .to(q("[data-mist-crimson]"), { opacity: 0.64, duration: 0.18 }, 0.49)
-        .to(q("[data-right-petals-after], [data-left-petals-after]"), { opacity: 0.86, duration: 0.18 }, 0.5)
+        .to(
+          q("[data-right-petals-after], [data-left-petals-after]"),
+          { opacity: 0.86, duration: 0.18 },
+          0.5,
+        )
         .to(q("[data-sakura-left]"), { opacity: 0.78, duration: 0.16 }, 0.52)
         .to(q("[data-sky-crimson]"), { opacity: 1, duration: 0.18 }, 0.68)
-        .to(q("[data-temple-after], [data-ground-after], [data-characters-after], [data-sakura-right-after]"), { opacity: 1, duration: 0.18 }, 0.68)
-        .to(q("[data-temple-before], [data-ground-before], [data-characters-before], [data-sakura-right-before], [data-mist-before]"), { opacity: 0.08, duration: 0.18 }, 0.68)
+        .to(
+          q(
+            "[data-temple-after], [data-ground-after], [data-characters-after], [data-sakura-right-after]",
+          ),
+          { opacity: 1, duration: 0.18 },
+          0.68,
+        )
+        .to(
+          q(
+            "[data-temple-before], [data-ground-before], [data-characters-before], [data-sakura-right-before], [data-mist-before]",
+          ),
+          { opacity: 0.08, duration: 0.18 },
+          0.68,
+        )
         .to(q("[data-mist-after]"), { opacity: 0.86, duration: 0.18 }, 0.68)
         .to(q("[data-crimson-wash]"), { opacity: 0.24, duration: 0.18 }, 0.68)
-        .to(q("[data-petal-vortex]"), { scale: 1.025, rotation: -0.35, duration: 0.18, transformOrigin: "50% 52%" }, 0.68)
-        .to(q("[data-hero-camera]"), { xPercent: -0.45, yPercent: -0.2, scale: 1.021, duration: 0.14, ease: "sine.out" }, 0.86)
-        .to(q("[data-petal-vortex]"), { scale: 1, rotation: 0, duration: 0.14, ease: "sine.out" }, 0.86)
+        .to(
+          q("[data-petal-vortex]"),
+          { scale: 1.025, rotation: -0.35, duration: 0.18, transformOrigin: "50% 52%" },
+          0.68,
+        )
+        .to(
+          q("[data-hero-camera]"),
+          { xPercent: -0.45, yPercent: -0.2, scale: 1.021, duration: 0.14, ease: "sine.out" },
+          0.86,
+        )
+        .to(
+          q("[data-petal-vortex]"),
+          { scale: 1, rotation: 0, duration: 0.14, ease: "sine.out" },
+          0.86,
+        )
         .to(q("[data-crimson-wash]"), { opacity: 0.17, duration: 0.14 }, 0.86);
     }
 
@@ -184,7 +226,8 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
       onToggle: ({ isActive }) => shell?.classList.toggle("th-hero-is-pinned", isActive),
       onUpdate: ({ progress }) => {
         root.dataset.heroProgress = progress.toFixed(3);
-        const speed = progress < 0.12 ? 0.58 : progress < 0.48 ? 0.82 : progress < 0.86 ? 1.5 : 0.72;
+        const speed =
+          progress < 0.12 ? 0.58 : progress < 0.48 ? 0.82 : progress < 0.86 ? 1.5 : 0.72;
         petalTweens.forEach((tween) => tween.timeScale(speed));
       },
     });
