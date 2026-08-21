@@ -1,0 +1,77 @@
+name: Hero runtime smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-runtime.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-runtime.log
+          exit 1
+      - name: Exercise hero runtime
+        run: |
+          mkdir -p qa
+          cat > qa/runtime-smoke.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          (async () => {
+            const viewportHeight = 900;
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: viewportHeight } });
+            const failures = [];
+
+            page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`));
+            page.on('console', (message) => {
+              const text = message.text();
+              if (/Invalid scope|Cannot access 'ctx' before initialization|Maximum call stack size exceeded/i.test(text)) {
+                failures.push(`console: ${text}`);
+              }
+            });
+
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForSelector('.ix-entry', { timeout: 45000 });
+            const buttons = page.locator('.ix-entry-actions button');
+            if (await buttons.count() > 1) await buttons.nth(1).click();
+            await page.waitForFunction(() => !document.querySelector('.ix-entry'), null, { timeout: 15000 });
+            await page.waitForSelector('.th-hero', { timeout: 10000 });
+
+            await page.mouse.move(1150, 250);
+            await page.waitForTimeout(250);
+            await page.mouse.move(450, 620);
+
+            const hero = page.locator('.th-hero');
+            const top = await hero.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+            for (const fraction of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+              await page.evaluate(({ y }) => window.scrollTo(0, y), { y: top + viewportHeight * 3 * fraction });
+              await page.waitForTimeout(350);
+            }
+
+            await page.waitForTimeout(500);
+            if (failures.length) throw new Error(failures.join('\n'));
+            console.log('Hero runtime smoke passed without TDZ, invalid scope, or stack overflow.');
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node qa/runtime-smoke.cjs
