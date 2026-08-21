@@ -11,6 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-08-21-hero-eclipse-sequence-design.md`
 
 ## Global Constraints
+
 - Hero only; do not restructure sections below it.
 - Use `public/hero-elements` as the definitive hero art source.
 - Preserve header, language, audio, entry gate and copy functionality.
@@ -24,6 +25,7 @@
 ### Task 1: Measure and validate hero assets
 
 **Files:**
+
 - Create: `.github/workflows/hero-assets-inspect.yml` (temporary, remove before final PR)
 - Create: `docs/superpowers/hero-assets-report.md`
 
@@ -37,11 +39,13 @@
 ### Task 2: Define deterministic timeline math with tests
 
 **Files:**
+
 - Create: `src/components/experience/hero/hero-timeline-math.ts`
 - Create: `src/components/experience/hero/hero-timeline-math.test.mjs`
 - Create: `.github/workflows/hero-tdd.yml` (temporary test runner if needed; remove before final PR)
 
 **Interfaces:**
+
 - Produces `clamp01(value)`, `rangeProgress(progress,start,end)`, `smoothRange(progress,start,end)`, and `phaseWeights(progress)`.
 
 - [ ] Write failing tests for clamping, timeline range mapping and the six narrative phase intervals.
@@ -53,6 +57,7 @@
 ### Task 3: Build hero scene constants and layers
 
 **Files:**
+
 - Create: `src/components/experience/hero/constants/hero-scene.ts`
 - Create: `src/components/experience/hero/hero-camera.tsx`
 - Create: `src/components/experience/hero/hero-scene.tsx`
@@ -63,6 +68,7 @@
 - Create: `src/components/experience/hero/layers/petal-vortex.tsx`
 
 **Interfaces:**
+
 - Layers expose data attributes consumed by the master timeline (`data-hero-*`).
 - `HeroCamera` wraps all scene layers and exposes `data-hero-camera`.
 
@@ -74,6 +80,7 @@
 ### Task 4: Implement one master GSAP timeline
 
 **Files:**
+
 - Create: `src/components/experience/hero/hooks/use-hero-timeline.ts`
 - Modify: `src/components/experience/immersive-experience.tsx`
 
@@ -90,6 +97,7 @@
 ### Task 5: Replace old hero rendering and style the scene
 
 **Files:**
+
 - Create: `src/components/experience/hero/tsukihara-hero.tsx`
 - Create: `src/app/hero-eclipse-sequence.css`
 - Modify: `src/app/layout.tsx`
@@ -105,6 +113,7 @@
 ### Task 6: Retire legacy hero parallax implementation
 
 **Files:**
+
 - Delete or stop importing: `src/components/experience/hero-parallax-scene.tsx`
 - Delete or stop importing: `src/components/experience/hero-parallax-config.ts`
 - Modify: `src/app/immersive-overhaul.css` to remove conflicting hero rules, leaving below-the-fold chapters untouched.
@@ -116,6 +125,7 @@
 ### Task 7: Production gates and visual timeline QA
 
 **Files:**
+
 - Create: `.github/workflows/hero-visual-qa.yml` (temporary; remove before final HEAD)
 
 - [ ] Run `npm run format:check`, `npm run lint`, and `npm run build`.

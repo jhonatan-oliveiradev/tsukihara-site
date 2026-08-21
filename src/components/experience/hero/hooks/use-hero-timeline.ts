@@ -81,9 +81,24 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           const direction = fromLeft ? 1 : -1;
           const tween = gsap.to(petal, {
             keyframes: [
-              { x: `${direction * distance * 0.52}vw`, y: -28 - (index % 4) * 9, rotation: direction * 125, opacity: 0.78 },
-              { x: `${direction * distance * 0.82}vw`, y: -8 + (index % 5) * 8, rotation: direction * 245, opacity: 0.9 },
-              { x: `${direction * distance}vw`, y: 22 - (index % 3) * 12, rotation: direction * 390, opacity: 0 },
+              {
+                x: `${direction * distance * 0.52}vw`,
+                y: -28 - (index % 4) * 9,
+                rotation: direction * 125,
+                opacity: 0.78,
+              },
+              {
+                x: `${direction * distance * 0.82}vw`,
+                y: -8 + (index % 5) * 8,
+                rotation: direction * 245,
+                opacity: 0.9,
+              },
+              {
+                x: `${direction * distance}vw`,
+                y: 22 - (index % 3) * 12,
+                rotation: direction * 390,
+                opacity: 0,
+              },
             ],
             duration,
             delay: -((index * 0.71) % duration),
@@ -108,26 +123,38 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
       } else {
         timeline
           // 0–12% — Serenity / character arrival.
-          .to("[data-characters-before], [data-characters-after]", {
-            xPercent: -0.8,
-            yPercent: -0.3,
-            scale: 1.004,
-            duration: 0.095,
-            ease: "power2.out",
-          }, 0.01)
-          .to("[data-characters-before], [data-characters-after]", {
-            xPercent: 0,
-            yPercent: 0,
-            scale: 1,
-            duration: 0.035,
-            ease: "sine.out",
-          }, 0.095)
+          .to(
+            "[data-characters-before], [data-characters-after]",
+            {
+              xPercent: -0.8,
+              yPercent: -0.3,
+              scale: 1.004,
+              duration: 0.095,
+              ease: "power2.out",
+            },
+            0.01,
+          )
+          .to(
+            "[data-characters-before], [data-characters-after]",
+            {
+              xPercent: 0,
+              yPercent: 0,
+              scale: 1,
+              duration: 0.035,
+              ease: "sine.out",
+            },
+            0.095,
+          )
           // 12–28% — Omen.
           .to("[data-moon-halo-normal]", { opacity: 0.6, scale: 0.95, duration: 0.16 }, 0.12)
           .to("[data-hero-stars]", { opacity: 0.42, duration: 0.16 }, 0.12)
           .to("[data-petal-sheet-left]", { xPercent: 2.5, yPercent: -1, duration: 0.16 }, 0.12)
           // 28–48% — Eclipse begins.
-          .to("[data-moon-shadow]", { xPercent: 2, opacity: 0.88, duration: 0.28, ease: "power1.inOut" }, 0.25)
+          .to(
+            "[data-moon-shadow]",
+            { xPercent: 2, opacity: 0.88, duration: 0.28, ease: "power1.inOut" },
+            0.25,
+          )
           .to("[data-moon-after]", { opacity: 0.58, duration: 0.22 }, 0.29)
           .to("[data-moon-before]", { opacity: 0.6, duration: 0.22 }, 0.29)
           .to("[data-sky-crimson]", { opacity: 0.52, duration: 0.24 }, 0.28)
@@ -138,7 +165,17 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           .to("[data-sakura-right-after]", { opacity: 0.5, duration: 0.22 }, 0.32)
           .to("[data-sakura-right-before]", { opacity: 0.72, duration: 0.22 }, 0.32)
           // 48–68% — Kintsugi awakens.
-          .to("[data-hero-camera]", { xPercent: -0.8, yPercent: -0.45, scale: 1.026, duration: 0.2, transformOrigin: "62% 54%" }, 0.48)
+          .to(
+            "[data-hero-camera]",
+            {
+              xPercent: -0.8,
+              yPercent: -0.45,
+              scale: 1.026,
+              duration: 0.2,
+              transformOrigin: "62% 54%",
+            },
+            0.48,
+          )
           .to("[data-moon-after]", { opacity: 1, duration: 0.2 }, 0.48)
           .to("[data-moon-before]", { opacity: 0.18, duration: 0.2 }, 0.48)
           .to("[data-moon-halo-normal]", { opacity: 0.08, duration: 0.18 }, 0.48)
@@ -149,20 +186,48 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           .to("[data-ground-before]", { opacity: 0.28, duration: 0.2 }, 0.49)
           .to("[data-characters-after]", { opacity: 0.82, duration: 0.18 }, 0.5)
           .to("[data-characters-before]", { opacity: 0.42, duration: 0.18 }, 0.5)
-          .to("[data-character-rim], [data-ground-glow], [data-temple-light]", { opacity: 0.72, duration: 0.18 }, 0.5)
+          .to(
+            "[data-character-rim], [data-ground-glow], [data-temple-light]",
+            { opacity: 0.72, duration: 0.18 },
+            0.5,
+          )
           .to("[data-mist-crimson]", { opacity: 0.64, duration: 0.18 }, 0.49)
-          .to("[data-right-petals-after], [data-left-petals-after]", { opacity: 0.86, duration: 0.18 }, 0.5)
+          .to(
+            "[data-right-petals-after], [data-left-petals-after]",
+            { opacity: 0.86, duration: 0.18 },
+            0.5,
+          )
           .to("[data-sakura-left]", { opacity: 0.78, duration: 0.16 }, 0.52)
           // 68–86% — Crimson dominion.
           .to("[data-sky-crimson]", { opacity: 1, duration: 0.18 }, 0.68)
-          .to("[data-temple-after], [data-ground-after], [data-characters-after], [data-sakura-right-after]", { opacity: 1, duration: 0.18 }, 0.68)
-          .to("[data-temple-before], [data-ground-before], [data-characters-before], [data-sakura-right-before], [data-mist-before]", { opacity: 0.08, duration: 0.18 }, 0.68)
+          .to(
+            "[data-temple-after], [data-ground-after], [data-characters-after], [data-sakura-right-after]",
+            { opacity: 1, duration: 0.18 },
+            0.68,
+          )
+          .to(
+            "[data-temple-before], [data-ground-before], [data-characters-before], [data-sakura-right-before], [data-mist-before]",
+            { opacity: 0.08, duration: 0.18 },
+            0.68,
+          )
           .to("[data-mist-after]", { opacity: 0.86, duration: 0.18 }, 0.68)
           .to("[data-crimson-wash]", { opacity: 0.24, duration: 0.18 }, 0.68)
-          .to("[data-petal-vortex]", { scale: 1.025, rotation: -0.35, duration: 0.18, transformOrigin: "50% 52%" }, 0.68)
+          .to(
+            "[data-petal-vortex]",
+            { scale: 1.025, rotation: -0.35, duration: 0.18, transformOrigin: "50% 52%" },
+            0.68,
+          )
           // 86–100% — settle and hold the final key visual.
-          .to("[data-hero-camera]", { xPercent: -0.45, yPercent: -0.2, scale: 1.021, duration: 0.14, ease: "sine.out" }, 0.86)
-          .to("[data-petal-vortex]", { scale: 1, rotation: 0, duration: 0.14, ease: "sine.out" }, 0.86)
+          .to(
+            "[data-hero-camera]",
+            { xPercent: -0.45, yPercent: -0.2, scale: 1.021, duration: 0.14, ease: "sine.out" },
+            0.86,
+          )
+          .to(
+            "[data-petal-vortex]",
+            { scale: 1, rotation: 0, duration: 0.14, ease: "sine.out" },
+            0.86,
+          )
           .to("[data-crimson-wash]", { opacity: 0.17, duration: 0.14 }, 0.86);
       }
 
@@ -179,7 +244,8 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         onToggle: ({ isActive }) => shell?.classList.toggle("th-hero-is-pinned", isActive),
         onUpdate: ({ progress }) => {
           root.dataset.heroProgress = progress.toFixed(3);
-          const speed = progress < 0.12 ? 0.58 : progress < 0.48 ? 0.82 : progress < 0.86 ? 1.5 : 0.72;
+          const speed =
+            progress < 0.12 ? 0.58 : progress < 0.48 ? 0.82 : progress < 0.86 ? 1.5 : 0.72;
           petalTweens.forEach((tween) => tween.timeScale(speed));
         },
       });
@@ -207,10 +273,11 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
             target.y(ny * target.depth * 14);
           });
         };
-        const resetPointer = () => pointerTargets.forEach((target) => {
-          target?.x(0);
-          target?.y(0);
-        });
+        const resetPointer = () =>
+          pointerTargets.forEach((target) => {
+            target?.x(0);
+            target?.y(0);
+          });
 
         window.addEventListener("pointermove", onPointerMove, { passive: true });
         window.addEventListener("pointerleave", resetPointer, { passive: true });

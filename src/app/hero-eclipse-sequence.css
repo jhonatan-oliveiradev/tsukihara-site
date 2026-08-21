@@ -67,7 +67,12 @@
     radial-gradient(circle at 77% 18%, rgba(255, 247, 222, 0.5) 0 1px, transparent 1.5px),
     radial-gradient(circle at 88% 39%, rgba(255, 247, 222, 0.34) 0 1px, transparent 1.5px),
     radial-gradient(circle at 29% 46%, rgba(255, 247, 222, 0.26) 0 1px, transparent 1.5px);
-  background-size: 31vw 24vh, 37vw 31vh, 29vw 28vh, 43vw 36vh, 34vw 27vh;
+  background-size:
+    31vw 24vh,
+    37vw 31vh,
+    29vw 28vh,
+    43vw 36vh,
+    34vw 27vh;
 }
 
 .th-hero-plane {
@@ -110,13 +115,23 @@
 }
 
 .th-hero-moon-halo-normal {
-  background: radial-gradient(circle, rgba(249, 222, 153, 0.25) 0%, rgba(218, 201, 161, 0.1) 38%, transparent 71%);
+  background: radial-gradient(
+    circle,
+    rgba(249, 222, 153, 0.25) 0%,
+    rgba(218, 201, 161, 0.1) 38%,
+    transparent 71%
+  );
   filter: blur(7px);
 }
 
 .th-hero-moon-halo-crimson {
   opacity: 0;
-  background: radial-gradient(circle, rgba(231, 53, 64, 0.34) 0%, rgba(155, 16, 30, 0.14) 42%, transparent 73%);
+  background: radial-gradient(
+    circle,
+    rgba(231, 53, 64, 0.34) 0%,
+    rgba(155, 16, 30, 0.14) 42%,
+    transparent 73%
+  );
   filter: blur(10px);
 }
 
@@ -168,7 +183,12 @@
   z-index: 3;
   inset: 28% 15% 5% 35%;
   opacity: 0;
-  background: radial-gradient(ellipse at center bottom, rgba(218, 81, 63, 0.26), rgba(174, 42, 47, 0.08) 39%, transparent 68%);
+  background: radial-gradient(
+    ellipse at center bottom,
+    rgba(218, 81, 63, 0.26),
+    rgba(174, 42, 47, 0.08) 39%,
+    transparent 68%
+  );
   mix-blend-mode: screen;
   will-change: opacity;
 }
@@ -225,7 +245,12 @@
   z-index: -1;
   inset: 7% 0 3% 18%;
   opacity: 0;
-  background: radial-gradient(ellipse at 62% 47%, rgba(231, 72, 77, 0.27), rgba(166, 29, 42, 0.08) 44%, transparent 69%);
+  background: radial-gradient(
+    ellipse at 62% 47%,
+    rgba(231, 72, 77, 0.27),
+    rgba(166, 29, 42, 0.08) 44%,
+    transparent 69%
+  );
   filter: blur(16px);
   mix-blend-mode: screen;
   will-change: opacity;
@@ -370,8 +395,20 @@
   z-index: 23;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(2, 4, 8, 0.88) 0%, rgba(2, 4, 8, 0.57) 23%, rgba(2, 4, 8, 0.08) 50%, transparent 74%),
-    linear-gradient(180deg, rgba(1, 2, 5, 0.22), transparent 28%, transparent 66%, rgba(1, 2, 5, 0.75) 100%);
+    linear-gradient(
+      90deg,
+      rgba(2, 4, 8, 0.88) 0%,
+      rgba(2, 4, 8, 0.57) 23%,
+      rgba(2, 4, 8, 0.08) 50%,
+      transparent 74%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(1, 2, 5, 0.22),
+      transparent 28%,
+      transparent 66%,
+      rgba(1, 2, 5, 0.75) 100%
+    );
 }
 
 .th-hero-content {
@@ -648,7 +685,12 @@
 
   .th-hero-vignette {
     background:
-      linear-gradient(180deg, rgba(2, 4, 8, 0.25), rgba(2, 4, 8, 0.09) 43%, rgba(2, 4, 8, 0.62) 100%),
+      linear-gradient(
+        180deg,
+        rgba(2, 4, 8, 0.25),
+        rgba(2, 4, 8, 0.09) 43%,
+        rgba(2, 4, 8, 0.62) 100%
+      ),
       linear-gradient(90deg, rgba(2, 4, 8, 0.65) 0%, rgba(2, 4, 8, 0.2) 58%, transparent 100%);
   }
 }

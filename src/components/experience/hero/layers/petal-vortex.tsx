@@ -16,11 +16,32 @@ export function PetalVortex() {
   return (
     <div className="th-hero-petal-vortex" data-petal-vortex aria-hidden="true">
       <div className="th-hero-petal-sheet th-hero-petal-sheet-left" data-petal-sheet-left>
-        <Image src={HERO_ASSETS.leftPetalsBefore} alt="" fill sizes="100vw" className="th-hero-image" data-left-petals-before />
-        <Image src={HERO_ASSETS.leftPetalsAfter} alt="" fill sizes="100vw" className="th-hero-image th-hero-state-after" data-left-petals-after />
+        <Image
+          src={HERO_ASSETS.leftPetalsBefore}
+          alt=""
+          fill
+          sizes="100vw"
+          className="th-hero-image"
+          data-left-petals-before
+        />
+        <Image
+          src={HERO_ASSETS.leftPetalsAfter}
+          alt=""
+          fill
+          sizes="100vw"
+          className="th-hero-image th-hero-state-after"
+          data-left-petals-after
+        />
       </div>
       <div className="th-hero-petal-sheet th-hero-petal-sheet-right" data-petal-sheet-right>
-        <Image src={HERO_ASSETS.rightPetalsAfter} alt="" fill sizes="100vw" className="th-hero-image" data-right-petals-after />
+        <Image
+          src={HERO_ASSETS.rightPetalsAfter}
+          alt=""
+          fill
+          sizes="100vw"
+          className="th-hero-image"
+          data-right-petals-after
+        />
       </div>
 
       {HERO_PETALS.map((petal) => {

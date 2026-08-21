@@ -3,7 +3,11 @@ import { HERO_ASSETS, HERO_DEPTH } from "@/components/experience/hero/constants/
 
 export function CharacterLayer() {
   return (
-    <div className="th-hero-plane th-hero-characters" data-hero-plane data-depth={HERO_DEPTH.characters}>
+    <div
+      className="th-hero-plane th-hero-characters"
+      data-hero-plane
+      data-depth={HERO_DEPTH.characters}
+    >
       <div className="th-hero-pointer-plane" data-hero-pointer-plane>
         <div className="th-hero-character-rim" data-character-rim />
         <Image
