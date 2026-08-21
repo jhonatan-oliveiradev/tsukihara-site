@@ -53,8 +53,8 @@ export function HeroParallaxScene() {
     const updateScroll = () => {
       const rect = hero.getBoundingClientRect();
       const viewport = window.innerHeight;
-      const travel = Math.max(rect.height + viewport * 0.48, 1);
-      scrollTarget = clamp((-rect.top + viewport * 0.04) / travel, 0, 1);
+      const travel = Math.max(rect.height - viewport, 1);
+      scrollTarget = clamp(-rect.top / travel, 0, 1);
     };
 
     const updatePointer = (event: PointerEvent) => {
@@ -70,14 +70,14 @@ export function HeroParallaxScene() {
 
     const render = (time: number) => {
       const seconds = time * 0.001;
-      const motionScale = isMobile ? 0 : isTablet ? 0.58 : 1;
+      const motionScale = isMobile ? 0 : isTablet ? 0.5 : 1;
 
-      pointerCurrent.x = damp(pointerCurrent.x, pointerTarget.x, 0.055);
-      pointerCurrent.y = damp(pointerCurrent.y, pointerTarget.y, 0.055);
-      scrollCurrent = damp(scrollCurrent, scrollTarget, 0.052);
+      pointerCurrent.x = damp(pointerCurrent.x, pointerTarget.x, 0.045);
+      pointerCurrent.y = damp(pointerCurrent.y, pointerTarget.y, 0.045);
+      scrollCurrent = damp(scrollCurrent, scrollTarget, 0.04);
 
-      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.48, 0.73);
-      opacityCurrent = damp(opacityCurrent, targetOpacity, 0.065);
+      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.76, 0.98);
+      opacityCurrent = damp(opacityCurrent, targetOpacity, 0.052);
       root.style.opacity = opacityCurrent.toFixed(3);
 
       for (const layer of heroParallaxLayers) {
@@ -87,23 +87,31 @@ export function HeroParallaxScene() {
         const pointerX = pointerCurrent.x * layer.maxX * motionScale;
         const pointerY = pointerCurrent.y * layer.maxY * motionScale;
         const easedScroll = smoothstep(scrollCurrent, 0, 1);
-        const scrollY = easedScroll * (10 + layer.depth * 88);
-        const scrollX = easedScroll * layer.depth * -34;
+        const scrollY = easedScroll * (18 + layer.depth * 220);
+        const scrollX = easedScroll * layer.depth * -74;
 
         let ambientX = 0;
         let ambientY = 0;
+        let scale = 1;
 
         if (layer.id === "mist") {
-          ambientX = Math.sin(seconds * 0.12) * (layer.ambientX ?? 0);
+          ambientX = Math.sin(seconds * 0.11) * (layer.ambientX ?? 0);
+          ambientY = Math.cos(seconds * 0.09) * 2;
         } else if (layer.id === "sakura") {
-          ambientX = Math.sin(seconds * 0.16) * (layer.ambientX ?? 0);
-          ambientY = Math.cos(seconds * 0.13) * (layer.ambientY ?? 0);
+          ambientX = Math.sin(seconds * 0.14) * (layer.ambientX ?? 0);
+          ambientY = Math.cos(seconds * 0.12) * (layer.ambientY ?? 0);
+        } else if (layer.id === "grass") {
+          ambientX = Math.sin(seconds * 0.22) * (layer.ambientX ?? 0);
+          ambientY = Math.cos(seconds * 0.17) * (layer.ambientY ?? 0);
+          scale = 1 + Math.sin(seconds * 0.18) * 0.0025;
+        } else if (layer.id === "ruins") {
+          ambientX = Math.sin(seconds * 0.1) * (layer.ambientX ?? 0);
         } else if (layer.id === "petals") {
-          ambientX = -((seconds * 4.5) % ((layer.ambientX ?? 0) * 2)) + (layer.ambientX ?? 0);
-          ambientY = Math.sin(seconds * 0.7) * (layer.ambientY ?? 0);
+          ambientX = -((seconds * 4.2) % ((layer.ambientX ?? 0) * 2)) + (layer.ambientX ?? 0);
+          ambientY = Math.sin(seconds * 0.65) * (layer.ambientY ?? 0);
         }
 
-        node.style.transform = `translate3d(${(pointerX + ambientX + scrollX).toFixed(2)}px, ${(pointerY - scrollY + ambientY).toFixed(2)}px, 0)`;
+        node.style.transform = `translate3d(${(pointerX + ambientX + scrollX).toFixed(2)}px, ${(pointerY - scrollY + ambientY).toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
       }
 
       frame = requestAnimationFrame(render);
@@ -159,10 +167,14 @@ export function HeroParallaxScene() {
               priority={layer.priority}
               sizes={
                 layer.id === "characters"
-                  ? "(max-width: 680px) 92vw, (max-width: 980px) 70vw, 56vw"
+                  ? "(max-width: 680px) 96vw, (max-width: 980px) 70vw, 56vw"
                   : layer.id === "moon"
-                    ? "(max-width: 680px) 48vw, 36vw"
-                    : "100vw"
+                    ? "(max-width: 680px) 56vw, 34vw"
+                    : layer.id === "ruins"
+                      ? "30vw"
+                      : layer.id === "grass"
+                        ? "70vw"
+                        : "100vw"
               }
               className="ix-parallax-image"
             />
