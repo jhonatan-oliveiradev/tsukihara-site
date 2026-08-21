@@ -219,45 +219,49 @@
   }
 
   .ix-parallax-temple {
-    width: 60vw;
-    height: 34vh;
-    right: 2vw;
-    bottom: 20vh;
-    opacity: 0.22;
+    width: 58vw;
+    height: 32vh;
+    right: 5vw;
+    bottom: 22vh;
+    opacity: 0.2;
   }
 
   .ix-parallax-mist {
-    width: 84vw;
-    height: 38vh;
-    right: -14vw;
-    top: 34vh;
-    opacity: 0.3;
+    width: 82vw;
+    height: 36vh;
+    right: -10vw;
+    top: 35vh;
+    opacity: 0.27;
   }
 
   .ix-parallax-sakura {
-    width: 74vw;
-    height: 82vh;
-    right: -20vw;
-    top: 5vh;
+    width: 70vw;
+    height: 78vh;
+    right: -16vw;
+    top: 6vh;
   }
 
   .ix-parallax-ground {
-    width: 92vw;
-    height: 36vh;
-    right: -16vw;
-    bottom: 0;
+    width: 88vw;
+    height: 33vh;
+    right: -8vw;
+    bottom: 2vh;
   }
 
   .ix-parallax-characters {
-    width: 64vw;
-    height: 74vh;
-    right: -7vw;
-    bottom: 4vh;
+    width: 60vw;
+    height: 70vh;
+    right: -2vw;
+    bottom: 5vh;
   }
 
   .ix-parallax-petals {
-    inset: 0 -8vw;
-    opacity: 0.46;
+    inset: 2vh -6vw;
+    opacity: 0.4;
+  }
+
+  .ix-hero-word {
+    opacity: 0.48;
   }
 
   .ix-hero-parallax::after {
@@ -291,10 +295,10 @@
   }
 
   .ix-parallax-moon {
-    width: clamp(230px, 60vw, 340px);
-    right: -4vw;
-    top: 33vh;
-    opacity: 0.8;
+    width: clamp(210px, 56vw, 320px);
+    right: -2vw;
+    top: 34vh;
+    opacity: 0.78;
   }
 
   .ix-parallax-temple {
@@ -302,52 +306,54 @@
   }
 
   .ix-parallax-mist {
-    width: 112vw;
-    height: 28vh;
-    right: -34vw;
-    top: 49vh;
-    opacity: 0.16;
+    width: 108vw;
+    height: 27vh;
+    right: -28vw;
+    top: 50vh;
+    opacity: 0.14;
   }
 
   .ix-parallax-sakura {
-    width: 108vw;
-    height: 64vh;
-    right: -43vw;
-    top: 29vh;
+    width: 102vw;
+    height: 60vh;
+    right: -38vw;
+    top: 31vh;
   }
 
   .ix-parallax-ground {
-    width: 126vw;
-    height: 27vh;
-    right: -29vw;
-    bottom: 1vh;
+    width: 118vw;
+    height: 25vh;
+    right: -22vw;
+    bottom: 2vh;
   }
 
   .ix-parallax-characters {
-    width: 88vw;
-    height: 54vh;
-    right: -17vw;
-    bottom: 5vh;
+    width: 82vw;
+    height: 50vh;
+    right: -11vw;
+    bottom: 5.5vh;
   }
 
   .ix-parallax-petals {
-    inset: 17vh -24vw -4vh -14vw;
-    opacity: 0.34;
+    inset: 20vh -18vw -2vh -10vw;
+    opacity: 0.27;
   }
 
   .ix-hero-logo {
     top: auto;
     left: 18px;
-    bottom: 24vh;
-    width: clamp(112px, 34vw, 145px);
+    bottom: 22vh;
+    width: clamp(106px, 30vw, 136px);
     transform: none;
-    opacity: 0.28;
+    opacity: 0.24;
     z-index: 20;
   }
 
   .ix-hero-word {
     z-index: 8;
-    opacity: 0.68;
+    opacity: 0.28;
+    font-size: clamp(5.4rem, 31vw, 7.4rem);
+    letter-spacing: -0.075em;
   }
 }
 
