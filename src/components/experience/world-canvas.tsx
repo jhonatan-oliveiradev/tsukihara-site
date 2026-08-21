@@ -1,51 +1,57 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { sampleCameraPath } from "@/experience/kage-port/scroll-path";
 
-const ink = new THREE.Color("#07070a");
-const moon = new THREE.Color("#c53632");
-const ember = new THREE.Color("#d99a61");
+const INK = new THREE.Color("#040609");
+const VERMILION = new THREE.Color("#b42027");
+const AMBER = new THREE.Color("#d9985c");
 
-function Mountain({
+function pageProgress() {
+  const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  return THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
+}
+
+function Ridge({
   z,
   y,
-  scale,
   opacity,
+  scale = 1,
 }: {
   z: number;
   y: number;
-  scale: number;
   opacity: number;
+  scale?: number;
 }) {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
-    shape.moveTo(-8, -2);
+    shape.moveTo(-12, -2.5);
     const peaks = [
-      [-7.4, -0.8],
-      [-6.1, 0.5],
-      [-5.1, -0.3],
-      [-3.8, 1.25],
-      [-2.7, 0.25],
-      [-1.5, 1.7],
-      [-0.2, 0.3],
-      [1.2, 1.15],
-      [2.6, 0.1],
-      [4.0, 1.55],
-      [5.3, 0.2],
-      [6.5, 0.8],
-      [8, -0.7],
+      [-10.5, -0.7],
+      [-8.7, 0.55],
+      [-7, -0.35],
+      [-5.4, 1.15],
+      [-3.5, 0.1],
+      [-1.7, 1.5],
+      [0, 0.35],
+      [1.8, 1.05],
+      [3.5, 0.05],
+      [5.1, 1.45],
+      [7.2, 0.18],
+      [9.1, 0.75],
+      [11, -0.55],
     ];
     peaks.forEach(([x, py]) => shape.lineTo(x, py));
-    shape.lineTo(8, -2);
+    shape.lineTo(12, -2.5);
     shape.closePath();
     return new THREE.ShapeGeometry(shape);
   }, []);
 
   return (
     <mesh geometry={geometry} position={[0, y, z]} scale={scale}>
-      <meshBasicMaterial color="#0c1014" transparent opacity={opacity} depthWrite={false} />
+      <meshBasicMaterial color="#080d12" transparent opacity={opacity} depthWrite={false} />
     </mesh>
   );
 }
@@ -53,7 +59,7 @@ function Mountain({
 function Torii({
   position,
   scale = 1,
-  opacity = 0.8,
+  opacity = 1,
 }: {
   position: [number, number, number];
   scale?: number;
@@ -61,28 +67,58 @@ function Torii({
 }) {
   const material = useMemo(
     () =>
-      new THREE.MeshBasicMaterial({
-        color: "#5a1719",
-        transparent: true,
+      new THREE.MeshStandardMaterial({
+        color: "#5c0e13",
+        roughness: 0.62,
+        metalness: 0.08,
+        transparent: opacity < 1,
         opacity,
-        depthWrite: false,
       }),
     [opacity],
   );
 
   return (
     <group position={position} scale={scale}>
-      <mesh position={[-0.95, 0, 0]} material={material}>
-        <boxGeometry args={[0.16, 2.75, 0.18]} />
+      <mesh position={[-1.1, 0, 0]} material={material}>
+        <boxGeometry args={[0.19, 3.2, 0.2]} />
       </mesh>
-      <mesh position={[0.95, 0, 0]} material={material}>
-        <boxGeometry args={[0.16, 2.75, 0.18]} />
+      <mesh position={[1.1, 0, 0]} material={material}>
+        <boxGeometry args={[0.19, 3.2, 0.2]} />
       </mesh>
-      <mesh position={[0, 1.42, 0]} material={material}>
-        <boxGeometry args={[2.6, 0.18, 0.2]} />
+      <mesh position={[0, 1.62, 0]} material={material}>
+        <boxGeometry args={[3.1, 0.2, 0.24]} />
       </mesh>
-      <mesh position={[0, 1.12, 0]} material={material}>
-        <boxGeometry args={[2.15, 0.12, 0.16]} />
+      <mesh position={[0, 1.25, 0]} material={material}>
+        <boxGeometry args={[2.5, 0.12, 0.17]} />
+      </mesh>
+    </group>
+  );
+}
+
+function Shrine() {
+  return (
+    <group position={[0, -1.75, -10.3]}>
+      <mesh position={[0, 1.2, 0]}>
+        <boxGeometry args={[6.2, 2.7, 2.5]} />
+        <meshStandardMaterial color="#12090a" roughness={0.72} />
+      </mesh>
+      <mesh position={[0, 2.65, 0.05]} rotation={[0, 0, Math.PI / 4]} scale={[4.7, 0.24, 1.65]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="#0a0c0f" roughness={0.86} />
+      </mesh>
+      <mesh position={[0, 1.35, 1.28]}>
+        <boxGeometry args={[4.25, 1.55, 0.08]} />
+        <meshStandardMaterial color="#5a1617" emissive="#2a0708" emissiveIntensity={0.7} />
+      </mesh>
+      {[-1.55, -0.52, 0.52, 1.55].map((x) => (
+        <mesh key={x} position={[x, 1.35, 1.34]}>
+          <boxGeometry args={[0.07, 1.45, 0.06]} />
+          <meshBasicMaterial color="#c27147" />
+        </mesh>
+      ))}
+      <mesh position={[0, -0.12, 2.35]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[3.5, 11]} />
+        <meshStandardMaterial color="#141216" roughness={0.8} />
       </mesh>
     </group>
   );
@@ -91,84 +127,110 @@ function Torii({
 function Lantern({ x, z, phase }: { x: number; z: number; phase: number }) {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }) => {
-    if (light.current)
-      light.current.intensity = 0.6 + Math.sin(clock.elapsedTime * 1.8 + phase) * 0.12;
+    if (light.current) {
+      light.current.intensity =
+        1.1 +
+        Math.sin(clock.elapsedTime * 2.1 + phase) * 0.18 +
+        Math.sin(clock.elapsedTime * 5.4 + phase) * 0.05;
+    }
   });
 
   return (
-    <group position={[x, -2.35, z]}>
+    <group position={[x, -1.15, z]}>
       <mesh>
-        <boxGeometry args={[0.13, 0.75, 0.13]} />
-        <meshBasicMaterial color="#17161a" />
+        <boxGeometry args={[0.12, 1.1, 0.12]} />
+        <meshBasicMaterial color="#151317" />
       </mesh>
-      <mesh position={[0, 0.42, 0]}>
-        <boxGeometry args={[0.42, 0.46, 0.42]} />
-        <meshBasicMaterial color="#c88551" transparent opacity={0.72} />
+      <mesh position={[0, 0.62, 0]}>
+        <boxGeometry args={[0.42, 0.5, 0.42]} />
+        <meshBasicMaterial color="#d88a55" transparent opacity={0.78} />
       </mesh>
-      <pointLight ref={light} position={[0, 0.42, 0.2]} color={ember} distance={3.5} decay={2.2} />
+      <pointLight ref={light} position={[0, 0.62, 0.2]} color={AMBER} distance={5} decay={2.1} />
     </group>
   );
 }
 
-function Moon() {
+function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> }) {
+  const group = useRef<THREE.Group>(null);
+  const shadow = useRef<THREE.Mesh>(null);
   const halo = useRef<THREE.Mesh>(null);
+
   useFrame(({ clock }) => {
-    if (!halo.current) return;
-    const s = 1 + Math.sin(clock.elapsedTime * 0.22) * 0.035;
-    halo.current.scale.setScalar(s);
+    const shot = sampleCameraPath(progress.current);
+    if (group.current) {
+      group.current.position.lerp(shot.moon, 0.055);
+      const breath = 1 + Math.sin(clock.elapsedTime * 0.22) * 0.018;
+      const scale = shot.moonScale * breath;
+      group.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.06);
+    }
+    if (shadow.current) shadow.current.position.x = THREE.MathUtils.lerp(-4.2, 0.5, shot.eclipse);
+    if (halo.current) halo.current.rotation.z = clock.elapsedTime * 0.008;
   });
 
   return (
-    <group position={[4.7, 2.1, -14]}>
-      <mesh ref={halo} scale={1.25}>
+    <group ref={group} position={[4.8, 4.5, -18]}>
+      <mesh ref={halo} scale={1.3}>
         <circleGeometry args={[2.55, 128]} />
-        <meshBasicMaterial color={moon} transparent opacity={0.1} depthWrite={false} />
+        <meshBasicMaterial color={VERMILION} transparent opacity={0.12} depthWrite={false} />
       </mesh>
       <mesh>
         <circleGeometry args={[1.9, 128]} />
-        <meshBasicMaterial color="#a72b2b" transparent opacity={0.84} depthWrite={false} />
+        <meshBasicMaterial color="#c03337" toneMapped={false} />
       </mesh>
-      <mesh position={[-0.28, 0.18, 0.01]}>
-        <circleGeometry args={[0.48, 72]} />
-        <meshBasicMaterial color="#6a181c" transparent opacity={0.3} depthWrite={false} />
-      </mesh>
-      <mesh position={[0.55, -0.32, 0.01]}>
-        <circleGeometry args={[0.32, 72]} />
-        <meshBasicMaterial color="#61191d" transparent opacity={0.28} depthWrite={false} />
+      <mesh ref={shadow} position={[-4.2, 0.08, 0.025]}>
+        <circleGeometry args={[1.93, 128]} />
+        <meshBasicMaterial color="#05070a" />
       </mesh>
     </group>
   );
 }
 
-function Petals() {
+function PetalField({
+  count,
+  z,
+  speed,
+  opacity,
+  tint,
+}: {
+  count: number;
+  z: number;
+  speed: number;
+  opacity: number;
+  tint: string;
+}) {
   const group = useRef<THREE.Group>(null);
   const petals = useMemo(
     () =>
-      Array.from({ length: 56 }, (_, i) => ({
-        x: ((i * 2.17) % 15) - 7.5,
-        y: ((i * 1.71) % 9) - 3.5,
-        z: -2 - ((i * 1.11) % 10),
-        s: 0.035 + (i % 6) * 0.009,
-        r: i * 0.61,
+      Array.from({ length: count }, (_, i) => ({
+        x: ((i * 2.31) % 17) - 8.5,
+        y: ((i * 1.73) % 10) - 4.5,
+        s: 0.035 + (i % 5) * 0.012,
+        r: i * 0.67,
+        phase: i * 0.39,
       })),
-    [],
+    [count],
   );
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, pointer }) => {
     if (!group.current) return;
-    group.current.rotation.z = Math.sin(clock.elapsedTime * 0.08) * 0.025;
-    group.current.position.x = Math.sin(clock.elapsedTime * 0.06) * 0.28;
+    group.current.position.y = -((clock.elapsedTime * speed) % 2.2);
+    group.current.position.x = Math.sin(clock.elapsedTime * 0.16) * 0.3 + pointer.x * 0.2 * speed;
+    group.current.rotation.z = Math.sin(clock.elapsedTime * 0.08) * 0.03;
   });
 
   return (
-    <group ref={group}>
-      {petals.map((p, i) => (
-        <mesh key={i} position={[p.x, p.y, p.z]} rotation={[0.4, p.r, p.r * 0.4]}>
-          <planeGeometry args={[p.s * 2.4, p.s]} />
+    <group ref={group} position={[0, 0, z]}>
+      {petals.map((petal, i) => (
+        <mesh
+          key={i}
+          position={[petal.x, petal.y, (i % 7) * -0.09]}
+          rotation={[0.6, petal.r, petal.phase]}
+        >
+          <planeGeometry args={[petal.s * 2.6, petal.s]} />
           <meshBasicMaterial
-            color="#e6b8c2"
+            color={tint}
             transparent
-            opacity={0.34}
+            opacity={opacity}
             side={THREE.DoubleSide}
             depthWrite={false}
           />
@@ -178,42 +240,97 @@ function Petals() {
   );
 }
 
-function StoryWorld() {
-  const rig = useRef<THREE.Group>(null);
-  const cameraTarget = useRef(new THREE.Vector3());
+function PointerEmbers() {
+  const attribute = useRef<THREE.BufferAttribute>(null);
 
-  useFrame(({ camera, clock }) => {
-    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const p = Math.min(1, window.scrollY / max);
-    const t = THREE.MathUtils.smoothstep(p, 0, 1);
+  useFrame(({ pointer, clock }) => {
+    if (!attribute.current) return;
+    const positions = attribute.current.array as Float32Array;
+    for (let i = 0; i < 36; i += 1) {
+      const idx = i * 3;
+      positions[idx] = pointer.x * 4.6 + Math.sin(clock.elapsedTime * 1.3 + i) * (i / 36) * 1.6;
+      positions[idx + 1] =
+        pointer.y * 2.8 + Math.cos(clock.elapsedTime * 1.1 + i * 0.7) * (i / 36) * 1.1;
+      positions[idx + 2] = -2.3 - i * 0.08;
+    }
+    attribute.current.needsUpdate = true;
+  });
 
-    cameraTarget.current.set(
-      THREE.MathUtils.lerp(0, -1.4, t),
-      THREE.MathUtils.lerp(0.1, 0.7, Math.sin(t * Math.PI)),
-      THREE.MathUtils.lerp(7.4, 5.8, t),
-    );
-    camera.position.lerp(cameraTarget.current, 0.035);
-    camera.lookAt(0, 0, -6);
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute
+          ref={attribute}
+          attach="attributes-position"
+          args={[new Float32Array(36 * 3), 3]}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#bb2730"
+        size={0.045}
+        transparent
+        opacity={0.34}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
 
-    if (rig.current) {
-      rig.current.position.y = THREE.MathUtils.lerp(0, 1.4, p);
-      rig.current.position.x = Math.sin(p * Math.PI * 2) * 0.45;
-      rig.current.rotation.y =
-        Math.sin(p * Math.PI) * 0.08 + Math.sin(clock.elapsedTime * 0.04) * 0.01;
+function Director({ fogRef }: { fogRef: React.RefObject<THREE.FogExp2 | null> }) {
+  const progress = useRef(0);
+  const world = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const lookAt = useRef(new THREE.Vector3(0, 0.5, -8));
+
+  useFrame(({ clock }) => {
+    const p = pageProgress();
+    progress.current = THREE.MathUtils.lerp(progress.current, p, 0.055);
+    const shot = sampleCameraPath(progress.current);
+    camera.position.lerp(shot.position, 0.055);
+    lookAt.current.lerp(shot.lookAt, 0.055);
+    camera.lookAt(lookAt.current);
+    if (fogRef.current) {
+      fogRef.current.density = THREE.MathUtils.lerp(fogRef.current.density, shot.fog, 0.04);
+    }
+    if (world.current) {
+      world.current.rotation.y =
+        Math.sin(progress.current * Math.PI * 1.6) * 0.035 +
+        Math.sin(clock.elapsedTime * 0.04) * 0.006;
     }
   });
 
   return (
-    <group ref={rig}>
-      <Moon />
-      <Mountain z={-15} y={-0.6} scale={1.25} opacity={0.86} />
-      <Mountain z={-10} y={-1.4} scale={1.02} opacity={0.76} />
-      <Torii position={[-3.4, -0.9, -7]} scale={0.78} opacity={0.48} />
-      <Torii position={[2.7, -1.2, -5]} scale={0.55} opacity={0.35} />
-      <Lantern x={-3.9} z={-3.6} phase={0.2} />
-      <Lantern x={3.5} z={-4.1} phase={1.7} />
-      <Petals />
+    <group ref={world}>
+      <EclipseMoon progress={progress} />
+      <Ridge z={-20} y={-2.5} opacity={0.9} scale={1.3} />
+      <Ridge z={-14} y={-2.3} opacity={0.76} scale={1.08} />
+      <Shrine />
+      <Torii position={[0, -0.95, -5.6]} scale={1.15} />
+      <Torii position={[-4.3, -1.15, -8.4]} scale={0.58} opacity={0.48} />
+      <Torii position={[4.1, -1.25, -11.6]} scale={0.42} opacity={0.3} />
+      <Lantern x={-2.8} z={-4.7} phase={0.2} />
+      <Lantern x={2.8} z={-4.7} phase={1.7} />
+      <PetalField count={44} z={-12} speed={0.08} opacity={0.18} tint="#d9a8b4" />
+      <PetalField count={34} z={-6} speed={0.15} opacity={0.28} tint="#d8abb7" />
+      <PetalField count={24} z={-2.3} speed={0.27} opacity={0.42} tint="#b92e36" />
+      <PointerEmbers />
     </group>
+  );
+}
+
+function SceneContents() {
+  const fogRef = useRef<THREE.FogExp2>(null);
+
+  return (
+    <>
+      <color attach="background" args={[INK]} />
+      <fogExp2 ref={fogRef} attach="fog" args={["#05090d", 0.018]} />
+      <ambientLight intensity={0.24} color="#6e7b8e" />
+      <directionalLight position={[-4, 8, 3]} intensity={0.8} color="#8296b4" />
+      <pointLight position={[0, 2.6, -8.2]} intensity={2.1} distance={18} color="#8e141a" />
+      <Director fogRef={fogRef} />
+    </>
   );
 }
 
@@ -221,14 +338,11 @@ export function WorldCanvas() {
   return (
     <div className="world-canvas" aria-hidden="true">
       <Canvas
-        dpr={[1, 2]}
-        camera={{ position: [0, 0.1, 7.4], fov: 38, near: 0.1, far: 50 }}
+        dpr={[1, 1.75]}
+        camera={{ position: [0, 1.2, 11.8], fov: 36, near: 0.2, far: 120 }}
         gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
       >
-        <color attach="background" args={[ink]} />
-        <fog attach="fog" args={["#07090c", 7, 24]} />
-        <ambientLight intensity={0.22} color="#75859b" />
-        <StoryWorld />
+        <SceneContents />
       </Canvas>
     </div>
   );

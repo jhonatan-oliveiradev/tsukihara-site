@@ -14,13 +14,33 @@ const WorldCanvas = dynamic(
   { ssr: false },
 );
 
-function Arrow() {
-  return (
-    <svg viewBox="0 0 18 18" aria-hidden="true">
-      <path d="M4 14 14 4M7 4h7v7" fill="none" stroke="currentColor" strokeWidth="1.2" />
-    </svg>
-  );
-}
+const lore = [
+  [
+    "01",
+    "Moonbound Vows",
+    "月誓",
+    "Promises spoken beneath the moon do not disappear when they are broken.",
+  ],
+  [
+    "02",
+    "Sacred Temples",
+    "神殿",
+    "Every sanctuary remembers the hands that built it and the spirits that remained.",
+  ],
+  [
+    "03",
+    "Guardian Spirits",
+    "守護",
+    "Some companions choose a person long before that person understands why.",
+  ],
+  [
+    "04",
+    "Forgotten Iron",
+    "黒鉄",
+    "Ruined metal and burned stone mark the kingdoms that tried to master the eclipse.",
+  ],
+  ["05", "The Eclipse", "月蝕", "When the moon is swallowed, memory stops behaving like the past."],
+] as const;
 
 function RevealWords({ text }: { text: string }) {
   return (
@@ -37,17 +57,27 @@ function RevealWords({ text }: { text: string }) {
   );
 }
 
+function Arrow() {
+  return (
+    <svg viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M4 14 14 4M7 4h7v7" fill="none" stroke="currentColor" strokeWidth="1.15" />
+    </svg>
+  );
+}
+
 export function ExperienceShell() {
   const root = useRef<HTMLDivElement>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [active, setActive] = useState("top");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [entered, setEntered] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
 
   useEffect(() => {
     if (!root.current) return;
     gsap.registerPlugin(ScrollTrigger);
-
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const lenis = reduced ? null : new Lenis({ lerp: 0.07, smoothWheel: true });
+    const lenis = reduced ? null : new Lenis({ lerp: 0.065, smoothWheel: true });
     let frame = 0;
     const raf = (time: number) => {
       lenis?.raf(time);
@@ -60,49 +90,30 @@ export function ExperienceShell() {
         if (reduced) return;
         gsap.fromTo(
           element.querySelectorAll(".word-unit"),
-          { yPercent: 112, opacity: 0 },
+          { yPercent: 115, opacity: 0 },
           {
             yPercent: 0,
             opacity: 1,
-            stagger: 0.055,
-            duration: 1,
+            duration: 1.05,
+            stagger: 0.05,
             ease: "power4.out",
             scrollTrigger: { trigger: element, start: "top 88%", once: true },
           },
         );
       });
 
-      gsap.utils.toArray<HTMLElement>("[data-fade]").forEach((element) => {
+      gsap.utils.toArray<HTMLElement>("[data-rv]").forEach((element) => {
         if (reduced) return;
         gsap.fromTo(
           element,
-          { y: 28, opacity: 0, filter: "blur(10px)" },
+          { y: 24, opacity: 0, filter: "blur(8px)" },
           {
             y: 0,
             opacity: 1,
             filter: "blur(0px)",
-            duration: 1.1,
-            ease: "power4.out",
-            scrollTrigger: { trigger: element, start: "top 88%", once: true },
-          },
-        );
-      });
-
-      gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((element) => {
-        if (reduced) return;
-        const amount = Number(element.dataset.parallax ?? 8);
-        gsap.fromTo(
-          element,
-          { yPercent: amount * 0.5 },
-          {
-            yPercent: -amount * 0.5,
-            ease: "none",
-            scrollTrigger: {
-              trigger: element,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
-            },
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: { trigger: element, start: "top 90%", once: true },
           },
         );
       });
@@ -110,24 +121,39 @@ export function ExperienceShell() {
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
-          start: "top 48%",
-          end: "bottom 48%",
+          start: "top 52%",
+          end: "bottom 52%",
           onToggle: ({ isActive }) => isActive && setActive(section.id),
         });
       });
 
       if (!reduced) {
-        gsap.to("[data-akari-hero]", {
-          yPercent: -5,
-          xPercent: 2,
+        gsap.to("[data-hero-word]", {
+          xPercent: -9,
           ease: "none",
           scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
         });
-        gsap.to("[data-hero-title]", {
-          yPercent: -22,
-          opacity: 0.2,
+        gsap.to("[data-hero-akari]", {
+          yPercent: -8,
+          xPercent: 4,
           ease: "none",
-          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom 20%", scrub: true },
+          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
+        });
+        gsap.utils.toArray<HTMLElement>("[data-shot]").forEach((media) => {
+          gsap.fromTo(
+            media.querySelector("img"),
+            { scale: 1.08 },
+            {
+              scale: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: media,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            },
+          );
         });
       }
     }, root);
@@ -140,11 +166,65 @@ export function ExperienceShell() {
     };
   }, []);
 
+  const enter = async (withSound: boolean) => {
+    setEntered(true);
+    setSoundOn(withSound);
+    if (withSound && audioRef.current) {
+      try {
+        audioRef.current.volume = 0.42;
+        await audioRef.current.play();
+      } catch {
+        setSoundOn(false);
+      }
+    }
+  };
+
+  const toggleSound = async () => {
+    if (!audioRef.current) return;
+    if (audioRef.current.paused) {
+      try {
+        audioRef.current.volume = 0.42;
+        await audioRef.current.play();
+        setSoundOn(true);
+      } catch {
+        setSoundOn(false);
+      }
+    } else {
+      audioRef.current.pause();
+      setSoundOn(false);
+    }
+  };
+
   return (
     <div ref={root} className="site-shell">
+      <audio ref={audioRef} src="/audio/tsukihara-theme.mp3" loop preload="none" />
       <WorldCanvas />
       <div className="vignette" aria-hidden="true" />
       <div className="film-grain" aria-hidden="true" />
+
+      {!entered && (
+        <div className="entry-gate">
+          <div className="entry-gate-copy">
+            <span>月の原</span>
+            <Image
+              src="/images/tsukihara-logo.webp"
+              alt="Tsukihara"
+              width={520}
+              height={293}
+              priority
+            />
+            <p>Enter beneath the moon.</p>
+            <div>
+              <button type="button" onClick={() => enter(true)}>
+                Enter with sound
+              </button>
+              <button type="button" onClick={() => enter(false)}>
+                Enter silently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <header className="site-nav">
         <Link href="#top" className="brand-mark" aria-label="Tsukihara — início">
@@ -163,6 +243,10 @@ export function ExperienceShell() {
             </Link>
           ))}
         </nav>
+        <button type="button" className="sound-toggle" onClick={toggleSound} aria-pressed={soundOn}>
+          <span>{soundOn ? "Sound on" : "Sound off"}</span>
+          <i />
+        </button>
         <button
           className="menu-button"
           type="button"
@@ -189,7 +273,7 @@ export function ExperienceShell() {
       )}
 
       <aside className="chapter-rail" aria-label="Progresso dos capítulos">
-        {["top", "akari", "realms", "bonds", "eclipse"].map((id, index) => (
+        {["top", "gate", "realms", "akari", "lore", "eclipse"].map((id, index) => (
           <Link
             key={id}
             href={`#${id}`}
@@ -202,251 +286,213 @@ export function ExperienceShell() {
       </aside>
 
       <main className="story">
-        <section id="top" data-section className="hero">
-          <div className="hero-wash" />
-          <div className="hero-jp" aria-hidden="true">
-            月蝕ノ記憶
+        <section id="top" data-section data-cam="0" className="hero hero-kage">
+          <div className="hero-copy-kage">
+            <p className="eyebrow" data-rv>
+              <b>朱莉</b> Chapter 00 — beneath the eclipse
+            </p>
+            <h1>
+              <RevealWords text="Where memory becomes a blade." />
+            </h1>
+            <p data-rv>
+              Enter sacred thresholds, drowned valleys and forgotten iron as Akari walks toward a
+              moon that remembers every vow.
+            </p>
           </div>
-          <div className="hero-character" data-akari-hero>
+          <div className="hero-akari" data-hero-akari>
             <Image
               src="/images/akari-no-rei.webp"
               alt="Akari no Rei"
               fill
               priority
               className="object-contain object-bottom"
-              sizes="(max-width: 760px) 78vw, 38vw"
+              sizes="(max-width: 760px) 78vw, 36vw"
             />
           </div>
-          <div className="hero-copy" data-hero-title>
-            <p className="micro-label" data-fade>
-              AN ORIGINAL ACTION ADVENTURE
-            </p>
-            <h1 className="hero-title">
-              <RevealWords text="Where the moon remembers every vow." />
-            </h1>
-            <p className="hero-deck" data-fade>
-              Enter sacred temples, drowned valleys and ruined iron as Akari walks toward an eclipse
-              that changes everything it touches.
-            </p>
-          </div>
-          <div className="hero-logo" data-fade>
+          <div className="hero-logo-kage" data-rv>
             <Image
               src="/images/tsukihara-logo.webp"
               alt="Tsukihara"
-              width={620}
-              height={350}
+              width={540}
+              height={304}
               priority
             />
           </div>
-          <div className="hero-meta" data-fade>
-            <span>In development</span>
-            <span>Scroll to enter</span>
+          <div className="hero-word" data-hero-word aria-hidden="true">
+            TSUKIHARA
           </div>
-          <a className="hero-preview" href="#realms" data-fade>
-            <span className="preview-image">
-              <Image
-                src="/images/hanamori.webp"
-                alt="Hanamori"
-                fill
-                className="object-cover"
-                sizes="240px"
-              />
-            </span>
-            <span className="preview-caption">
-              <b>Hanamori</b>
-              <small>First realm</small>
+          <div className="hero-jp-vertical" aria-hidden="true">
+            月蝕ノ道
+          </div>
+          <a href="#gate" className="hero-cue" data-rv>
+            <span>Scroll to enter</span>
+            <span>
+              <i />
             </span>
           </a>
         </section>
 
-        <section id="akari" data-section className="chapter akari-chapter">
-          <div className="chapter-rule">
-            <span>朱莉 — AKARI</span>
+        <section id="gate" data-section data-cam="1" className="sec gate-section">
+          <div className="sec-label">
+            <span>01 — THE THRESHOLD</span>
             <i />
-            <span>THE PROTAGONIST</span>
+            <span>門</span>
           </div>
-          <div className="akari-layout">
-            <div className="akari-statement">
-              <h2>
-                <RevealWords text="She carries a blade into a world already breaking." />
-              </h2>
-              <p data-fade>
-                Akari is the visual and emotional center of Tsukihara. Her path crosses memory, duty
-                and the awakening of a power that changes the shape of every realm around her.
+          <div className="manifesto-grid">
+            <h2>
+              <RevealWords text="A sacred world, already beginning to fracture." />
+            </h2>
+            <div data-rv>
+              <p>
+                Tsukihara begins at the edge of a sanctuary. Beauty remains, but every place carries
+                evidence of something older moving beneath it.
               </p>
-              <div className="akari-state-line" data-fade>
-                <span>
-                  <small>01</small> Standard
-                </span>
-                <i />
-                <span>
-                  <small>02</small> Awakening
-                </span>
-                <i />
-                <span>
-                  <small>03</small> Akari no Rei
-                </span>
-              </div>
+              <a href="#realms" className="text-link">
+                Cross the threshold <Arrow />
+              </a>
             </div>
-            <div className="akari-figure" data-parallax="8">
-              <span className="akari-kanji" aria-hidden="true">
-                朱莉
-              </span>
-              <Image
-                src="/images/akari-no-rei.webp"
-                alt="Akari no Rei"
-                fill
-                className="object-contain object-bottom"
-                sizes="(max-width: 760px) 80vw, 36vw"
-              />
+          </div>
+          <div className="world-stats" data-rv>
+            <div>
+              <b>03</b>
+              <span>known realms</span>
             </div>
-            <div className="character-notes" data-fade>
-              <div>
-                <span>Weapon</span>
-                <b>Blade</b>
-              </div>
-              <div>
-                <span>Path</span>
-                <b>Moonlit realms</b>
-              </div>
-              <div>
-                <span>State</span>
-                <b>Akari no Rei</b>
-              </div>
-              <div>
-                <span>Motif</span>
-                <b>Vermilion / Sakura</b>
-              </div>
+            <div>
+              <b>01</b>
+              <span>moon in change</span>
+            </div>
+            <div>
+              <b>05</b>
+              <span>lore pillars</span>
+            </div>
+            <div>
+              <b>∞</b>
+              <span>remembered vows</span>
             </div>
           </div>
         </section>
 
-        <section id="realms" data-section className="chapter realms-chapter">
-          <div className="realms-intro">
-            <span className="section-side-note">世界 — WORLD</span>
-            <h2>
-              <RevealWords text="Three different memories of the same moon." />
-            </h2>
-            <p data-fade>
-              Each realm carries its own architecture, weather, vertical rhythm and emotional
-              temperature.
-            </p>
+        <section id="realms" data-section data-cam="2" className="sec realms-archive">
+          <div className="sec-label">
+            <span>02 — THE REALMS</span>
+            <i />
+            <span>世界</span>
           </div>
-
-          <div className="realm-mosaic">
+          <div className="archive-grid">
             {realms.map((realm, index) => (
-              <article
-                key={realm.id}
-                id={realm.id}
-                className={`realm-panel realm-panel-${index + 1}`}
-                data-parallax={index === 0 ? "4" : "6"}
-              >
-                <div className="realm-media">
+              <article key={realm.id} className={`archive-card archive-${index + 1}`} data-shot>
+                <div className="archive-media">
                   <Image
                     src={realm.image}
                     alt={realm.title}
                     fill
                     className="object-cover"
-                    sizes={index === 0 ? "64vw" : "36vw"}
+                    sizes={index === 0 ? "65vw" : "34vw"}
                   />
-                  <span className="realm-grade" />
                 </div>
-                <div className="realm-copy">
-                  <span className="realm-index">0{index + 1}</span>
-                  <p>{realm.kanji}</p>
-                  <h3>{realm.title}</h3>
-                  <small>{realm.label}</small>
-                  <div>{realm.copy}</div>
+                <div className="archive-caption">
+                  <span>0{index + 1}</span>
+                  <div>
+                    <b>{realm.title}</b>
+                    <small>
+                      {realm.kanji} · {realm.label}
+                    </small>
+                  </div>
                 </div>
               </article>
             ))}
           </div>
-
-          <div className="world-note" data-fade>
-            <span>WORLD DIRECTION</span>
-            <p>Beautiful enough to invite you forward. Haunted enough to make you hesitate.</p>
-          </div>
         </section>
 
-        <section id="bonds" data-section className="chapter bonds-chapter">
-          <div className="bonds-title">
-            <span className="section-side-note">絆 — BONDS</span>
-            <h2>
-              <RevealWords text="Some spirits choose who they will follow." />
-            </h2>
-            <p data-fade>
-              Haku is guardian, omen and witness — one of the presences bound to Akari&apos;s path
-              as the eclipse draws closer.
-            </p>
-          </div>
-          <div className="haku-spread" data-parallax="5">
-            <div className="haku-image">
-              <Image
-                src="/images/haku-eclipse.webp"
-                alt="Haku beneath the eclipse"
-                fill
-                className="object-cover"
-                sizes="(max-width: 760px) 92vw, 58vw"
-              />
-              <span />
-            </div>
-            <div className="haku-caption" data-fade>
-              <b>Haku</b>
-              <small>Guardian spirit · 白</small>
-              <p>The quiet before the world changes.</p>
-            </div>
-          </div>
-        </section>
-
-        <section id="eclipse" data-section className="eclipse-chapter">
-          <div className="eclipse-disc" aria-hidden="true">
-            <i />
-            <b />
-          </div>
-          <div className="eclipse-copy">
-            <span className="section-side-note">月蝕 — ECLIPSE</span>
-            <h2>
-              <RevealWords text="When the moon turns red, every vow is tested." />
-            </h2>
-            <p data-fade>
-              Tsukihara is currently in development. New characters, gameplay, music and the first
-              trailer will arrive here as the world takes shape.
-            </p>
-            <div className="closing-actions" data-fade>
-              <span className="coming-action">
-                <b>Wishlist on Steam</b>
-                <small>Coming soon</small>
-              </span>
-              <a href="#top">
-                <span>Return to the beginning</span>
-                <Arrow />
-              </a>
-            </div>
-          </div>
-          <div className="eclipse-akari" data-parallax="4">
+        <section id="akari" data-section data-cam="3" className="sec character-spread">
+          <div className="character-art">
+            <span aria-hidden="true">朱莉</span>
             <Image
               src="/images/akari-no-rei.webp"
               alt="Akari no Rei"
               fill
               className="object-contain object-bottom"
-              sizes="(max-width: 760px) 78vw, 36vw"
+              sizes="(max-width: 760px) 86vw, 42vw"
             />
+          </div>
+          <div className="character-copy">
+            <p className="eyebrow" data-rv>
+              <b>03</b> AKARI NO REI — 朱莉
+            </p>
+            <h2>
+              <RevealWords text="She enters as a swordswoman. She leaves changed by the moon." />
+            </h2>
+            <p data-rv>
+              Akari is the emotional axis of Tsukihara: memory, duty and transformation condensed
+              into a single path through the kingdoms.
+            </p>
+            <div className="character-spec" data-rv>
+              <span>Weapon — Blade</span>
+              <span>Motif — Vermilion / Sakura</span>
+              <span>State — Akari no Rei</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="lore" data-section data-cam="4" className="sec lore-section">
+          <div className="lore-intro">
+            <h2>
+              <RevealWords text="Five pillars. One world under a changing moon." />
+            </h2>
+            <p data-rv>Each chapter is a fragment of the mythology that shapes the journey.</p>
+          </div>
+          <div className="lore-grid">
+            {lore.map(([index, title, kanji, copy]) => (
+              <article key={title} data-rv>
+                <span>{index}</span>
+                <h3>
+                  {title} <small>{kanji}</small>
+                </h3>
+                <p>{copy}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="eclipse" data-section data-cam="5" className="sec afterlight-section">
+          <div className="afterlight-copy">
+            <p className="eyebrow" data-rv>
+              05 — AFTERLIGHT · 月蝕
+            </p>
+            <h2>
+              <RevealWords text="When the moon closes, the story opens." />
+            </h2>
+            <p data-rv>
+              Tsukihara is in development. New characters, gameplay, music and the first trailer
+              will arrive as the world takes shape.
+            </p>
+            <div className="closing-actions" data-rv>
+              <span>
+                <b>Wishlist on Steam</b>
+                <small>Coming soon</small>
+              </span>
+              <a href="#top">
+                Return to the beginning <Arrow />
+              </a>
+            </div>
+          </div>
+          <div className="afterlight-mark" aria-hidden="true">
+            AFTERLIGHT
           </div>
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="footer-manifesto">
-          <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={400} height={225} />
+      <footer className="site-footer footer-kage">
+        <div>
+          <Image src="/images/tsukihara-logo.webp" alt="Tsukihara" width={300} height={169} />
           <p>
-            A moonlit action-adventure about memory, duty and the things that awaken when sacred
-            places stop being silent.
+            A moonlit action-adventure about memory, sacred places and what awakens beneath an
+            eclipse.
           </p>
         </div>
-        <div className="footer-base">
-          <span>TSUKIHARA — IN DEVELOPMENT</span>
-          <span>月の原</span>
-          <span>2026</span>
+        <div>
+          <span>Educational interaction study inspired by Kage — Meng To.</span>
+          <span>Tsukihara · in development</span>
         </div>
       </footer>
     </div>
