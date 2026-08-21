@@ -3,10 +3,11 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { CinematicPreloader } from "@/components/experience/cinematic-preloader";
 import { FallingSakura } from "@/components/experience/falling-sakura";
 import { HeroParallaxScene } from "@/components/experience/hero-parallax-scene";
 import { JpRevealText } from "@/components/experience/jp-reveal-text";
@@ -18,6 +19,8 @@ const ImmersiveWorld = dynamic(
   () => import("@/components/experience/immersive-world").then((module) => module.ImmersiveWorld),
   { ssr: false },
 );
+
+const AUDIO_VOLUME = 0.18;
 
 function Arrow() {
   return (
@@ -31,11 +34,13 @@ export function ImmersiveExperience() {
   const root = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [locale, setLocale] = useState<Locale>("pt");
+  const [preloaded, setPreloaded] = useState(false);
   const [entered, setEntered] = useState(false);
   const [muted, setMuted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState("top");
   const copy = immersiveCopy[locale];
+  const finishPreload = useCallback(() => setPreloaded(true), []);
 
   useEffect(() => {
     if (!root.current) return;
@@ -77,23 +82,28 @@ export function ImmersiveExperience() {
         gsap.to("[data-hero-word]", {
           xPercent: -10,
           ease: "none",
-          scrollTrigger: { trigger: "#top", start: "top top", end: "bottom top", scrub: true },
+          scrollTrigger: {
+            trigger: "#top",
+            start: "top top",
+            end: "bottom+=35% top",
+            scrub: 1.2,
+          },
         });
         gsap.utils.toArray<HTMLElement>("[data-shot]").forEach((media) => {
           const image = media.querySelector("img");
           if (!image) return;
           gsap.fromTo(
             image,
-            { scale: 1.08, yPercent: -2 },
+            { scale: 1.08, yPercent: -3 },
             {
               scale: 1,
-              yPercent: 3,
+              yPercent: 4,
               ease: "none",
               scrollTrigger: {
                 trigger: media,
                 start: "top bottom",
                 end: "bottom top",
-                scrub: true,
+                scrub: 1.3,
               },
             },
           );
@@ -134,7 +144,7 @@ export function ImmersiveExperience() {
     setEntered(true);
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 0.4;
+    audio.volume = AUDIO_VOLUME;
     audio.muted = !withSound;
     setMuted(!withSound);
     try {
@@ -148,7 +158,7 @@ export function ImmersiveExperience() {
     const audio = audioRef.current;
     if (!audio) return;
     if (audio.paused) {
-      audio.volume = 0.4;
+      audio.volume = AUDIO_VOLUME;
       try {
         await audio.play();
       } catch {
@@ -169,18 +179,19 @@ export function ImmersiveExperience() {
 
   return (
     <div ref={root} className="ix-shell">
+      {!preloaded && <CinematicPreloader onComplete={finishPreload} />}
       <audio ref={audioRef} src="/audio/tsukihara-theme.mp3" loop preload="metadata" />
       <ImmersiveWorld />
       <div className="ix-vignette" aria-hidden="true" />
       <div className="ix-grain" aria-hidden="true" />
       <FallingSakura />
 
-      {!entered && (
+      {preloaded && !entered && (
         <div className="ix-entry">
           <div className="ix-entry-inner">
             <span>{copy.enter.overline}</span>
             <Image
-              src="/images/tsukihara-logo.webp"
+              src="/assets_hq/logotipo.png"
               alt="Tsukihara"
               width={560}
               height={315}
@@ -230,13 +241,20 @@ export function ImmersiveExperience() {
               EN
             </button>
           </div>
-          <button type="button" className="ix-sound" onClick={toggleMute} aria-pressed={!muted}>
+          <button
+            type="button"
+            className="ix-sound"
+            onClick={toggleMute}
+            aria-pressed={!muted}
+            aria-label={`${copy.nav.sound}: ${muted ? "off" : "on"}`}
+            title={copy.nav.sound}
+          >
             <span className="ix-sound-bars" aria-hidden="true">
               <i />
               <i />
               <i />
             </span>
-            <span>{muted ? copy.nav.soundOff : copy.nav.soundOn}</span>
+            <span>{copy.nav.sound}</span>
           </button>
           <button
             type="button"
@@ -269,7 +287,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-hero-copy">
             <p className="ix-eyebrow" data-reveal>
-              <b>朱莉</b> {copy.hero.eyebrow}
+              <b>月母</b> {copy.hero.eyebrow}
             </p>
             <h1>
               <JpRevealText jp={copy.hero.titleJp} text={copy.hero.title} locale={locale} />
@@ -278,7 +296,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-hero-logo" data-reveal>
             <Image
-              src="/images/tsukihara-logo.webp"
+              src="/assets_hq/logotipo.png"
               alt="Tsukihara"
               width={520}
               height={293}
@@ -298,13 +316,21 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="gate" data-section className="ix-section ix-threshold">
+          <Image
+            src="/secret-pathways-assets/foreground/png/sakura-branch.webp"
+            alt=""
+            width={900}
+            height={900}
+            className="ix-secret-asset ix-secret-branch"
+            aria-hidden="true"
+          />
           <div className="ix-kanji-ghost ix-kanji-gate" data-scroll-kanji aria-hidden="true">
-            門
+            月継
           </div>
           <div className="ix-section-label">
             <span>{copy.threshold.label}</span>
             <i />
-            <span>門</span>
+            <span>月継</span>
           </div>
           <div className="ix-manifesto">
             <h2>
@@ -381,6 +407,32 @@ export function ImmersiveExperience() {
           </div>
         </section>
 
+        <section className="ix-trailer" aria-labelledby="trailer-title">
+          <div className="ix-trailer-mark" aria-hidden="true">
+            剣舞
+          </div>
+          <div className="ix-trailer-head">
+            <h2 id="trailer-title">
+              <JpRevealText
+                jp={copy.trailer.titleJp}
+                text={copy.trailer.title}
+                locale={locale}
+              />
+            </h2>
+            <div>
+              <p className="ix-eyebrow" data-reveal>
+                {copy.trailer.label}
+              </p>
+              <p data-reveal>{copy.trailer.body}</p>
+            </div>
+          </div>
+          <div className="ix-trailer-frame" data-reveal>
+            <video autoPlay muted loop playsInline preload="metadata">
+              <source src="/assets_hq/video_battle.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </section>
+
         <section id="akari" data-section className="ix-section ix-akari">
           <div className="ix-kanji-ghost ix-kanji-akari" data-scroll-kanji aria-hidden="true">
             朱莉
@@ -388,7 +440,7 @@ export function ImmersiveExperience() {
           <div className="ix-akari-art">
             <span aria-hidden="true">朱莉</span>
             <Image
-              src="/images/akari-no-rei.webp"
+              src="/assets_hq/AKARI_NO_REI_CANONICAL_MODEL_V02.png"
               alt="Akari no Rei"
               fill
               className="object-contain object-bottom"
@@ -412,8 +464,16 @@ export function ImmersiveExperience() {
         </section>
 
         <section id="lore" data-section className="ix-section ix-lore">
+          <Image
+            src="/secret-pathways-assets/foreground/png/stone-lantern.webp"
+            alt=""
+            width={520}
+            height={740}
+            className="ix-secret-asset ix-secret-lantern"
+            aria-hidden="true"
+          />
           <div className="ix-kanji-ghost ix-kanji-lore" data-scroll-kanji aria-hidden="true">
-            残響
+            記憶
           </div>
           <div className="ix-section-label">
             <span>{copy.lore.label}</span>
@@ -442,7 +502,7 @@ export function ImmersiveExperience() {
 
         <section id="eclipse" data-section className="ix-afterlight">
           <div className="ix-kanji-ghost ix-kanji-eclipse" data-scroll-kanji aria-hidden="true">
-            月蝕
+            紅蝕
           </div>
           <div className="ix-after-copy">
             <p className="ix-eyebrow" data-reveal>
@@ -462,7 +522,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-after-akari">
             <Image
-              src="/images/akari-no-rei.webp"
+              src="/assets_hq/AKARI_NO_REI_CANONICAL_MODEL_V02.png"
               alt="Akari no Rei"
               fill
               className="object-contain object-bottom"
