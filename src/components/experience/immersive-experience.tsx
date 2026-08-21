@@ -49,12 +49,6 @@ export function ImmersiveExperience() {
   const copy = immersiveCopy[locale];
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("tsukihara-locale");
-    if (saved === "pt" || saved === "en") setLocale(saved);
-    else if (!navigator.language.toLowerCase().startsWith("pt")) setLocale("en");
-  }, []);
-
-  useEffect(() => {
     if (!root.current) return;
     gsap.registerPlugin(ScrollTrigger);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -148,7 +142,6 @@ export function ImmersiveExperience() {
 
   const changeLocale = (next: Locale) => {
     setLocale(next);
-    window.localStorage.setItem("tsukihara-locale", next);
     document.documentElement.lang = next === "pt" ? "pt-BR" : "en";
   };
 
