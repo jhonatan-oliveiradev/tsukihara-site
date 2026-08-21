@@ -26,6 +26,7 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
     const pointerQuery = window.matchMedia(`(max-width: ${HERO_BREAKPOINTS.mobile}px)`);
     const shell = root.closest<HTMLElement>(".ix-shell");
     const reduced = reducedQuery.matches;
+    let removePointerListeners: (() => void) | undefined;
 
     const ctx = gsap.context(() => {
       const afterStates = gsap.utils.toArray<HTMLElement>(".th-hero-state-after");
@@ -231,7 +232,7 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           .to("[data-crimson-wash]", { opacity: 0.17, duration: 0.14 }, 0.86);
       }
 
-      const trigger = ScrollTrigger.create({
+      ScrollTrigger.create({
         trigger: root,
         start: "top top",
         end: () => `+=${Math.round(window.innerHeight * getScrollDistance(reduced))}`,
@@ -281,22 +282,19 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
 
         window.addEventListener("pointermove", onPointerMove, { passive: true });
         window.addEventListener("pointerleave", resetPointer, { passive: true });
-        ctx.add(() => {
+        removePointerListeners = () => {
           window.removeEventListener("pointermove", onPointerMove);
           window.removeEventListener("pointerleave", resetPointer);
-        });
+        };
       }
-
-      ctx.add(() => {
-        trigger.kill();
-        ambient.kill();
-        petalTweens.forEach((tween) => tween.kill());
-        shell?.classList.remove("th-hero-is-pinned");
-        delete root.dataset.heroProgress;
-      });
     }, root);
 
     ScrollTrigger.refresh();
-    return () => ctx.revert();
+    return () => {
+      removePointerListeners?.();
+      shell?.classList.remove("th-hero-is-pinned");
+      delete root.dataset.heroProgress;
+      ctx.revert();
+    };
   }, [rootRef]);
 }
