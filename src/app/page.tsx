@@ -1,5 +1,5 @@
-import { ExperienceShell } from "@/components/experience/experience-shell";
+import { ImmersiveExperience } from "@/components/experience/immersive-experience";
 
 export default function HomePage() {
-  return <ExperienceShell />;
+  return <ImmersiveExperience />;
 }
