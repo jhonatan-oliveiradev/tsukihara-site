@@ -86,13 +86,39 @@ export const immersiveCopy = {
       label: "05 — MEMÓRIAS FRATURADAS",
       title: "A lua não está morrendo. Ela está esquecendo.",
       titleJp: "月は死んでいるのではない。忘れている。",
-      intro: "Quanto mais realidade Akari restaura, mais a história de Tsukihara deixa de parecer uma lenda — e mais próxima ela chega da verdade que foi apagada dela.",
+      intro:
+        "Quanto mais realidade Akari restaura, mais a história de Tsukihara deixa de parecer uma lenda — e mais próxima ela chega da verdade que foi apagada dela.",
       items: [
-        ["01", "Lua-Mãe", "月母", "A entidade divina que preservava as memórias de vivos, mortos, espíritos e deuses começou a esquecer aquilo que jurou guardar."],
-        ["02", "Kintsugi Lunar", "月継", "Akari escolhe quais fragmentos esquecidos restaurar e quando sustentá-los com luz lunar — na exploração, em puzzles e durante o combate."],
-        ["03", "Haku e Mochi", "守護", "Haku abre possibilidades de travessia e poder lunar. Mochi percebe segredos, paredes falsas e memórias escondidas onde ninguém mais enxerga nada."],
-        ["04", "Vazios Lunares", "虚月", "Quando uma memória desaparece por completo, alguma coisa ocupa o espaço que ela deixou. Nem toda ausência permanece vazia."],
-        ["05", "Eclipse Carmesim", "紅蝕", "Não é apenas um fenômeno no céu. O eclipse muda o mapa, corrompe regiões, acorda máquinas e aproxima Akari da origem do esquecimento."],
+        [
+          "01",
+          "Lua-Mãe",
+          "月母",
+          "A entidade divina que preservava as memórias de vivos, mortos, espíritos e deuses começou a esquecer aquilo que jurou guardar.",
+        ],
+        [
+          "02",
+          "Kintsugi Lunar",
+          "月継",
+          "Akari escolhe quais fragmentos esquecidos restaurar e quando sustentá-los com luz lunar — na exploração, em puzzles e durante o combate.",
+        ],
+        [
+          "03",
+          "Haku e Mochi",
+          "守護",
+          "Haku abre possibilidades de travessia e poder lunar. Mochi percebe segredos, paredes falsas e memórias escondidas onde ninguém mais enxerga nada.",
+        ],
+        [
+          "04",
+          "Vazios Lunares",
+          "虚月",
+          "Quando uma memória desaparece por completo, alguma coisa ocupa o espaço que ela deixou. Nem toda ausência permanece vazia.",
+        ],
+        [
+          "05",
+          "Eclipse Carmesim",
+          "紅蝕",
+          "Não é apenas um fenômeno no céu. O eclipse muda o mapa, corrompe regiões, acorda máquinas e aproxima Akari da origem do esquecimento.",
+        ],
       ],
     },
     eclipse: {
@@ -143,7 +169,12 @@ export const immersiveCopy = {
       titleJp: "忘れられたものは、月光で再び形を得る。",
       body: "Through her kitsune mask, Akari can see fragments of reality that the moon has forgotten. Lunar Kintsugi restores broken bridges, platforms, doors, mechanisms and paths for a limited time. The question is never only where to go — but what is worth bringing back.",
       cta: "Restore the path",
-      stats: [["09", "realms beneath the eclipse"], ["01", "moon that is forgetting"], ["02", "guardians beside you"], ["∞", "memories waiting to return"]],
+      stats: [
+        ["09", "realms beneath the eclipse"],
+        ["01", "moon that is forgetting"],
+        ["02", "guardians beside you"],
+        ["∞", "memories waiting to return"],
+      ],
     },
     realmsIntro: {
       label: "02 — THE NINE REALMS",
@@ -182,13 +213,39 @@ export const immersiveCopy = {
       label: "05 — FRACTURED MEMORIES",
       title: "The moon is not dying. It is forgetting.",
       titleJp: "月は死んでいるのではない。忘れている。",
-      intro: "The more reality Akari restores, the less Tsukihara's history feels like legend — and the closer she comes to the truth that was erased from her.",
+      intro:
+        "The more reality Akari restores, the less Tsukihara's history feels like legend — and the closer she comes to the truth that was erased from her.",
       items: [
-        ["01", "Mother Moon", "月母", "The divine being that preserved the memories of living, dead, spirits and gods has begun to forget what it once swore to keep."],
-        ["02", "Lunar Kintsugi", "月継", "Akari chooses which forgotten fragments to restore and when to sustain them with moonlight — across exploration, puzzles and combat."],
-        ["03", "Haku and Mochi", "守護", "Haku opens new possibilities for traversal and lunar power. Mochi senses secrets, false walls and hidden memories where nobody else sees anything."],
-        ["04", "Lunar Voids", "虚月", "When a memory disappears completely, something takes the space it leaves behind. Not every absence stays empty."],
-        ["05", "Crimson Eclipse", "紅蝕", "It is more than a phenomenon in the sky. The eclipse changes the map, corrupts regions, awakens machines and pulls Akari toward the origin of oblivion."],
+        [
+          "01",
+          "Mother Moon",
+          "月母",
+          "The divine being that preserved the memories of living, dead, spirits and gods has begun to forget what it once swore to keep.",
+        ],
+        [
+          "02",
+          "Lunar Kintsugi",
+          "月継",
+          "Akari chooses which forgotten fragments to restore and when to sustain them with moonlight — across exploration, puzzles and combat.",
+        ],
+        [
+          "03",
+          "Haku and Mochi",
+          "守護",
+          "Haku opens new possibilities for traversal and lunar power. Mochi senses secrets, false walls and hidden memories where nobody else sees anything.",
+        ],
+        [
+          "04",
+          "Lunar Voids",
+          "虚月",
+          "When a memory disappears completely, something takes the space it leaves behind. Not every absence stays empty.",
+        ],
+        [
+          "05",
+          "Crimson Eclipse",
+          "紅蝕",
+          "It is more than a phenomenon in the sky. The eclipse changes the map, corrupts regions, awakens machines and pulls Akari toward the origin of oblivion.",
+        ],
       ],
     },
     eclipse: {

@@ -18,10 +18,7 @@ const imageAssets = [
   "/parallax/tsukihara-petals.png",
 ];
 
-const fetchAssets = [
-  "/models/japanese_temple/scene.gltf",
-  "/models/crimson_katana/scene.gltf",
-];
+const fetchAssets = ["/models/japanese_temple/scene.gltf", "/models/crimson_katana/scene.gltf"];
 
 type CinematicPreloaderProps = {
   onComplete: () => void;
@@ -90,12 +87,14 @@ export function CinematicPreloader({ onComplete }: CinematicPreloaderProps) {
       video.load();
     });
 
-    Promise.allSettled([...imagePromises, ...fetchPromises, audioPromise, videoPromise]).then(() => {
-      if (cancelled) return;
-      setProgress(100);
-      window.setTimeout(() => setLeaving(true), 260);
-      window.setTimeout(onComplete, 900);
-    });
+    Promise.allSettled([...imagePromises, ...fetchPromises, audioPromise, videoPromise]).then(
+      () => {
+        if (cancelled) return;
+        setProgress(100);
+        window.setTimeout(() => setLeaving(true), 260);
+        window.setTimeout(onComplete, 900);
+      },
+    );
 
     return () => {
       cancelled = true;
@@ -103,7 +102,7 @@ export function CinematicPreloader({ onComplete }: CinematicPreloaderProps) {
   }, [onComplete]);
 
   return (
-    <div className={`ix-preloader${leaving ? " is-leaving" : ""}`} aria-live="polite">
+    <div className={`ix-preloader${leaving ? "is-leaving" : ""}`} aria-live="polite">
       <div className="ix-preloader-moon" aria-hidden="true" />
       <div className="ix-preloader-inner">
         <span className="ix-preloader-jp">月の原</span>

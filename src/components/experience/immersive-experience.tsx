@@ -413,11 +413,7 @@ export function ImmersiveExperience() {
           </div>
           <div className="ix-trailer-head">
             <h2 id="trailer-title">
-              <JpRevealText
-                jp={copy.trailer.titleJp}
-                text={copy.trailer.title}
-                locale={locale}
-              />
+              <JpRevealText jp={copy.trailer.titleJp} text={copy.trailer.title} locale={locale} />
             </h2>
             <div>
               <p className="ix-eyebrow" data-reveal>
