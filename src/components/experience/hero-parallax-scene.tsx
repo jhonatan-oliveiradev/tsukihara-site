@@ -75,7 +75,7 @@ export function HeroParallaxScene() {
       pointerCurrent.y = damp(pointerCurrent.y, pointerTarget.y, 0.055);
       scrollCurrent = damp(scrollCurrent, scrollTarget, 0.052);
 
-      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.7, 1);
+      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.46, 0.69);
       opacityCurrent = damp(opacityCurrent, targetOpacity, 0.065);
       root.style.opacity = opacityCurrent.toFixed(3);
 
