@@ -8,13 +8,24 @@ on:
 jobs:
   runtime:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm install
+      - name: Format hero files for review
+        run: |
+          npx prettier --write src/app/hero-eclipse-sequence.css src/components/experience/hero/hooks/use-hero-timeline.ts src/components/experience/hero/tsukihara-hero.tsx
+          mkdir -p qa/formatted/src/app qa/formatted/src/components/experience/hero/hooks qa/formatted/src/components/experience/hero
+          cp src/app/hero-eclipse-sequence.css qa/formatted/src/app/
+          cp src/components/experience/hero/hooks/use-hero-timeline.ts qa/formatted/src/components/experience/hero/hooks/
+          cp src/components/experience/hero/tsukihara-hero.tsx qa/formatted/src/components/experience/hero/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hero-formatted-files
+          path: qa/formatted
       - run: npm run build
       - run: npm install --no-save playwright
       - run: npx playwright install --with-deps chromium
@@ -27,18 +38,25 @@ jobs:
           done
           cat /tmp/tsukihara-runtime.log
           exit 1
-      - name: Exercise hero runtime
+      - name: Exercise and capture hero runtime
         run: |
-          mkdir -p qa
+          mkdir -p qa/screens
           cat > qa/runtime-smoke.cjs <<'NODE'
           const { chromium } = require('playwright');
 
-          (async () => {
-            const viewportHeight = 900;
-            const browser = await chromium.launch({ headless: true });
-            const page = await browser.newPage({ viewport: { width: 1440, height: viewportHeight } });
-            const failures = [];
+          async function enter(page) {
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForSelector('.ix-entry', { timeout: 45000 });
+            const buttons = page.locator('.ix-entry-actions button');
+            if (await buttons.count() > 1) await buttons.nth(1).click();
+            await page.waitForFunction(() => !document.querySelector('.ix-entry'), null, { timeout: 15000 });
+            await page.waitForSelector('.th-hero', { timeout: 10000 });
+            await page.waitForTimeout(700);
+          }
 
+          async function captureSequence(browser, width, height, label, fractions) {
+            const page = await browser.newPage({ viewport: { width, height } });
+            const failures = [];
             page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`));
             page.on('console', (message) => {
               const text = message.text();
@@ -47,27 +65,32 @@ jobs:
               }
             });
 
-            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
-            await page.waitForSelector('.ix-entry', { timeout: 45000 });
-            const buttons = page.locator('.ix-entry-actions button');
-            if (await buttons.count() > 1) await buttons.nth(1).click();
-            await page.waitForFunction(() => !document.querySelector('.ix-entry'), null, { timeout: 15000 });
-            await page.waitForSelector('.th-hero', { timeout: 10000 });
-
-            await page.mouse.move(1150, 250);
-            await page.waitForTimeout(250);
-            await page.mouse.move(450, 620);
-
+            await enter(page);
             const hero = page.locator('.th-hero');
             const top = await hero.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-            for (const fraction of [0.1, 0.3, 0.5, 0.7, 0.9]) {
-              await page.evaluate(({ y }) => window.scrollTo(0, y), { y: top + viewportHeight * 3 * fraction });
-              await page.waitForTimeout(350);
+            const distance = height * (width <= 680 ? 2.08 : width <= 980 ? 2.55 : 3.05);
+
+            for (const fraction of fractions) {
+              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), { y: top + distance * fraction });
+              await page.waitForTimeout(1200);
+              const progress = await hero.getAttribute('data-hero-progress');
+              const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+              if (overflow) failures.push(`horizontal overflow at ${label} ${fraction}`);
+              await page.screenshot({ path: `qa/screens/${label}-${String(fraction).replace('.', '-')}-${progress ?? 'na'}.png`, fullPage: false });
             }
 
-            await page.waitForTimeout(500);
             if (failures.length) throw new Error(failures.join('\n'));
-            console.log('Hero runtime smoke passed without TDZ, invalid scope, or stack overflow.');
+            await page.close();
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            await captureSequence(browser, 1440, 900, 'desktop', [0, 0.18, 0.4, 0.58, 0.76, 0.94]);
+            await captureSequence(browser, 1920, 1080, 'desktop-xl', [0, 0.58, 0.94]);
+            await captureSequence(browser, 2560, 1080, 'ultrawide', [0, 0.58, 0.94]);
+            await captureSequence(browser, 768, 1024, 'tablet', [0, 0.58, 0.94]);
+            await captureSequence(browser, 390, 844, 'mobile', [0, 0.58, 0.94]);
+            console.log('Hero runtime and visual capture completed without targeted runtime errors or overflow.');
             await browser.close();
           })().catch((error) => {
             console.error(error);
@@ -75,3 +98,8 @@ jobs:
           });
           NODE
           node qa/runtime-smoke.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hero-visual-qa
+          path: qa/screens
