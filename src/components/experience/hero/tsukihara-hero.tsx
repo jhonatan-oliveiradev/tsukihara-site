@@ -15,8 +15,38 @@ type TsukiharaHeroProps = {
   locale: Locale;
 };
 
+const narrative = {
+  pt: {
+    omenEyebrow: "A MEMÓRIA ESTÁ SE PARTINDO",
+    omenTitle: "Primeiro, o mundo esquece os nomes.",
+    omenBody:
+      "Depois, pontes deixam de existir, templos desaparecem dos mapas e os Vazios Lunares atravessam aquilo que restou da realidade.",
+    eclipseEyebrow: "KINTSUGI LUNAR",
+    eclipseTitle: "A lua esqueceu. Mas você lembra.",
+    eclipseBody:
+      "Com a máscara kitsune, Akari enxerga fragmentos apagados e os restaura por instantes — escolhendo quais partes do mundo devem voltar a existir.",
+    phaseSerene: "Lua-Mãe",
+    phaseOmen: "Presságio",
+    phaseEclipse: "Eclipse Carmesim",
+  },
+  en: {
+    omenEyebrow: "MEMORY IS BREAKING APART",
+    omenTitle: "First, the world forgets its names.",
+    omenBody:
+      "Then bridges cease to exist, temples vanish from maps, and Lunar Voids cross what remains of reality.",
+    eclipseEyebrow: "LUNAR KINTSUGI",
+    eclipseTitle: "The moon forgot. But you remember.",
+    eclipseBody:
+      "Through her kitsune mask, Akari sees erased fragments and restores them for a moment — choosing which pieces of the world may exist again.",
+    phaseSerene: "Moon-Mother",
+    phaseOmen: "Omen",
+    phaseEclipse: "Crimson Eclipse",
+  },
+} as const;
+
 export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
   const rootRef = useRef<HTMLElement>(null);
+  const beat = narrative[locale];
   useHeroTimeline(rootRef);
 
   return (
@@ -27,21 +57,35 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
         </HeroCamera>
 
         <div className="th-hero-content" data-hero-content>
-          <div className="th-hero-copy">
-            <p className="ix-eyebrow" data-reveal>
+          <div className="th-hero-copy th-hero-copy-intro" data-copy-intro>
+            <p className="ix-eyebrow">
               <b>月母</b> {copy.hero.eyebrow}
             </p>
             <h1>
               <JpRevealText jp={copy.hero.titleJp} text={copy.hero.title} locale={locale} />
             </h1>
-            <p className="th-hero-body" data-reveal>
-              {copy.hero.body}
-            </p>
-            <div className="th-hero-signature" data-reveal>
+            <p className="th-hero-body">{copy.hero.body}</p>
+            <div className="th-hero-signature">
               <span>AKARI NO REI</span>
               <i />
               <span>九つの国</span>
             </div>
+          </div>
+
+          <div className="th-hero-copy th-hero-copy-beat th-hero-copy-omen" data-copy-omen>
+            <p className="ix-eyebrow">
+              <b>忘却</b> {beat.omenEyebrow}
+            </p>
+            <h2>{beat.omenTitle}</h2>
+            <p className="th-hero-body">{beat.omenBody}</p>
+          </div>
+
+          <div className="th-hero-copy th-hero-copy-beat th-hero-copy-eclipse" data-copy-eclipse>
+            <p className="ix-eyebrow">
+              <b>金継ぎ</b> {beat.eclipseEyebrow}
+            </p>
+            <h2>{beat.eclipseTitle}</h2>
+            <p className="th-hero-body">{beat.eclipseBody}</p>
           </div>
 
           <div className="th-hero-logo" data-hero-logo>
@@ -54,12 +98,24 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
             />
           </div>
 
-          <div className="th-hero-word" aria-hidden="true">
+          <div className="th-hero-word" data-hero-word aria-hidden="true">
             TSUKIHARA
           </div>
           <div className="th-hero-jp" aria-hidden="true">
             {copy.hero.vertical}
           </div>
+
+          <div className="th-hero-phase" aria-hidden="true">
+            <span data-phase-serene>{beat.phaseSerene}</span>
+            <span data-phase-omen>{beat.phaseOmen}</span>
+            <span data-phase-eclipse>{beat.phaseEclipse}</span>
+          </div>
+
+          <div className="th-hero-kanji" aria-hidden="true">
+            <span data-kanji-memory>記憶</span>
+            <span data-kanji-eclipse>蝕</span>
+          </div>
+
           <a href="#gate" className="th-hero-scroll-cue">
             <span>{copy.hero.cue}</span>
             <i />

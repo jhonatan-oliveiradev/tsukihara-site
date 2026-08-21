@@ -1,0 +1,187 @@
+.th-hero-stage {
+  background:
+    radial-gradient(circle at 64% 24%, rgba(112, 136, 166, 0.09), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(21, 35, 52, 0.18), transparent 48%),
+    linear-gradient(180deg, #06101c 0%, #050b14 46%, #02050a 100%);
+}
+
+.th-hero-copy h1,
+.th-hero-copy h2,
+.th-hero-word {
+  font-family: "Cinzel", "Yu Mincho", "Hiragino Mincho ProN", serif;
+}
+
+/* The environment masters are wide cinematic plates. Their transparent pixels still
+   carry a faint edge in some browsers, so their upper edge is feathered into the sky. */
+.th-hero-atmosphere,
+.th-hero-temple,
+.th-hero-mist-mid,
+.th-hero-ground {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 100%);
+}
+
+.th-hero-sakura-left,
+.th-hero-sakura-right {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 9%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 9%, #000 100%);
+}
+
+.th-hero-atmosphere,
+.th-hero-temple,
+.th-hero-ground {
+  filter: saturate(0.92) contrast(1.025);
+}
+
+.th-hero-sakura-right {
+  opacity: calc(0.8 + var(--hero-eclipse) * 0.16);
+  filter: saturate(calc(0.86 + var(--hero-eclipse) * 0.2))
+    brightness(calc(0.84 + var(--hero-eclipse) * 0.12));
+}
+
+.th-hero-vignette {
+  background:
+    radial-gradient(
+      ellipse at 69% 57%,
+      transparent 22%,
+      rgba(2, 5, 10, 0.08) 52%,
+      rgba(2, 5, 10, 0.28) 92%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(2, 5, 10, 0.95) 0%,
+      rgba(2, 5, 10, 0.7) 23%,
+      rgba(2, 5, 10, 0.12) 48%,
+      transparent 73%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.2),
+      transparent 25%,
+      transparent 66%,
+      rgba(1, 3, 7, 0.78) 100%
+    );
+}
+
+.th-hero-copy {
+  z-index: 48;
+}
+
+.th-hero-copy h1,
+.th-hero-copy h2 {
+  text-shadow:
+    0 16px 46px rgba(0, 0, 0, 0.55),
+    0 2px 12px rgba(0, 0, 0, 0.34);
+}
+
+.th-hero-body {
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+@media (min-width: 1921px) {
+  .th-hero-scene {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  }
+}
+
+@media (max-width: 980px) {
+  .th-hero-scene {
+    left: 50%;
+  }
+
+  .th-hero-characters {
+    right: calc((1120px - 100vw) / 2 + 24px);
+    width: min(58vw, 480px);
+  }
+
+  .th-hero-atmosphere,
+  .th-hero-temple,
+  .th-hero-mist-mid,
+  .th-hero-ground {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%);
+  }
+
+  .th-hero-copy {
+    width: min(44vw, 390px);
+  }
+}
+
+@media (max-width: 680px) {
+  .th-hero-scene {
+    left: 50%;
+    width: 820px;
+    min-width: 820px;
+  }
+
+  .th-hero-moon {
+    top: 10.5vh;
+    left: 60%;
+    width: 220px;
+  }
+
+  .th-hero-characters {
+    right: calc((820px - 100vw) / 2 + 10px);
+    bottom: 3.2vh;
+    width: min(96vw, 390px);
+  }
+
+  .th-hero-atmosphere,
+  .th-hero-temple,
+  .th-hero-mist-mid,
+  .th-hero-ground {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 100%);
+  }
+
+  .th-hero-sakura-right {
+    opacity: calc(0.58 + var(--hero-eclipse) * 0.28);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 17%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 17%, #000 100%);
+  }
+
+  .th-hero-copy {
+    top: 13.5vh;
+    left: 20px;
+    width: min(79vw, 310px);
+  }
+
+  .th-hero-copy h1,
+  .th-hero-copy h2 {
+    max-width: 8.8ch;
+    font-size: clamp(2.25rem, 10.4vw, 3.15rem);
+    line-height: 0.96;
+  }
+
+  .th-hero-copy-beat h2 {
+    max-width: 9.5ch;
+  }
+
+  .th-hero-body {
+    max-width: 31ch;
+    margin-top: 0.9rem;
+    font-size: 0.7rem;
+    line-height: 1.55;
+  }
+
+  .th-hero-signature {
+    margin-top: 1rem;
+  }
+
+  .th-hero-word {
+    bottom: 0.6vh;
+    font-size: clamp(4.5rem, 22vw, 7rem);
+    opacity: 0.14;
+  }
+
+  .th-hero-logo {
+    top: 8.8vh;
+    right: 14px;
+    width: 108px;
+  }
+
+  .th-hero-scroll-cue {
+    bottom: 2.4vh;
+  }
+}
