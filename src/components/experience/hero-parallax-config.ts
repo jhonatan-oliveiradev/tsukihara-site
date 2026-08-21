@@ -54,7 +54,7 @@ export const heroParallaxLayers: readonly HeroParallaxLayer[] = [
   },
   {
     id: "characters",
-    src: "/parallax/tsukihara-characters.png",
+    src: "/parallax/tsukihara-characters-web.png",
     depth: 0.12,
     maxX: 17,
     maxY: 9,
