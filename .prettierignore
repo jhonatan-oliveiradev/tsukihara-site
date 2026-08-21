@@ -1,5 +1,5 @@
 public/secret-pathways-assets/**
 public/models/**
 public/audio/**
-public/favicon/**
+public/favicon/site.webmanifest
 tsconfig.json
