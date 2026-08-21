@@ -12,7 +12,7 @@ export const realms = [
     title: "Hanamori",
     kanji: "花守",
     label: "Temple of blossoms",
-    image: "/images/hanamori.webp",
+    image: "/assets_hq/templo-hanamori.png",
     copy: "A sanctuary of red timber, suspended bridges and drifting sakura high above the valley.",
   },
   {
@@ -20,7 +20,7 @@ export const realms = [
     title: "Mizukyo",
     kanji: "水鏡",
     label: "Mirror of water",
-    image: "/images/mizukyo.webp",
+    image: "/assets_hq/mizukyo-cachoeiras.png",
     copy: "Waterfalls cut through the mountainside and turn every passage into mist, reflection and vertical motion.",
   },
   {
@@ -28,7 +28,7 @@ export const realms = [
     title: "Kurogane",
     kanji: "黒鉄",
     label: "Ruins of iron",
-    image: "/images/kurogane.webp",
+    image: "/assets_hq/kurogane-ruinas.png",
     copy: "Broken stone, scorched metal and forgotten structures mark the most severe edge of Tsukihara's world.",
   },
 ] as const;
