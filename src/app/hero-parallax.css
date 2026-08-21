@@ -1,0 +1,340 @@
+.ix-hero {
+  overflow: clip;
+  isolation: isolate;
+}
+
+.ix-hero-parallax {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: clip;
+}
+
+.ix-hero-parallax::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(4, 6, 9, 0.92) 0%,
+    rgba(4, 6, 9, 0.72) 26%,
+    rgba(4, 6, 9, 0.2) 52%,
+    transparent 69%
+  );
+}
+
+.ix-parallax-layer,
+.ix-parallax-motion,
+.ix-parallax-image {
+  pointer-events: none;
+  user-select: none;
+}
+
+.ix-parallax-layer {
+  position: absolute;
+}
+
+.ix-parallax-motion {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.ix-parallax-image {
+  object-fit: contain;
+}
+
+.ix-parallax-moon {
+  z-index: 2;
+  width: clamp(280px, 34vw, 680px);
+  aspect-ratio: 1;
+  right: clamp(13vw, 18vw, 22vw);
+  top: clamp(14vh, 20vh, 25vh);
+  opacity: 0.92;
+}
+
+.ix-parallax-moon .ix-parallax-image {
+  object-position: center;
+}
+
+.ix-parallax-temple {
+  z-index: 3;
+  width: clamp(520px, 52vw, 960px);
+  height: clamp(280px, 43vh, 520px);
+  right: clamp(5vw, 9vw, 13vw);
+  bottom: clamp(13vh, 17vh, 21vh);
+  opacity: 0.38;
+}
+
+.ix-parallax-temple .ix-parallax-image {
+  object-position: center bottom;
+}
+
+.ix-parallax-mist {
+  z-index: 4;
+  width: min(78vw, 1500px);
+  height: 46vh;
+  right: -8vw;
+  top: 28vh;
+  opacity: 0.42;
+}
+
+.ix-parallax-mist .ix-parallax-image {
+  object-position: center;
+}
+
+.ix-parallax-sakura {
+  z-index: 5;
+  width: clamp(620px, 58vw, 1160px);
+  height: 90vh;
+  right: clamp(-12vw, -7vw, -3vw);
+  top: 0;
+}
+
+.ix-parallax-sakura .ix-parallax-image {
+  object-position: right top;
+}
+
+.ix-parallax-ground {
+  z-index: 7;
+  width: clamp(820px, 76vw, 1500px);
+  height: 42vh;
+  right: -9vw;
+  bottom: -7vh;
+}
+
+.ix-parallax-ground .ix-parallax-image {
+  object-position: right bottom;
+}
+
+.ix-parallax-characters {
+  z-index: 9;
+  width: clamp(660px, 54vw, 1080px);
+  height: 88vh;
+  right: clamp(-5vw, -1vw, 1vw);
+  bottom: -1vh;
+}
+
+.ix-parallax-characters .ix-parallax-image {
+  object-position: right bottom;
+}
+
+.ix-parallax-petals {
+  z-index: 10;
+  inset: -4vh -3vw -2vh -3vw;
+  opacity: 0.62;
+}
+
+.ix-parallax-petals .ix-parallax-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.ix-hero-copy,
+.ix-hero-logo,
+.ix-hero-jp,
+.ix-scroll-cue {
+  z-index: 20;
+}
+
+.ix-hero-copy {
+  max-width: min(590px, 43vw);
+}
+
+.ix-hero-logo {
+  z-index: 18;
+}
+
+.ix-hero-word {
+  z-index: 8;
+  color: rgba(225, 226, 220, 0.72);
+}
+
+.ix-hero-jp {
+  right: clamp(12px, 1.3vw, 26px);
+}
+
+@media (min-width: 1600px) {
+  .ix-parallax-characters {
+    width: clamp(820px, 52vw, 1180px);
+    right: 1vw;
+  }
+
+  .ix-parallax-sakura {
+    width: min(54vw, 1220px);
+    right: -4vw;
+  }
+
+  .ix-parallax-ground {
+    width: min(72vw, 1580px);
+    right: -5vw;
+  }
+
+  .ix-parallax-moon {
+    right: 19vw;
+  }
+}
+
+@media (min-width: 2100px) {
+  .ix-parallax-characters {
+    width: min(49vw, 1260px);
+    right: 4vw;
+  }
+
+  .ix-parallax-moon {
+    width: min(30vw, 760px);
+    right: 21vw;
+  }
+
+  .ix-parallax-temple {
+    width: min(46vw, 1040px);
+    right: 13vw;
+  }
+}
+
+@media (max-width: 980px) {
+  .ix-hero-copy {
+    max-width: min(520px, 56vw);
+  }
+
+  .ix-parallax-moon {
+    width: clamp(250px, 42vw, 460px);
+    right: 8vw;
+    top: 21vh;
+  }
+
+  .ix-parallax-temple {
+    width: 60vw;
+    height: 34vh;
+    right: 2vw;
+    bottom: 20vh;
+    opacity: 0.28;
+  }
+
+  .ix-parallax-mist {
+    width: 84vw;
+    height: 38vh;
+    right: -14vw;
+    top: 34vh;
+    opacity: 0.34;
+  }
+
+  .ix-parallax-sakura {
+    width: 74vw;
+    height: 82vh;
+    right: -20vw;
+    top: 5vh;
+  }
+
+  .ix-parallax-ground {
+    width: 92vw;
+    height: 36vh;
+    right: -16vw;
+    bottom: -5vh;
+  }
+
+  .ix-parallax-characters {
+    width: 68vw;
+    height: 78vh;
+    right: -10vw;
+    bottom: -1vh;
+  }
+
+  .ix-parallax-petals {
+    inset: 0 -8vw;
+    opacity: 0.52;
+  }
+
+  .ix-hero-parallax::after {
+    background: linear-gradient(
+      90deg,
+      rgba(4, 6, 9, 0.94) 0%,
+      rgba(4, 6, 9, 0.74) 34%,
+      rgba(4, 6, 9, 0.18) 61%,
+      transparent 78%
+    );
+  }
+}
+
+@media (max-width: 680px) {
+  .ix-hero {
+    min-height: 100svh;
+  }
+
+  .ix-hero-copy {
+    max-width: min(92vw, 460px);
+  }
+
+  .ix-hero-parallax::after {
+    background: linear-gradient(
+      180deg,
+      rgba(4, 6, 9, 0.95) 0%,
+      rgba(4, 6, 9, 0.79) 38%,
+      rgba(4, 6, 9, 0.18) 65%,
+      rgba(4, 6, 9, 0.04) 100%
+    );
+  }
+
+  .ix-parallax-moon {
+    width: clamp(230px, 60vw, 340px);
+    right: -5vw;
+    top: 36vh;
+    opacity: 0.82;
+  }
+
+  .ix-parallax-temple {
+    display: none;
+  }
+
+  .ix-parallax-mist {
+    width: 112vw;
+    height: 28vh;
+    right: -34vw;
+    top: 49vh;
+    opacity: 0.18;
+  }
+
+  .ix-parallax-sakura {
+    width: 112vw;
+    height: 66vh;
+    right: -47vw;
+    top: 27vh;
+  }
+
+  .ix-parallax-ground {
+    width: 132vw;
+    height: 29vh;
+    right: -34vw;
+    bottom: -2vh;
+  }
+
+  .ix-parallax-characters {
+    width: 94vw;
+    height: 58vh;
+    right: -23vw;
+    bottom: -1vh;
+  }
+
+  .ix-parallax-petals {
+    inset: 17vh -24vw -4vh -14vw;
+    opacity: 0.4;
+  }
+
+  .ix-hero-logo {
+    z-index: 20;
+  }
+
+  .ix-hero-word {
+    z-index: 8;
+    opacity: 0.72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-parallax-motion {
+    transform: none !important;
+    will-change: auto;
+  }
+}
