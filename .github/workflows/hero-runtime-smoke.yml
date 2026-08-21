@@ -33,24 +33,35 @@ jobs:
           cat > qa/runtime-smoke.cjs <<'NODE'
           const { chromium } = require('playwright');
 
-          async function assertExperienceConcealed(page, label) {
+          async function snapshotState(page, label) {
             const state = await page.evaluate(() => {
+              const gateway = document.querySelector('.ix-entry-gateway');
               const layer = document.querySelector('.ix-experience-layer');
-              if (!layer) return { exists: false };
-              const style = getComputedStyle(layer);
+              const style = layer ? getComputedStyle(layer) : null;
               return {
-                exists: true,
-                opacity: Number(style.opacity),
-                visibility: style.visibility,
-                pointerEvents: style.pointerEvents,
+                url: location.href,
+                gatewayCount: document.querySelectorAll('.ix-entry-gateway').length,
+                phase: gateway?.dataset.phase ?? 'ready',
+                layerCount: document.querySelectorAll('.ix-experience-layer').length,
+                layerClass: layer?.className ?? null,
+                opacity: style ? Number(style.opacity) : null,
+                visibility: style?.visibility ?? null,
+                pointerEvents: style?.pointerEvents ?? null,
+                bodyChildren: document.body.children.length,
               };
             });
-            if (!state.exists || state.visibility !== 'hidden' || state.opacity > 0.001 || state.pointerEvents !== 'none') {
+            console.log(`[${label}] ${JSON.stringify(state)}`);
+            return state;
+          }
+
+          async function assertExperienceConcealed(page, label) {
+            const state = await snapshotState(page, label);
+            if (state.layerCount !== 1 || state.visibility !== 'hidden' || state.opacity > 0.001 || state.pointerEvents !== 'none') {
               throw new Error(`Experience leaked during ${label}: ${JSON.stringify(state)}`);
             }
           }
 
-          async function enter(page) {
+          async function enter(page, failures) {
             await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('.ix-entry-gateway', { timeout: 45000 });
             await assertExperienceConcealed(page, 'loading');
@@ -67,40 +78,27 @@ jobs:
             if (await buttons.count() < 2) throw new Error('Expected sound and silent entry choices');
             await buttons.nth(1).evaluate((button) => button.click());
 
-            const observed = [];
-            for (const delay of [0, 40, 120, 320, 760, 1180]) {
-              if (delay) await page.waitForTimeout(delay - observed.reduce((sum, item) => sum + item.waited, 0));
-              const phase = await page.evaluate(() => document.querySelector('.ix-entry-gateway')?.dataset.phase ?? 'ready');
-              observed.push({ waited: delay - observed.reduce((sum, item) => sum + item.waited, 0), delay, phase });
-              if (phase === 'revealing') break;
+            await page.waitForTimeout(60);
+            const revealState = await snapshotState(page, 'after click 60ms');
+            if (failures.length) throw new Error(`Browser error during reveal: ${failures.join(' | ')}`);
+            if (revealState.phase !== 'revealing') {
+              throw new Error(`Gateway did not enter revealing state: ${JSON.stringify(revealState)}`);
             }
-            if (!observed.some((item) => item.phase === 'revealing')) {
-              throw new Error(`Gateway never entered revealing state: ${JSON.stringify(observed)}`);
-            }
-
-            const revealingState = await page.evaluate(() => {
-              const layer = document.querySelector('.ix-experience-layer');
-              const style = layer ? getComputedStyle(layer) : null;
-              return style
-                ? {
-                    opacity: Number(style.opacity),
-                    visibility: style.visibility,
-                    pointerEvents: style.pointerEvents,
-                  }
-                : null;
-            });
             if (
-              !revealingState ||
-              revealingState.visibility !== 'visible' ||
-              revealingState.opacity < 0.99 ||
-              revealingState.pointerEvents !== 'auto'
+              revealState.layerCount !== 1 ||
+              revealState.visibility !== 'visible' ||
+              revealState.opacity < 0.99 ||
+              revealState.pointerEvents !== 'auto'
             ) {
-              throw new Error(`Hero was not staged beneath reveal curtains: ${JSON.stringify(revealingState)}`);
+              throw new Error(`Hero was not staged beneath reveal curtains: ${JSON.stringify(revealState)}`);
             }
 
             await page.screenshot({ path: 'qa/screens/gateway-revealing.png', fullPage: false });
             await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, { timeout: 10000 });
-            await page.waitForSelector('.ix-experience-layer.is-visible', { timeout: 5000 });
+            const readyState = await snapshotState(page, 'ready');
+            if (readyState.layerCount !== 1 || readyState.visibility !== 'visible' || readyState.pointerEvents !== 'auto') {
+              throw new Error(`Experience was not interactive after reveal: ${JSON.stringify(readyState)}`);
+            }
             await page.waitForSelector('#top', { timeout: 10000 });
             await page.waitForTimeout(700);
           }
@@ -108,15 +106,19 @@ jobs:
           async function captureSequence(browser, width, height, label, fractions) {
             const page = await browser.newPage({ viewport: { width, height } });
             const failures = [];
-            page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`));
+            page.on('pageerror', (error) => {
+              failures.push(`pageerror: ${error.message}`);
+              console.error(`BROWSER PAGEERROR: ${error.stack || error.message}`);
+            });
             page.on('console', (message) => {
               const text = message.text();
+              if (message.type() === 'error') console.error(`BROWSER CONSOLE: ${text}`);
               if (/Invalid scope|Cannot access 'ctx' before initialization|Maximum call stack size exceeded/i.test(text)) {
                 failures.push(`console: ${text}`);
               }
             });
 
-            await enter(page);
+            await enter(page, failures);
             const hero = page.locator('#top');
             const top = await hero.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
             const distance = height * (width <= 680 ? 2.08 : width <= 980 ? 2.55 : 3.05);
