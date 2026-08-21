@@ -89,7 +89,13 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
           </div>
 
           <div className="th-hero-logo" data-hero-logo>
-            <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={520} height={293} priority />
+            <Image
+              src="/assets_hq/logotipo.png"
+              alt="Tsukihara"
+              width={520}
+              height={293}
+              priority
+            />
           </div>
 
           <div className="th-hero-word" data-hero-word aria-hidden="true">

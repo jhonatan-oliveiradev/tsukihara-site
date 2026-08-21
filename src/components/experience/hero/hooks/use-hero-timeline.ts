@@ -16,7 +16,8 @@ const getScrollDistance = (reduced: boolean) => {
 };
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
-const range = (progress: number, start: number, end: number) => clamp01((progress - start) / (end - start));
+const range = (progress: number, start: number, end: number) =>
+  clamp01((progress - start) / (end - start));
 
 export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -40,7 +41,12 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
 
     gsap.set(after, { opacity: 0 });
     gsap.set(before, { opacity: 1 });
-    gsap.set(q("[data-sakura-left], [data-mist-crimson], [data-crimson-wash], [data-character-rim], [data-ground-glow], [data-temple-light], [data-moon-halo-crimson], [data-right-petals-after], [data-left-petals-after]"), { opacity: 0 });
+    gsap.set(
+      q(
+        "[data-sakura-left], [data-mist-crimson], [data-crimson-wash], [data-character-rim], [data-ground-glow], [data-temple-light], [data-moon-halo-crimson], [data-right-petals-after], [data-left-petals-after]",
+      ),
+      { opacity: 0 },
+    );
     gsap.set(q("[data-moon-shadow]"), { xPercent: -132, opacity: 0 });
     gsap.set(q("[data-copy-intro]"), { opacity: 1, y: 0 });
     gsap.set(q("[data-copy-omen], [data-copy-eclipse]"), { opacity: 0, y: 36 });
@@ -101,10 +107,18 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(after, { opacity: 1, duration: 0.36 }, 0.42)
         .to(before, { opacity: 0.12, duration: 0.36 }, 0.42)
         .to(q("[data-sky-crimson]"), { opacity: 0.9, duration: 0.36 }, 0.42)
-        .to(q("[data-moon-halo-crimson], [data-crimson-wash]"), { opacity: 0.8, duration: 0.3 }, 0.48);
+        .to(
+          q("[data-moon-halo-crimson], [data-crimson-wash]"),
+          { opacity: 0.8, duration: 0.3 },
+          0.48,
+        );
     } else {
       timeline
-        .to(q("[data-hero-camera]"), { scale: 1.012, xPercent: -0.2, yPercent: -0.12, duration: 0.16 }, 0)
+        .to(
+          q("[data-hero-camera]"),
+          { scale: 1.012, xPercent: -0.2, yPercent: -0.12, duration: 0.16 },
+          0,
+        )
         .to(q("[data-copy-intro]"), { y: -16, opacity: 0.35, duration: 0.12 }, 0.12)
         .to(q("[data-copy-intro]"), { y: -32, opacity: 0, duration: 0.08 }, 0.22)
         .to(q("[data-copy-omen]"), { y: 0, opacity: 1, duration: 0.11, ease: "power2.out" }, 0.2)
@@ -114,14 +128,30 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(q("[data-sky-crimson]"), { opacity: 0.12, duration: 0.16 }, 0.24)
         .to(q("[data-moon-after]"), { opacity: 0.12, duration: 0.14 }, 0.3)
         .to(q("[data-temple-after], [data-mist-after]"), { opacity: 0.12, duration: 0.16 }, 0.3)
-        .to(q("[data-moon-shadow]"), { xPercent: -4, opacity: 0.62, duration: 0.16, ease: "power1.inOut" }, 0.36)
+        .to(
+          q("[data-moon-shadow]"),
+          { xPercent: -4, opacity: 0.62, duration: 0.16, ease: "power1.inOut" },
+          0.36,
+        )
         .to(q("[data-moon-after]"), { opacity: 0.48, duration: 0.18 }, 0.38)
         .to(q("[data-moon-before]"), { opacity: 0.72, duration: 0.18 }, 0.38)
         .to(q("[data-sky-crimson]"), { opacity: 0.38, duration: 0.18 }, 0.38)
-        .to(q("[data-temple-after], [data-mist-after], [data-sakura-right-after]"), { opacity: 0.4, duration: 0.18 }, 0.38)
-        .to(q("[data-temple-before], [data-mist-before], [data-sakura-right-before]"), { opacity: 0.78, duration: 0.18 }, 0.38)
+        .to(
+          q("[data-temple-after], [data-mist-after], [data-sakura-right-after]"),
+          { opacity: 0.4, duration: 0.18 },
+          0.38,
+        )
+        .to(
+          q("[data-temple-before], [data-mist-before], [data-sakura-right-before]"),
+          { opacity: 0.78, duration: 0.18 },
+          0.38,
+        )
         .to(q("[data-copy-omen]"), { y: -24, opacity: 0, duration: 0.1 }, 0.5)
-        .to(q("[data-copy-eclipse]"), { y: 0, opacity: 1, duration: 0.12, ease: "power2.out" }, 0.53)
+        .to(
+          q("[data-copy-eclipse]"),
+          { y: 0, opacity: 1, duration: 0.12, ease: "power2.out" },
+          0.53,
+        )
         .to(q("[data-phase-omen]"), { opacity: 0, duration: 0.07 }, 0.5)
         .to(q("[data-phase-eclipse]"), { opacity: 1, duration: 0.08 }, 0.54)
         .to(q("[data-kanji-memory]"), { opacity: 0.025, yPercent: -8, duration: 0.18 }, 0.5)
@@ -131,21 +161,53 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(q("[data-moon-before]"), { opacity: 0.28, duration: 0.2 }, 0.5)
         .to(q("[data-moon-halo-normal]"), { opacity: 0.1, duration: 0.18 }, 0.5)
         .to(q("[data-moon-halo-crimson]"), { opacity: 0.92, scale: 1.05, duration: 0.2 }, 0.5)
-        .to(q("[data-temple-after], [data-ground-after], [data-characters-after], [data-sakura-right-after]"), { opacity: 0.82, duration: 0.2 }, 0.5)
-        .to(q("[data-temple-before], [data-ground-before], [data-characters-before], [data-sakura-right-before]"), { opacity: 0.32, duration: 0.2 }, 0.5)
+        .to(
+          q(
+            "[data-temple-after], [data-ground-after], [data-characters-after], [data-sakura-right-after]",
+          ),
+          { opacity: 0.82, duration: 0.2 },
+          0.5,
+        )
+        .to(
+          q(
+            "[data-temple-before], [data-ground-before], [data-characters-before], [data-sakura-right-before]",
+          ),
+          { opacity: 0.32, duration: 0.2 },
+          0.5,
+        )
         .to(q("[data-sakura-left], [data-mist-crimson]"), { opacity: 0.58, duration: 0.18 }, 0.52)
-        .to(q("[data-character-rim], [data-ground-glow], [data-temple-light]"), { opacity: 0.65, duration: 0.18 }, 0.54)
+        .to(
+          q("[data-character-rim], [data-ground-glow], [data-temple-light]"),
+          { opacity: 0.65, duration: 0.18 },
+          0.54,
+        )
         .to(q("[data-crimson-wash]"), { opacity: 0.18, duration: 0.18 }, 0.56)
-        .to(q("[data-left-petals-after], [data-right-petals-after]"), { opacity: 0.72, duration: 0.18 }, 0.58)
+        .to(
+          q("[data-left-petals-after], [data-right-petals-after]"),
+          { opacity: 0.72, duration: 0.18 },
+          0.58,
+        )
         .to(q("[data-sky-crimson]"), { opacity: 0.94, duration: 0.18 }, 0.68)
         .to(after, { opacity: 1, duration: 0.18 }, 0.68)
         .to(before, { opacity: 0.06, duration: 0.18 }, 0.68)
         .to(q("[data-sakura-left]"), { opacity: 0.82, duration: 0.14 }, 0.68)
         .to(q("[data-mist-crimson]"), { opacity: 0.74, duration: 0.14 }, 0.68)
         .to(q("[data-crimson-wash]"), { opacity: 0.25, duration: 0.14 }, 0.68)
-        .to(q("[data-hero-camera]"), { scale: 1.026, xPercent: -0.65, yPercent: -0.22, duration: 0.18 }, 0.68)
-        .to(q("[data-hero-word]"), { opacity: 0.42, letterSpacing: "-0.045em", duration: 0.16 }, 0.72)
-        .to(q("[data-hero-camera]"), { scale: 1.02, xPercent: -0.35, yPercent: -0.12, duration: 0.14, ease: "sine.out" }, 0.86)
+        .to(
+          q("[data-hero-camera]"),
+          { scale: 1.026, xPercent: -0.65, yPercent: -0.22, duration: 0.18 },
+          0.68,
+        )
+        .to(
+          q("[data-hero-word]"),
+          { opacity: 0.42, letterSpacing: "-0.045em", duration: 0.16 },
+          0.72,
+        )
+        .to(
+          q("[data-hero-camera]"),
+          { scale: 1.02, xPercent: -0.35, yPercent: -0.12, duration: 0.14, ease: "sine.out" },
+          0.86,
+        )
         .to(q("[data-crimson-wash]"), { opacity: 0.18, duration: 0.14 }, 0.86);
     }
 
@@ -166,7 +228,8 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         root.style.setProperty("--hero-omen", range(progress, 0.12, 0.48).toFixed(4));
         root.style.setProperty("--hero-eclipse", range(progress, 0.28, 0.78).toFixed(4));
         root.style.setProperty("--hero-storm", range(progress, 0.48, 0.86).toFixed(4));
-        const speed = progress < 0.12 ? 0.55 : progress < 0.48 ? 0.85 : progress < 0.86 ? 1.45 : 0.72;
+        const speed =
+          progress < 0.12 ? 0.55 : progress < 0.48 ? 0.85 : progress < 0.86 ? 1.45 : 0.72;
         petalTweens.forEach((tween) => tween.timeScale(speed));
       },
     });
@@ -194,10 +257,11 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           target.y(ny * target.depth * 8);
         });
       };
-      const reset = () => pointerTargets.forEach((target) => {
-        target?.x(0);
-        target?.y(0);
-      });
+      const reset = () =>
+        pointerTargets.forEach((target) => {
+          target?.x(0);
+          target?.y(0);
+        });
       window.addEventListener("pointermove", move, { passive: true });
       window.addEventListener("pointerleave", reset, { passive: true });
       removePointerListeners = () => {

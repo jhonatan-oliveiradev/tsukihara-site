@@ -62,7 +62,11 @@
   opacity: calc(0.08 + var(--hero-storm) * 0.16);
   background:
     radial-gradient(circle at 67% 33%, rgba(255, 200, 146, 0.12), transparent 18%),
-    radial-gradient(circle at 74% 54%, rgba(142, 27, 42, calc(var(--hero-eclipse) * 0.2)), transparent 30%),
+    radial-gradient(
+      circle at 74% 54%,
+      rgba(142, 27, 42, calc(var(--hero-eclipse) * 0.2)),
+      transparent 30%
+    ),
     linear-gradient(180deg, transparent 52%, rgba(2, 4, 8, 0.22));
   mix-blend-mode: screen;
 }
@@ -74,7 +78,10 @@
     radial-gradient(circle at 18% 34%, rgba(255, 255, 255, 0.15) 0 0.6px, transparent 0.9px),
     radial-gradient(circle at 72% 61%, rgba(255, 226, 211, 0.11) 0 0.8px, transparent 1px),
     radial-gradient(circle at 43% 77%, rgba(255, 255, 255, 0.09) 0 0.5px, transparent 0.8px);
-  background-size: 113px 97px, 149px 127px, 83px 109px;
+  background-size:
+    113px 97px,
+    149px 127px,
+    83px 109px;
   animation: th-hero-grain 8s steps(2) infinite;
 }
 
@@ -107,7 +114,12 @@
     radial-gradient(circle at 77% 18%, rgba(255, 247, 222, 0.52) 0 1px, transparent 1.5px),
     radial-gradient(circle at 88% 39%, rgba(255, 247, 222, 0.34) 0 1px, transparent 1.5px),
     radial-gradient(circle at 29% 46%, rgba(255, 247, 222, 0.26) 0 1px, transparent 1.5px);
-  background-size: 31vw 24vh, 37vw 31vh, 29vw 28vh, 43vw 36vh, 34vw 27vh;
+  background-size:
+    31vw 24vh,
+    37vw 31vh,
+    29vw 28vh,
+    43vw 36vh,
+    34vw 27vh;
   transition: opacity 0.2s linear;
 }
 
@@ -157,13 +169,23 @@
 
 .th-hero-moon-halo-normal {
   opacity: calc(0.76 - var(--hero-eclipse) * 0.58);
-  background: radial-gradient(circle, rgba(252, 224, 155, 0.34), rgba(230, 201, 142, 0.12) 38%, transparent 71%);
+  background: radial-gradient(
+    circle,
+    rgba(252, 224, 155, 0.34),
+    rgba(230, 201, 142, 0.12) 38%,
+    transparent 71%
+  );
   filter: blur(9px);
 }
 
 .th-hero-moon-halo-crimson {
   opacity: 0;
-  background: radial-gradient(circle, rgba(255, 61, 70, 0.42), rgba(166, 20, 34, 0.16) 44%, transparent 73%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 61, 70, 0.42),
+    rgba(166, 20, 34, 0.16) 44%,
+    transparent 73%
+  );
   filter: blur(12px);
 }
 
@@ -215,7 +237,12 @@
   z-index: 3;
   inset: 32% 25% 5% 30%;
   opacity: 0;
-  background: radial-gradient(ellipse at center bottom, rgba(240, 116, 71, 0.31), rgba(177, 45, 49, 0.09) 42%, transparent 70%);
+  background: radial-gradient(
+    ellipse at center bottom,
+    rgba(240, 116, 71, 0.31),
+    rgba(177, 45, 49, 0.09) 42%,
+    transparent 70%
+  );
   mix-blend-mode: screen;
 }
 
@@ -264,7 +291,12 @@
   z-index: -1;
   inset: 8% 0 4% 20%;
   opacity: 0;
-  background: radial-gradient(ellipse at 64% 48%, rgba(244, 83, 81, 0.3), rgba(173, 31, 44, 0.09) 45%, transparent 70%);
+  background: radial-gradient(
+    ellipse at 64% 48%,
+    rgba(244, 83, 81, 0.3),
+    rgba(173, 31, 44, 0.09) 45%,
+    transparent 70%
+  );
   filter: blur(17px);
   mix-blend-mode: screen;
 }
@@ -400,8 +432,20 @@
   z-index: 30;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(2, 5, 10, 0.92) 0%, rgba(2, 5, 10, 0.65) 24%, rgba(2, 5, 10, 0.1) 48%, transparent 72%),
-    linear-gradient(180deg, rgba(1, 3, 7, 0.26), transparent 26%, transparent 65%, rgba(1, 3, 7, 0.76) 100%);
+    linear-gradient(
+      90deg,
+      rgba(2, 5, 10, 0.92) 0%,
+      rgba(2, 5, 10, 0.65) 24%,
+      rgba(2, 5, 10, 0.1) 48%,
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.26),
+      transparent 26%,
+      transparent 65%,
+      rgba(1, 3, 7, 0.76) 100%
+    );
 }
 
 .th-hero-content {
@@ -585,19 +629,37 @@
 }
 
 @keyframes th-hero-cue {
-  0%, 100% { transform: scaleX(0.35); opacity: 0.45; }
-  50% { transform: scaleX(1); opacity: 1; }
+  0%,
+  100% {
+    transform: scaleX(0.35);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
 }
 
 @keyframes th-hero-grass {
-  from { transform: rotate(-0.15deg) translateY(0); }
-  to { transform: rotate(0.45deg) translateY(-3px); }
+  from {
+    transform: rotate(-0.15deg) translateY(0);
+  }
+  to {
+    transform: rotate(0.45deg) translateY(-3px);
+  }
 }
 
 @keyframes th-hero-grain {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  33% { transform: translate3d(1px, -1px, 0); }
-  66% { transform: translate3d(-1px, 1px, 0); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  33% {
+    transform: translate3d(1px, -1px, 0);
+  }
+  66% {
+    transform: translate3d(-1px, 1px, 0);
+  }
 }
 
 @media (min-width: 1921px) {
