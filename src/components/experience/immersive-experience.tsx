@@ -50,8 +50,14 @@ export function ImmersiveExperience() {
       lenis?.raf(time);
       frame = requestAnimationFrame(raf);
     };
+    const updateScrollTrigger = () => ScrollTrigger.update();
+    const resizeLenis = () => lenis?.resize();
 
-    if (lenis) frame = requestAnimationFrame(raf);
+    if (lenis) {
+      lenis.on("scroll", updateScrollTrigger);
+      ScrollTrigger.addEventListener("refresh", resizeLenis);
+      frame = requestAnimationFrame(raf);
+    }
 
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
@@ -80,20 +86,6 @@ export function ImmersiveExperience() {
       });
 
       if (reduced) return;
-
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: ".ix-hero-overhaul",
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1.15,
-          },
-        })
-        .to("[data-hero-word]", { xPercent: -13, yPercent: -5, ease: "none" }, 0)
-        .to("[data-hero-logo]", { yPercent: -18, opacity: 0.08, ease: "none" }, 0.08)
-        .to("[data-hero-copy]", { yPercent: -12, opacity: 0.16, ease: "none" }, 0.56)
-        .to(".ix-hero-ink", { opacity: 0.82, ease: "none" }, 0.58);
 
       gsap
         .timeline({
@@ -194,11 +186,16 @@ export function ImmersiveExperience() {
       });
     }, root);
 
+    ScrollTrigger.refresh();
+
     return () => {
       ctx.revert();
-      lenis?.destroy();
+      if (lenis) {
+        lenis.off("scroll", updateScrollTrigger);
+        ScrollTrigger.removeEventListener("refresh", resizeLenis);
+        lenis.destroy();
+      }
       cancelAnimationFrame(frame);
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, [locale]);
 
