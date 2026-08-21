@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/content/immersive-copy";
 
 const glyphs = "月影刃華神霧鉄夢朱守蝕道火水花夜魂祈";
@@ -9,7 +9,6 @@ type JpRevealTextProps = {
   jp: string;
   text: string;
   locale: Locale;
-  as?: ElementType;
   className?: string;
   duration?: number;
   delay?: number;
@@ -19,12 +18,11 @@ export function JpRevealText({
   jp,
   text,
   locale,
-  as: Tag = "span",
   className,
   duration = 980,
   delay = 80,
 }: JpRevealTextProps) {
-  const ref = useRef<HTMLElement | null>(null);
+  const ref = useRef<HTMLSpanElement>(null);
   const frameRef = useRef<number | null>(null);
   const [display, setDisplay] = useState(jp);
 
@@ -115,8 +113,8 @@ export function JpRevealText({
   }, [delay, duration, jp, locale, text]);
 
   return (
-    <Tag ref={ref} className={className} aria-label={text} data-jp-reveal>
+    <span ref={ref} className={className} aria-label={text} data-jp-reveal>
       <span aria-hidden="true">{display}</span>
-    </Tag>
+    </span>
   );
 }
