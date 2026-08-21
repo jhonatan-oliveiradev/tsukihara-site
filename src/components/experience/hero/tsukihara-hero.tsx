@@ -34,9 +34,7 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
             <h1>
               <JpRevealText jp={copy.hero.titleJp} text={copy.hero.title} locale={locale} />
             </h1>
-            <p className="th-hero-body" data-reveal>
-              {copy.hero.body}
-            </p>
+            <p className="th-hero-body" data-reveal>{copy.hero.body}</p>
             <div className="th-hero-signature" data-reveal>
               <span>AKARI NO REI</span>
               <i />
@@ -45,15 +43,17 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
           </div>
 
           <div className="th-hero-logo" data-hero-logo>
-            <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={520} height={293} priority />
+            <Image
+              src="/assets_hq/logotipo.png"
+              alt="Tsukihara"
+              width={520}
+              height={293}
+              priority
+            />
           </div>
 
-          <div className="th-hero-word" aria-hidden="true">
-            TSUKIHARA
-          </div>
-          <div className="th-hero-jp" aria-hidden="true">
-            {copy.hero.vertical}
-          </div>
+          <div className="th-hero-word" aria-hidden="true">TSUKIHARA</div>
+          <div className="th-hero-jp" aria-hidden="true">{copy.hero.vertical}</div>
           <a href="#gate" className="th-hero-scroll-cue">
             <span>{copy.hero.cue}</span>
             <i />
