@@ -1,0 +1,118 @@
+name: Visual hero parallax
+
+on:
+  push:
+    branches:
+      - feat/hero-cinematic-parallax
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install
+      - run: npm run build
+      - name: Validate PNG alpha channels
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          expected = [
+              'tsukihara-blood-moon-eclipse.png',
+              'tsukihara-distant-temple.png',
+              'tsukihara-lunar-mist.png',
+              'tsukihara-sakura-tree.png',
+              'tsukihara-ground.png',
+              'tsukihara-characters.png',
+              'tsukihara-petals.png',
+          ]
+          root = Path('public/parallax')
+          for name in expected:
+              path = root / name
+              image = Image.open(path)
+              has_alpha = image.mode in ('RGBA', 'LA') or 'transparency' in image.info
+              print(f'{name}: size={image.size} mode={image.mode} alpha={has_alpha}')
+              if not has_alpha:
+                  raise SystemExit(f'Missing alpha channel: {name}')
+          PY
+      - name: Install Chromium
+        run: npx --yes playwright@1.55.0 install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-next.log 2>&1 &
+          echo $! > /tmp/tsukihara-next.pid
+          for i in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-next.log
+          exit 1
+      - name: Capture responsive hero screenshots
+        run: |
+          cat > /tmp/hero-visual.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+
+          const viewports = [
+            ['390', 390, 844],
+            ['768', 768, 1024],
+            ['1440', 1440, 900],
+            ['1920', 1920, 1080],
+            ['2560-ultrawide', 2560, 1080],
+          ];
+
+          await fs.mkdir('hero-screenshots', { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+
+          for (const [name, width, height] of viewports) {
+            const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'networkidle' });
+            const buttons = page.locator('.ix-entry-actions button');
+            if (await buttons.count()) await buttons.nth(1).click();
+            await page.waitForTimeout(1800);
+
+            const report = await page.evaluate(() => {
+              const hero = document.querySelector('#top');
+              const copy = document.querySelector('.ix-hero-copy');
+              const header = document.querySelector('.ix-header');
+              const characters = document.querySelector('.ix-parallax-characters');
+              const scrollWidth = document.documentElement.scrollWidth;
+              const clientWidth = document.documentElement.clientWidth;
+              const rect = (node) => node ? node.getBoundingClientRect().toJSON() : null;
+              return {
+                scrollWidth,
+                clientWidth,
+                horizontalOverflow: scrollWidth > clientWidth + 1,
+                hero: rect(hero),
+                copy: rect(copy),
+                header: rect(header),
+                characters: rect(characters),
+              };
+            });
+
+            console.log(`${name}: ${JSON.stringify(report)}`);
+            if (report.horizontalOverflow) throw new Error(`Horizontal overflow at ${name}px`);
+            await page.screenshot({ path: `hero-screenshots/hero-${name}.png`, fullPage: false });
+            await page.close();
+          }
+
+          await browser.close();
+          JS
+          npx --yes --package=playwright@1.55.0 node /tmp/hero-visual.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hero-parallax-screenshots
+          path: hero-screenshots/*.png
+          if-no-files-found: error
+          retention-days: 2
