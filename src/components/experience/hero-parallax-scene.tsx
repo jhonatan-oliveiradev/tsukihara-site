@@ -12,6 +12,10 @@ type LayerNodes = Partial<Record<HeroParallaxLayerId, HTMLDivElement>>;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const damp = (current: number, target: number, amount: number) =>
   current + (target - current) * amount;
+const smoothstep = (value: number, start: number, end: number) => {
+  const t = clamp((value - start) / Math.max(end - start, 0.0001), 0, 1);
+  return t * t * (3 - 2 * t);
+};
 
 export function HeroParallaxScene() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -31,6 +35,7 @@ export function HeroParallaxScene() {
     const pointerCurrent = { x: 0, y: 0 };
     let scrollTarget = 0;
     let scrollCurrent = 0;
+    let opacityCurrent = 1;
     let frame = 0;
     let isMobile = mobileQuery.matches;
     let isTablet = tabletQuery.matches;
@@ -46,7 +51,9 @@ export function HeroParallaxScene() {
 
     const updateScroll = () => {
       const rect = root.getBoundingClientRect();
-      scrollTarget = clamp(-rect.top / Math.max(rect.height, 1), 0, 1);
+      const viewport = window.innerHeight;
+      const travel = Math.max(rect.height + viewport * 0.52, 1);
+      scrollTarget = clamp((-rect.top + viewport * 0.05) / travel, 0, 1);
     };
 
     const updatePointer = (event: PointerEvent) => {
@@ -64,9 +71,13 @@ export function HeroParallaxScene() {
       const seconds = time * 0.001;
       const motionScale = isMobile ? 0 : isTablet ? 0.58 : 1;
 
-      pointerCurrent.x = damp(pointerCurrent.x, pointerTarget.x, 0.065);
-      pointerCurrent.y = damp(pointerCurrent.y, pointerTarget.y, 0.065);
-      scrollCurrent = damp(scrollCurrent, scrollTarget, 0.075);
+      pointerCurrent.x = damp(pointerCurrent.x, pointerTarget.x, 0.055);
+      pointerCurrent.y = damp(pointerCurrent.y, pointerTarget.y, 0.055);
+      scrollCurrent = damp(scrollCurrent, scrollTarget, 0.052);
+
+      const targetOpacity = 1 - smoothstep(scrollCurrent, 0.7, 1);
+      opacityCurrent = damp(opacityCurrent, targetOpacity, 0.065);
+      root.style.opacity = opacityCurrent.toFixed(3);
 
       for (const layer of heroParallaxLayers) {
         const node = nodesRef.current[layer.id];
@@ -74,7 +85,9 @@ export function HeroParallaxScene() {
 
         const pointerX = pointerCurrent.x * layer.maxX * motionScale;
         const pointerY = pointerCurrent.y * layer.maxY * motionScale;
-        const scrollY = scrollCurrent * (6 + layer.depth * 54);
+        const easedScroll = smoothstep(scrollCurrent, 0, 1);
+        const scrollY = easedScroll * (10 + layer.depth * 88);
+        const scrollX = easedScroll * layer.depth * -34;
 
         let ambientX = 0;
         let ambientY = 0;
@@ -89,7 +102,7 @@ export function HeroParallaxScene() {
           ambientY = Math.sin(seconds * 0.7) * (layer.ambientY ?? 0);
         }
 
-        node.style.transform = `translate3d(${(pointerX + ambientX).toFixed(2)}px, ${(pointerY - scrollY + ambientY).toFixed(2)}px, 0)`;
+        node.style.transform = `translate3d(${(pointerX + ambientX + scrollX).toFixed(2)}px, ${(pointerY - scrollY + ambientY).toFixed(2)}px, 0)`;
       }
 
       frame = requestAnimationFrame(render);
@@ -115,6 +128,7 @@ export function HeroParallaxScene() {
       window.removeEventListener("resize", updateScroll);
       mobileQuery.removeEventListener("change", updateMediaState);
       tabletQuery.removeEventListener("change", updateMediaState);
+      root.style.opacity = "";
 
       for (const node of Object.values(nodesRef.current)) {
         if (node) node.style.transform = "";
