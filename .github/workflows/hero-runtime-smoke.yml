@@ -45,7 +45,7 @@ jobs:
                 pointerEvents: style.pointerEvents,
               };
             });
-            if (!state.exists || state.visibility !== 'hidden' || state.opacity > 0.001) {
+            if (!state.exists || state.visibility !== 'hidden' || state.opacity > 0.001 || state.pointerEvents !== 'none') {
               throw new Error(`Experience leaked during ${label}: ${JSON.stringify(state)}`);
             }
           }
@@ -55,7 +55,11 @@ jobs:
             await page.waitForSelector('.ix-entry-gateway', { timeout: 45000 });
             await assertExperienceConcealed(page, 'loading');
 
-            await page.waitForSelector('.ix-entry-gateway[data-phase="entry"]', { timeout: 45000 });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
             await assertExperienceConcealed(page, 'entry choice');
             await page.screenshot({ path: 'qa/screens/gateway-entry.png', fullPage: false });
 
@@ -63,13 +67,28 @@ jobs:
             if (await buttons.count() < 2) throw new Error('Expected sound and silent entry choices');
             await buttons.nth(1).click();
 
-            await page.waitForSelector('.ix-entry-gateway[data-phase="revealing"]', { timeout: 5000 });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'revealing',
+              null,
+              { timeout: 5000 },
+            );
             const revealingState = await page.evaluate(() => {
               const layer = document.querySelector('.ix-experience-layer');
               const style = layer ? getComputedStyle(layer) : null;
-              return style ? { opacity: Number(style.opacity), visibility: style.visibility } : null;
+              return style
+                ? {
+                    opacity: Number(style.opacity),
+                    visibility: style.visibility,
+                    pointerEvents: style.pointerEvents,
+                  }
+                : null;
             });
-            if (!revealingState || revealingState.visibility !== 'visible' || revealingState.opacity < 0.99) {
+            if (
+              !revealingState ||
+              revealingState.visibility !== 'visible' ||
+              revealingState.opacity < 0.99 ||
+              revealingState.pointerEvents !== 'auto'
+            ) {
               throw new Error(`Hero was not staged beneath reveal curtains: ${JSON.stringify(revealingState)}`);
             }
 
@@ -97,11 +116,18 @@ jobs:
             const distance = height * (width <= 680 ? 2.08 : width <= 980 ? 2.55 : 3.05);
 
             for (const fraction of fractions) {
-              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), { y: top + distance * fraction });
+              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
+                y: top + distance * fraction,
+              });
               await page.waitForTimeout(900);
-              const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+              const overflow = await page.evaluate(
+                () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+              );
               if (overflow) failures.push(`horizontal overflow at ${label} ${fraction}`);
-              await page.screenshot({ path: `qa/screens/${label}-${String(fraction).replace('.', '-')}.png`, fullPage: false });
+              await page.screenshot({
+                path: `qa/screens/${label}-${String(fraction).replace('.', '-')}.png`,
+                fullPage: false,
+              });
             }
 
             if (failures.length) throw new Error(failures.join('\n'));
