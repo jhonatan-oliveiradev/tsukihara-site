@@ -97,7 +97,13 @@ img {
   inset: 0;
   z-index: 60;
   background:
-    linear-gradient(to bottom, rgb(2 3 5 / 0.12), transparent 18%, transparent 74%, rgb(2 3 5 / 0.52)),
+    linear-gradient(
+      to bottom,
+      rgb(2 3 5 / 0.12),
+      transparent 18%,
+      transparent 74%,
+      rgb(2 3 5 / 0.52)
+    ),
     radial-gradient(115% 90% at 50% 42%, transparent 38%, rgb(2 3 5 / 0.62) 100%);
 }
 
@@ -114,14 +120,24 @@ img {
   inset: 0;
   z-index: 59;
   opacity: 0.035;
-  background-image: repeating-linear-gradient(to bottom, transparent 0 3px, rgb(255 255 255 / 0.14) 4px);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 3px,
+    rgb(255 255 255 / 0.14) 4px
+  );
   mix-blend-mode: soft-light;
 }
 
 @keyframes grain-shift {
-  0% { transform: translate3d(-2%, 1%, 0); }
-  50% { transform: translate3d(2%, -1%, 0); }
-  100% { transform: translate3d(-1%, 2%, 0); }
+  0% {
+    transform: translate3d(-2%, 1%, 0);
+  }
+  50% {
+    transform: translate3d(2%, -1%, 0);
+  }
+  100% {
+    transform: translate3d(-1%, 2%, 0);
+  }
 }
 
 .story,
@@ -278,7 +294,9 @@ img {
   width: 0.7rem;
   height: 1px;
   background: rgb(232 225 215 / 0.25);
-  transition: width 0.4s var(--ease), background 0.4s ease;
+  transition:
+    width 0.4s var(--ease),
+    background 0.4s ease;
 }
 
 .chapter-rail a:hover i,
@@ -348,7 +366,13 @@ img {
   inset: 0;
   background:
     linear-gradient(to top, rgb(5 6 9 / 0.86) 0%, transparent 34%),
-    linear-gradient(90deg, rgb(5 6 9 / 0.46) 0%, transparent 32%, transparent 70%, rgb(5 6 9 / 0.28) 100%);
+    linear-gradient(
+      90deg,
+      rgb(5 6 9 / 0.46) 0%,
+      transparent 32%,
+      transparent 70%,
+      rgb(5 6 9 / 0.28) 100%
+    );
   pointer-events: none;
 }
 
@@ -531,7 +555,13 @@ img {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to bottom, rgb(5 6 9 / 0.54), rgb(5 6 9 / 0.78) 20%, rgb(5 6 9 / 0.76) 82%, rgb(5 6 9 / 0.46));
+  background: linear-gradient(
+    to bottom,
+    rgb(5 6 9 / 0.54),
+    rgb(5 6 9 / 0.78) 20%,
+    rgb(5 6 9 / 0.76) 82%,
+    rgb(5 6 9 / 0.46)
+  );
   pointer-events: none;
 }
 
@@ -681,7 +711,9 @@ img {
 
 .realm-image img,
 .haku-media img {
-  transition: transform 1.2s var(--ease), filter 0.8s ease;
+  transition:
+    transform 1.2s var(--ease),
+    filter 0.8s ease;
 }
 
 .realm-feature:hover img,

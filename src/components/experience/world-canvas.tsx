@@ -14,7 +14,17 @@ function pageProgress() {
   return THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
 }
 
-function Mountain({ z, y, scale, opacity }: { z: number; y: number; scale: number; opacity: number }) {
+function Mountain({
+  z,
+  y,
+  scale,
+  opacity,
+}: {
+  z: number;
+  y: number;
+  scale: number;
+  opacity: number;
+}) {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-9, -2.2);
@@ -47,7 +57,15 @@ function Mountain({ z, y, scale, opacity }: { z: number; y: number; scale: numbe
   );
 }
 
-function Torii({ position, scale = 1, opacity = 0.82 }: { position: [number, number, number]; scale?: number; opacity?: number }) {
+function Torii({
+  position,
+  scale = 1,
+  opacity = 0.82,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  opacity?: number;
+}) {
   const material = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -86,8 +104,14 @@ function Shrine() {
     () => new THREE.MeshBasicMaterial({ color: "#d39a60", transparent: true, opacity: 0.48 }),
     [],
   );
-  const wood = useMemo(() => new THREE.MeshStandardMaterial({ color: "#311316", roughness: 0.92 }), []);
-  const roof = useMemo(() => new THREE.MeshStandardMaterial({ color: "#0d1116", roughness: 0.94 }), []);
+  const wood = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: "#311316", roughness: 0.92 }),
+    [],
+  );
+  const roof = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: "#0d1116", roughness: 0.94 }),
+    [],
+  );
 
   return (
     <group position={[0, -0.65, -7.7]} scale={1.05}>
@@ -194,7 +218,21 @@ function EclipseMoon() {
   );
 }
 
-function PetalLayer({ count, z, span, speed, opacity, scale }: { count: number; z: number; span: number; speed: number; opacity: number; scale: number }) {
+function PetalLayer({
+  count,
+  z,
+  span,
+  speed,
+  opacity,
+  scale,
+}: {
+  count: number;
+  z: number;
+  span: number;
+  speed: number;
+  opacity: number;
+  scale: number;
+}) {
   const group = useRef<THREE.Group>(null);
   const petals = useMemo(
     () =>
@@ -219,9 +257,19 @@ function PetalLayer({ count, z, span, speed, opacity, scale }: { count: number; 
   return (
     <group ref={group}>
       {petals.map((petal, i) => (
-        <mesh key={i} position={[petal.x, petal.y, petal.zz]} rotation={[0.35, petal.rotation, petal.rotation * 0.35]}>
+        <mesh
+          key={i}
+          position={[petal.x, petal.y, petal.zz]}
+          rotation={[0.35, petal.rotation, petal.rotation * 0.35]}
+        >
           <planeGeometry args={[petal.size * 2.2, petal.size]} />
-          <meshBasicMaterial color="#db7f8e" transparent opacity={opacity} side={THREE.DoubleSide} depthWrite={false} />
+          <meshBasicMaterial
+            color="#db7f8e"
+            transparent
+            opacity={opacity}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
       ))}
     </group>
@@ -251,7 +299,13 @@ function ForegroundReeds() {
       {blades.map((blade, i) => (
         <mesh key={i} position={[blade.x, blade.h / 2, blade.z]} rotation={[0, 0, blade.lean]}>
           <planeGeometry args={[0.045, blade.h]} />
-          <meshBasicMaterial color={i % 5 === 0 ? "#391416" : "#101419"} transparent opacity={0.9} side={THREE.DoubleSide} depthWrite={false} />
+          <meshBasicMaterial
+            color={i % 5 === 0 ? "#391416" : "#101419"}
+            transparent
+            opacity={0.9}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
       ))}
     </group>
@@ -271,13 +325,18 @@ function SanctuaryWorld() {
     const z = THREE.MathUtils.lerp(7.7, 6.05, ease);
 
     camera.position.lerp(new THREE.Vector3(x, y, z), 0.035);
-    target.current.set(THREE.MathUtils.lerp(0, -0.45, p), THREE.MathUtils.lerp(-0.12, 0.25, p), THREE.MathUtils.lerp(-7.2, -6.4, p));
+    target.current.set(
+      THREE.MathUtils.lerp(0, -0.45, p),
+      THREE.MathUtils.lerp(-0.12, 0.25, p),
+      THREE.MathUtils.lerp(-7.2, -6.4, p),
+    );
     camera.lookAt(target.current);
 
     if (rig.current) {
       rig.current.position.x = Math.sin(p * Math.PI * 2.1) * 0.42;
       rig.current.position.y = THREE.MathUtils.lerp(0, 0.9, p);
-      rig.current.rotation.y = Math.sin(p * Math.PI) * 0.055 + Math.sin(clock.elapsedTime * 0.045) * 0.008;
+      rig.current.rotation.y =
+        Math.sin(p * Math.PI) * 0.055 + Math.sin(clock.elapsedTime * 0.045) * 0.008;
     }
 
     if (ambient.current) ambient.current.intensity = THREE.MathUtils.lerp(0.34, 0.17, p);

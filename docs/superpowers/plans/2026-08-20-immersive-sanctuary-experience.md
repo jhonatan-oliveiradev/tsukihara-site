@@ -24,9 +24,11 @@
 ### Task 1: Persistent sanctuary world
 
 **Files:**
+
 - Modify: `src/components/experience/world-canvas.tsx`
 
 **Interfaces:**
+
 - Consumes: browser scroll position and existing `@react-three/fiber` / `three` dependencies.
 - Produces: `WorldCanvas` with one continuous `SanctuaryWorld`, persistent eclipse, shrine, torii, mountains, lanterns, grasses and multi-depth particles.
 
@@ -41,10 +43,12 @@
 ### Task 2: Narrative page architecture
 
 **Files:**
+
 - Modify: `src/components/experience/experience-shell.tsx`
 - Modify: `src/content/game.ts`
 
 **Interfaces:**
+
 - Consumes: `WorldCanvas`, current Tsukihara image assets and `realms` content.
 - Produces: semantic chapters `#top`, `#manifesto`, `#realms`, `#akari`, `#bonds`, `#lore`, `#eclipse` and matching nav/rail state.
 
@@ -60,9 +64,11 @@
 ### Task 3: Motion choreography
 
 **Files:**
+
 - Modify: `src/components/experience/experience-shell.tsx`
 
 **Interfaces:**
+
 - Consumes: semantic `data-*` hooks in the story markup.
 - Produces: GSAP/ScrollTrigger timelines for masked words, fade/blur handoffs, image parallax, hero exit and section-state tracking.
 
@@ -77,11 +83,13 @@
 ### Task 4: Premium editorial visual system
 
 **Files:**
+
 - Modify: `src/app/globals.css`
 - Remove if obsolete: `src/app/editorial-overrides.css`
 - Modify if required: `src/app/layout.tsx`
 
 **Interfaces:**
+
 - Consumes: class names emitted by `ExperienceShell`.
 - Produces: responsive visual system with Bodoni/Didot/Mincho-inspired display type, Japanese vermilion annotations, fine rules, scene overlays and unique layouts per chapter.
 
@@ -97,9 +105,11 @@
 ### Task 5: Quality gate and PR
 
 **Files:**
+
 - No product-code additions unless CI reports a defect.
 
 **Interfaces:**
+
 - Consumes: completed feature branch.
 - Produces: a draft pull request with verified quality state and visual-review notes.
 
