@@ -129,14 +129,11 @@ export function CinematicPreloader({
     return () => window.clearTimeout(revealTimer);
   }, [onRevealComplete, phase]);
 
-  const choose = async (withSound: boolean) => {
+  const choose = (withSound: boolean) => {
     if (phase !== "entry" || choicePending) return;
     setChoicePending(true);
-    try {
-      await onChoose(withSound);
-    } finally {
-      setChoicePending(false);
-    }
+    const result = onChoose(withSound);
+    void Promise.resolve(result).catch(() => setChoicePending(false));
   };
 
   return (
