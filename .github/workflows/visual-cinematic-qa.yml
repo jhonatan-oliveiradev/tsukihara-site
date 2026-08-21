@@ -1,9 +1,9 @@
 name: Visual cinematic QA
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/cinematic-world-polish
+      - dev
 
 jobs:
   visual:
