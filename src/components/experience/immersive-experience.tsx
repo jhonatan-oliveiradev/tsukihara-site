@@ -228,7 +228,7 @@ export function ImmersiveExperience() {
     document.documentElement.lang = next === "pt" ? "pt-BR" : "en";
   };
 
-  const enter = async (withSound: boolean) => {
+  const enter = (withSound: boolean) => {
     const audio = audioRef.current;
     setGate("revealing");
     setMuted(!withSound);
@@ -236,12 +236,10 @@ export function ImmersiveExperience() {
     if (!audio) return;
     audio.volume = AUDIO_VOLUME;
     audio.muted = !withSound;
-    try {
-      await audio.play();
-    } catch {
+    void audio.play().catch(() => {
       audio.muted = true;
       setMuted(true);
-    }
+    });
   };
 
   const toggleMute = async () => {
@@ -282,7 +280,7 @@ export function ImmersiveExperience() {
       <audio ref={audioRef} src="/audio/tsukihara-theme.mp3" loop preload="metadata" />
 
       <div
-        className={`ix-experience-layer${experienceVisible ? "is-visible" : ""}`}
+        className={`ix-experience-layer${experienceVisible ? " is-visible" : ""}`}
         aria-hidden={!experienceReady}
       >
         <ImmersiveWorld />
