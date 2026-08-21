@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -10,7 +9,10 @@ import Lenis from "lenis";
 import { CharacterSpotlight } from "@/components/experience/character-spotlight";
 import { CinematicEpilogue } from "@/components/experience/cinematic-epilogue";
 import { CinematicHero } from "@/components/experience/cinematic-hero";
-import { CinematicPreloader } from "@/components/experience/cinematic-preloader";
+import {
+  CinematicPreloader,
+  type EntryGatewayPhase,
+} from "@/components/experience/cinematic-preloader";
 import { ExperiencePillars } from "@/components/experience/experience-pillars";
 import { FallingSakura } from "@/components/experience/falling-sakura";
 import { KintsugiChapter } from "@/components/experience/kintsugi-chapter";
@@ -25,21 +27,46 @@ const ImmersiveWorld = dynamic(
 );
 
 const AUDIO_VOLUME = 0.12;
+type ExperienceGate = EntryGatewayPhase | "ready";
 
 export function ImmersiveExperience() {
   const root = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [locale, setLocale] = useState<Locale>("pt");
-  const [preloaded, setPreloaded] = useState(false);
-  const [entered, setEntered] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [gate, setGate] = useState<ExperienceGate>("loading");
+  const [muted, setMuted] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState("top");
   const copy = immersiveCopy[locale];
-  const finishPreload = useCallback(() => setPreloaded(true), []);
+  const experienceReady = gate === "ready";
+  const experienceVisible = gate === "revealing" || experienceReady;
+
+  const finishPreload = useCallback(() => {
+    setGate((current) => (current === "loading" ? "entry" : current));
+  }, []);
+
+  const finishReveal = useCallback(() => {
+    setGate("ready");
+  }, []);
 
   useEffect(() => {
-    if (!root.current) return;
+    if (experienceReady) return;
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+    };
+  }, [experienceReady]);
+
+  useEffect(() => {
+    if (!experienceReady || !root.current) return;
     gsap.registerPlugin(ScrollTrigger);
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -183,7 +210,7 @@ export function ImmersiveExperience() {
       });
     }, root);
 
-    ScrollTrigger.refresh();
+    requestAnimationFrame(() => ScrollTrigger.refresh());
 
     return () => {
       ctx.revert();
@@ -194,7 +221,7 @@ export function ImmersiveExperience() {
         lenis.destroy();
       }
     };
-  }, [locale]);
+  }, [experienceReady, locale]);
 
   const changeLocale = (next: Locale) => {
     setLocale(next);
@@ -202,15 +229,17 @@ export function ImmersiveExperience() {
   };
 
   const enter = async (withSound: boolean) => {
-    setEntered(true);
     const audio = audioRef.current;
+    setGate("revealing");
+    setMuted(!withSound);
+
     if (!audio) return;
     audio.volume = AUDIO_VOLUME;
     audio.muted = !withSound;
-    setMuted(!withSound);
     try {
       await audio.play();
     } catch {
+      audio.muted = true;
       setMuted(true);
     }
   };
@@ -240,115 +269,106 @@ export function ImmersiveExperience() {
 
   return (
     <div ref={root} className="ix-shell ix-overhaul-shell">
-      {!preloaded && <CinematicPreloader onComplete={finishPreload} />}
-      <audio ref={audioRef} src="/audio/tsukihara-theme.mp3" loop preload="metadata" />
-      <ImmersiveWorld />
-      <div className="ix-vignette" aria-hidden="true" />
-      <div className="ix-grain" aria-hidden="true" />
-      <FallingSakura />
+      {gate !== "ready" && (
+        <CinematicPreloader
+          phase={gate}
+          copy={copy.enter}
+          onLoaded={finishPreload}
+          onChoose={enter}
+          onRevealComplete={finishReveal}
+        />
+      )}
 
-      {preloaded && !entered && (
-        <div className="ix-entry">
-          <div className="ix-entry-inner">
-            <span>{copy.enter.overline}</span>
-            <Image
-              src="/assets_hq/logotipo.png"
-              alt="Tsukihara"
-              width={560}
-              height={315}
-              priority
-            />
-            <p>{copy.enter.line}</p>
-            <div className="ix-entry-actions">
-              <button type="button" onClick={() => enter(true)}>
-                {copy.enter.withSound}
+      <audio ref={audioRef} src="/audio/tsukihara-theme.mp3" loop preload="metadata" />
+
+      <div
+        className={`ix-experience-layer${experienceVisible ? " is-visible" : ""}`}
+        aria-hidden={!experienceReady}
+      >
+        <ImmersiveWorld />
+        <div className="ix-vignette" aria-hidden="true" />
+        <div className="ix-grain" aria-hidden="true" />
+        <FallingSakura />
+
+        <header className="ix-header">
+          <Link href="#top" className="ix-brand" aria-label="Tsukihara">
+            <span className="ix-brand-moon" />
+            <span>TSUKIHARA</span>
+            <small>月の原</small>
+          </Link>
+          <nav className="ix-nav" aria-label="Main navigation">
+            {nav.map(([id, label, jp]) => (
+              <Link key={id} href={`#${id}`} className={active === id ? "is-active" : ""}>
+                <NavLabelSwap primary={label} secondary={jp} />
+              </Link>
+            ))}
+          </nav>
+          <div className="ix-header-actions">
+            <div className="ix-language" aria-label={copy.languageLabel}>
+              <button
+                type="button"
+                className={locale === "pt" ? "is-active" : ""}
+                onClick={() => changeLocale("pt")}
+              >
+                PT
               </button>
-              <button type="button" onClick={() => enter(false)}>
-                {copy.enter.silent}
+              <span>/</span>
+              <button
+                type="button"
+                className={locale === "en" ? "is-active" : ""}
+                onClick={() => changeLocale("en")}
+              >
+                EN
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      <header className="ix-header">
-        <Link href="#top" className="ix-brand" aria-label="Tsukihara">
-          <span className="ix-brand-moon" />
-          <span>TSUKIHARA</span>
-          <small>月の原</small>
-        </Link>
-        <nav className="ix-nav" aria-label="Main navigation">
-          {nav.map(([id, label, jp]) => (
-            <Link key={id} href={`#${id}`} className={active === id ? "is-active" : ""}>
-              <NavLabelSwap primary={label} secondary={jp} />
-            </Link>
-          ))}
-        </nav>
-        <div className="ix-header-actions">
-          <div className="ix-language" aria-label={copy.languageLabel}>
             <button
               type="button"
-              className={locale === "pt" ? "is-active" : ""}
-              onClick={() => changeLocale("pt")}
+              className="ix-sound"
+              onClick={toggleMute}
+              aria-pressed={!muted}
+              aria-label={`${copy.nav.sound}: ${muted ? "off" : "on"}`}
+              title={copy.nav.sound}
             >
-              PT
+              <span className="ix-sound-bars" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>{copy.nav.sound}</span>
             </button>
-            <span>/</span>
             <button
               type="button"
-              className={locale === "en" ? "is-active" : ""}
-              onClick={() => changeLocale("en")}
+              className="ix-menu"
+              onClick={() => setMenuOpen((value) => !value)}
+              aria-expanded={menuOpen}
             >
-              EN
+              {menuOpen ? copy.nav.close : copy.nav.menu}
             </button>
           </div>
-          <button
-            type="button"
-            className="ix-sound"
-            onClick={toggleMute}
-            aria-pressed={!muted}
-            aria-label={`${copy.nav.sound}: ${muted ? "off" : "on"}`}
-            title={copy.nav.sound}
-          >
-            <span className="ix-sound-bars" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span>{copy.nav.sound}</span>
-          </button>
-          <button
-            type="button"
-            className="ix-menu"
-            onClick={() => setMenuOpen((value) => !value)}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? copy.nav.close : copy.nav.menu}
-          </button>
-        </div>
-      </header>
+        </header>
 
-      {menuOpen && (
-        <div className="ix-mobile-menu">
-          {nav.map(([id, label, jp], index) => (
-            <Link key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
-              <span>0{index + 1}</span>
-              <b>{label}</b>
-              <small lang="ja">{jp}</small>
-            </Link>
-          ))}
-        </div>
-      )}
+        {menuOpen && (
+          <div className="ix-mobile-menu">
+            {nav.map(([id, label, jp], index) => (
+              <Link key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
+                <span>0{index + 1}</span>
+                <b>{label}</b>
+                <small lang="ja">{jp}</small>
+              </Link>
+            ))}
+          </div>
+        )}
 
-      <main className="ix-story ix-story-overhaul">
-        <CinematicHero copy={copy} locale={locale} />
-        <KintsugiChapter copy={copy} locale={locale} />
-        <RealmAtlas copy={copy} locale={locale} />
-        <TrailerChapter copy={copy} locale={locale} />
-        <CharacterSpotlight copy={copy} locale={locale} />
-        <ExperiencePillars copy={copy} locale={locale} />
-        <CinematicEpilogue copy={copy} locale={locale} />
-      </main>
+        <main className="ix-story ix-story-overhaul">
+          <CinematicHero copy={copy} locale={locale} />
+          <KintsugiChapter copy={copy} locale={locale} />
+          <RealmAtlas copy={copy} locale={locale} />
+          <TrailerChapter copy={copy} locale={locale} />
+          <CharacterSpotlight copy={copy} locale={locale} />
+          <ExperiencePillars copy={copy} locale={locale} />
+          <CinematicEpilogue copy={copy} locale={locale} />
+        </main>
+      </div>
     </div>
   );
 }
