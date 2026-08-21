@@ -1,6 +1,7 @@
 export const chapterNav = [
-  { href: "#akari", label: "Akari" },
+  { href: "#manifesto", label: "Story" },
   { href: "#realms", label: "World" },
+  { href: "#akari", label: "Akari" },
   { href: "#bonds", label: "Bonds" },
   { href: "#eclipse", label: "Eclipse" },
 ] as const;
@@ -32,9 +33,40 @@ export const realms = [
   },
 ] as const;
 
-export const characters = [
-  { name: "Haku", kanji: "白", role: "Guardian spirit", image: "/images/haku.webp" },
-  { name: "Yume", kanji: "夢", role: "Dream-bearer", image: "/images/yume.webp" },
-  { name: "Mochi", kanji: "餅", role: "Companion", image: "/images/mochi.webp" },
-  { name: "Kaien Aramasa", kanji: "荒正", role: "Wanderer", image: "/images/kaien-aramasa.webp" },
+export const loreChapters = [
+  {
+    index: "01",
+    title: "Moonbound Vows",
+    kanji: "月誓",
+    copy: "Promises made beneath the moon do not disappear. They return as memory, burden and power.",
+    time: "Origin",
+  },
+  {
+    index: "02",
+    title: "Sacred Temples",
+    kanji: "神殿",
+    copy: "Shrines preserve more than prayer. Some guard passages, old names and things better left sleeping.",
+    time: "Realm",
+  },
+  {
+    index: "03",
+    title: "Guardian Spirits",
+    kanji: "守霊",
+    copy: "Not every spirit is an omen. Some choose a path, a person and a vow to protect.",
+    time: "Bond",
+  },
+  {
+    index: "04",
+    title: "Forgotten Iron",
+    kanji: "黒鉄",
+    copy: "Kurogane remembers the age when devotion became industry and sacred ground learned to burn.",
+    time: "Ruin",
+  },
+  {
+    index: "05",
+    title: "The Eclipse",
+    kanji: "月蝕",
+    copy: "When the moon closes its eye, hidden states awaken and every vow is tested against what remains.",
+    time: "Omen",
+  },
 ] as const;
