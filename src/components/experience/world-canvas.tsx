@@ -14,7 +14,17 @@ function pageProgress() {
   return THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
 }
 
-function Ridge({ z, y, opacity, scale = 1 }: { z: number; y: number; opacity: number; scale?: number }) {
+function Ridge({
+  z,
+  y,
+  opacity,
+  scale = 1,
+}: {
+  z: number;
+  y: number;
+  opacity: number;
+  scale?: number;
+}) {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12, -2.5);
@@ -46,7 +56,15 @@ function Ridge({ z, y, opacity, scale = 1 }: { z: number; y: number; opacity: nu
   );
 }
 
-function Torii({ position, scale = 1, opacity = 1 }: { position: [number, number, number]; scale?: number; opacity?: number }) {
+function Torii({
+  position,
+  scale = 1,
+  opacity = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  opacity?: number;
+}) {
   const material = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -167,7 +185,19 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
   );
 }
 
-function PetalField({ count, z, speed, opacity, tint }: { count: number; z: number; speed: number; opacity: number; tint: string }) {
+function PetalField({
+  count,
+  z,
+  speed,
+  opacity,
+  tint,
+}: {
+  count: number;
+  z: number;
+  speed: number;
+  opacity: number;
+  tint: string;
+}) {
   const group = useRef<THREE.Group>(null);
   const petals = useMemo(
     () =>
@@ -191,9 +221,19 @@ function PetalField({ count, z, speed, opacity, tint }: { count: number; z: numb
   return (
     <group ref={group} position={[0, 0, z]}>
       {petals.map((petal, i) => (
-        <mesh key={i} position={[petal.x, petal.y, (i % 7) * -0.09]} rotation={[0.6, petal.r, petal.phase]}>
+        <mesh
+          key={i}
+          position={[petal.x, petal.y, (i % 7) * -0.09]}
+          rotation={[0.6, petal.r, petal.phase]}
+        >
           <planeGeometry args={[petal.s * 2.6, petal.s]} />
-          <meshBasicMaterial color={tint} transparent opacity={opacity} side={THREE.DoubleSide} depthWrite={false} />
+          <meshBasicMaterial
+            color={tint}
+            transparent
+            opacity={opacity}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
       ))}
     </group>
@@ -219,7 +259,11 @@ function PointerEmbers() {
   return (
     <points>
       <bufferGeometry>
-        <bufferAttribute ref={attribute} attach="attributes-position" args={[new Float32Array(36 * 3), 3]} />
+        <bufferAttribute
+          ref={attribute}
+          attach="attributes-position"
+          args={[new Float32Array(36 * 3), 3]}
+        />
       </bufferGeometry>
       <pointsMaterial
         color="#bb2730"
