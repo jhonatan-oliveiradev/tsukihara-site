@@ -180,18 +180,28 @@ export function CinematicPreloader({
         <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={560} height={315} priority />
         <p>{copy.line}</p>
         <div className="ix-gateway-actions">
-          <button type="button" disabled={choicePending || phase !== "entry"} onClick={() => choose(true)}>
+          <button
+            type="button"
+            disabled={choicePending || phase !== "entry"}
+            onClick={() => choose(true)}
+          >
             <span>01</span>
             {copy.withSound}
             <i />
           </button>
-          <button type="button" disabled={choicePending || phase !== "entry"} onClick={() => choose(false)}>
+          <button
+            type="button"
+            disabled={choicePending || phase !== "entry"}
+            onClick={() => choose(false)}
+          >
             <span>02</span>
             {copy.silent}
             <i />
           </button>
         </div>
-        <small className="ix-gateway-entry-note">音はいつでも変更できます · O som pode ser alterado a qualquer momento</small>
+        <small className="ix-gateway-entry-note">
+          音はいつでも変更できます · O som pode ser alterado a qualquer momento
+        </small>
       </div>
 
       <div className="ix-gateway-reveal-line" aria-hidden="true" />

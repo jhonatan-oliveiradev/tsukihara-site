@@ -27,9 +27,7 @@
   left: 0;
   width: 100%;
   height: calc(50% + 1px);
-  background:
-    radial-gradient(circle at 50% 100%, rgba(92, 15, 25, 0.13), transparent 35%),
-    #020305;
+  background: radial-gradient(circle at 50% 100%, rgba(92, 15, 25, 0.13), transparent 35%), #020305;
   will-change: transform;
 }
 
@@ -41,9 +39,7 @@
 .ix-gateway-curtain-bottom {
   bottom: 0;
   transform-origin: bottom;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(92, 15, 25, 0.13), transparent 35%),
-    #020305;
+  background: radial-gradient(circle at 50% 0%, rgba(92, 15, 25, 0.13), transparent 35%), #020305;
 }
 
 .ix-entry-gateway-revealing {
@@ -81,7 +77,11 @@
     radial-gradient(circle at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.82) 100%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
     linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: auto, auto, 9vw 9vw, 9vw 9vw;
+  background-size:
+    auto,
+    auto,
+    9vw 9vw,
+    9vw 9vw;
 }
 
 .ix-gateway-atmosphere::after {
@@ -104,7 +104,12 @@
   border: 1px solid rgba(169, 62, 73, 0.15);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 38% 34%, rgba(175, 61, 70, 0.16), rgba(47, 8, 15, 0.08) 52%, transparent 72%);
+  background: radial-gradient(
+    circle at 38% 34%,
+    rgba(175, 61, 70, 0.16),
+    rgba(47, 8, 15, 0.08) 52%,
+    transparent 72%
+  );
   box-shadow:
     0 0 110px rgba(128, 22, 34, 0.1),
     inset 0 0 60px rgba(177, 56, 68, 0.05);
@@ -419,34 +424,65 @@
 }
 
 @keyframes ix-gateway-curtain-top {
-  from { transform: translateY(0); }
-  to { transform: translateY(-102%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-102%);
+  }
 }
 
 @keyframes ix-gateway-curtain-bottom {
-  from { transform: translateY(0); }
-  to { transform: translateY(102%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(102%);
+  }
 }
 
 @keyframes ix-gateway-reveal-line {
-  0% { opacity: 0; transform: scaleX(0); }
-  24% { opacity: 1; transform: scaleX(0.32); }
-  70% { opacity: 0.8; transform: scaleX(1); }
-  100% { opacity: 0; transform: scaleX(1); }
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  24% {
+    opacity: 1;
+    transform: scaleX(0.32);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
 }
 
 @keyframes ix-gateway-orbit {
-  to { transform: translate(-50%, -50%) rotate(378deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(378deg);
+  }
 }
 
 @keyframes ix-gateway-orbit-reverse {
-  to { transform: translate(-50%, -50%) rotate(-387deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(-387deg);
+  }
 }
 
 @keyframes ix-gateway-grain {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  33% { transform: translate3d(1%, -1%, 0); }
-  66% { transform: translate3d(-1%, 1%, 0); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  33% {
+    transform: translate3d(1%, -1%, 0);
+  }
+  66% {
+    transform: translate3d(-1%, 1%, 0);
+  }
 }
 
 @media (max-width: 760px) {

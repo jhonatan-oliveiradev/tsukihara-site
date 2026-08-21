@@ -282,7 +282,7 @@ export function ImmersiveExperience() {
       <audio ref={audioRef} src="/audio/tsukihara-theme.mp3" loop preload="metadata" />
 
       <div
-        className={`ix-experience-layer${experienceVisible ? " is-visible" : ""}`}
+        className={`ix-experience-layer${experienceVisible ? "is-visible" : ""}`}
         aria-hidden={!experienceReady}
       >
         <ImmersiveWorld />
