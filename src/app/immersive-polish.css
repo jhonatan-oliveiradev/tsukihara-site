@@ -1,0 +1,198 @@
+[data-jp-reveal] {
+  display: inline;
+  font-variant-ligatures: none;
+}
+
+[data-jp-reveal] > span {
+  display: inline;
+}
+
+.ix-nav-swap {
+  display: inline-grid;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.ix-nav-swap-track {
+  display: grid;
+  grid-template-rows: 1.15em 1.15em;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-nav-swap-track > span {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.ix-nav a:hover .ix-nav-swap-track,
+.ix-nav a:focus-visible .ix-nav-swap-track {
+  transform: translateY(-1.15em);
+}
+
+.ix-mobile-menu a {
+  align-items: baseline;
+}
+
+.ix-mobile-menu a b {
+  font-weight: 400;
+}
+
+.ix-mobile-menu a small {
+  margin-left: auto;
+  color: #a8434b;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.ix-kanji-ghost {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+  color: rgba(159, 36, 46, 0.085);
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
+  font-size: clamp(9rem, 22vw, 28rem);
+  font-weight: 500;
+  line-height: 0.8;
+  letter-spacing: -0.08em;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.ix-kanji-hero {
+  right: clamp(1rem, 5vw, 7rem);
+  top: 13vh;
+  z-index: 7;
+  color: rgba(159, 36, 46, 0.065);
+}
+
+.ix-kanji-gate {
+  right: 7vw;
+  top: 4%;
+}
+
+.ix-kanji-realms {
+  left: 2vw;
+  top: 15%;
+}
+
+.ix-kanji-akari {
+  right: 2vw;
+  top: 7%;
+}
+
+.ix-kanji-lore {
+  left: 4vw;
+  top: 3%;
+}
+
+.ix-kanji-eclipse {
+  right: 5vw;
+  top: 8%;
+  color: rgba(183, 48, 58, 0.11);
+}
+
+.ix-sakura-fall {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.ix-sakura-fall i {
+  position: absolute;
+  top: -8vh;
+  left: var(--petal-x);
+  width: var(--petal-size);
+  height: calc(var(--petal-size) * 0.58);
+  border-radius: 90% 15% 90% 20%;
+  background: linear-gradient(135deg, rgba(241, 176, 190, 0.95), rgba(154, 42, 55, 0.72));
+  opacity: var(--petal-opacity);
+  transform-origin: 50% 50%;
+  animation: ix-sakura-drift var(--petal-duration) linear var(--petal-delay) infinite;
+  will-change: transform;
+}
+
+.ix-sakura-fall i:nth-child(3n) {
+  filter: blur(0.3px);
+}
+
+.ix-sakura-fall i:nth-child(4n) {
+  background: linear-gradient(135deg, rgba(255, 215, 223, 0.85), rgba(178, 55, 67, 0.62));
+}
+
+@keyframes ix-sakura-drift {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg) scale(0.85);
+  }
+  36% {
+    transform: translate3d(calc(var(--petal-drift) * 0.35), 34vh, 0)
+      rotate(calc(var(--petal-rotate) * 0.38)) scale(1);
+  }
+  72% {
+    transform: translate3d(calc(var(--petal-drift) * 0.72), 74vh, 0)
+      rotate(calc(var(--petal-rotate) * 0.74)) scale(0.92);
+  }
+  100% {
+    transform: translate3d(var(--petal-drift), 112vh, 0) rotate(var(--petal-rotate)) scale(0.78);
+  }
+}
+
+@media (max-width: 980px) {
+  .ix-kanji-ghost {
+    font-size: clamp(7rem, 27vw, 16rem);
+    opacity: 0.72;
+  }
+
+  .ix-sakura-fall i:nth-child(2n) {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .ix-kanji-ghost {
+    font-size: clamp(6rem, 34vw, 11rem);
+    opacity: 0.5;
+  }
+
+  .ix-kanji-hero {
+    right: -8vw;
+    top: 34vh;
+  }
+
+  .ix-sakura-fall i:nth-child(3n),
+  .ix-sakura-fall i:nth-child(4n) {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .ix-nav-swap-track {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-nav-swap-track {
+    transition: none;
+    transform: none !important;
+  }
+
+  .ix-sakura-fall i {
+    animation: none;
+    opacity: calc(var(--petal-opacity) * 0.35);
+    transform: translate3d(0, 30vh, 0);
+  }
+
+  .ix-kanji-ghost {
+    transform: none !important;
+    will-change: auto;
+  }
+}
