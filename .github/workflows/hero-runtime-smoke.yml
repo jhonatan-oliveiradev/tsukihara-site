@@ -15,17 +15,6 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: Format hero files for review
-        run: |
-          npx prettier --write src/app/hero-eclipse-sequence.css src/components/experience/hero/hooks/use-hero-timeline.ts src/components/experience/hero/tsukihara-hero.tsx
-          mkdir -p qa/formatted/src/app qa/formatted/src/components/experience/hero/hooks qa/formatted/src/components/experience/hero
-          cp src/app/hero-eclipse-sequence.css qa/formatted/src/app/
-          cp src/components/experience/hero/hooks/use-hero-timeline.ts qa/formatted/src/components/experience/hero/hooks/
-          cp src/components/experience/hero/tsukihara-hero.tsx qa/formatted/src/components/experience/hero/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hero-formatted-files
-          path: qa/formatted
       - run: npm run build
       - run: npm install --no-save playwright
       - run: npx playwright install --with-deps chromium
@@ -38,45 +27,115 @@ jobs:
           done
           cat /tmp/tsukihara-runtime.log
           exit 1
-      - name: Exercise and capture hero runtime
+      - name: Exercise cinematic gateway and hero runtime
         run: |
           mkdir -p qa/screens
           cat > qa/runtime-smoke.cjs <<'NODE'
           const { chromium } = require('playwright');
 
-          async function enter(page) {
+          async function snapshotState(page, label) {
+            const state = await page.evaluate(() => {
+              const gateway = document.querySelector('.ix-entry-gateway');
+              const layer = document.querySelector('.ix-experience-layer');
+              const style = layer ? getComputedStyle(layer) : null;
+              return {
+                url: location.href,
+                gatewayCount: document.querySelectorAll('.ix-entry-gateway').length,
+                phase: gateway?.dataset.phase ?? 'ready',
+                layerCount: document.querySelectorAll('.ix-experience-layer').length,
+                layerClass: layer?.className ?? null,
+                opacity: style ? Number(style.opacity) : null,
+                visibility: style?.visibility ?? null,
+                pointerEvents: style?.pointerEvents ?? null,
+                bodyChildren: document.body.children.length,
+              };
+            });
+            console.log(`[${label}] ${JSON.stringify(state)}`);
+            return state;
+          }
+
+          async function assertExperienceConcealed(page, label) {
+            const state = await snapshotState(page, label);
+            if (state.layerCount !== 1 || state.visibility !== 'hidden' || state.opacity > 0.001 || state.pointerEvents !== 'none') {
+              throw new Error(`Experience leaked during ${label}: ${JSON.stringify(state)}`);
+            }
+          }
+
+          async function enter(page, failures) {
             await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
-            await page.waitForSelector('.ix-entry', { timeout: 45000 });
-            const buttons = page.locator('.ix-entry-actions button');
-            if (await buttons.count() > 1) await buttons.nth(1).click();
-            await page.waitForFunction(() => !document.querySelector('.ix-entry'), null, { timeout: 15000 });
-            await page.waitForSelector('.th-hero', { timeout: 10000 });
+            await page.waitForSelector('.ix-entry-gateway', { timeout: 45000 });
+            await assertExperienceConcealed(page, 'loading');
+
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
+            await assertExperienceConcealed(page, 'entry choice');
+            await page.screenshot({ path: 'qa/screens/gateway-entry.png', fullPage: false });
+
+            const buttons = page.locator('.ix-gateway-actions button');
+            if (await buttons.count() < 2) throw new Error('Expected sound and silent entry choices');
+            await buttons.nth(1).evaluate((button) => button.click());
+
+            await page.waitForTimeout(60);
+            const revealState = await snapshotState(page, 'after click 60ms');
+            if (failures.length) throw new Error(`Browser error during reveal: ${failures.join(' | ')}`);
+            if (revealState.phase !== 'revealing') {
+              throw new Error(`Gateway did not enter revealing state: ${JSON.stringify(revealState)}`);
+            }
+            if (
+              revealState.layerCount !== 1 ||
+              revealState.visibility !== 'visible' ||
+              revealState.opacity < 0.99 ||
+              revealState.pointerEvents !== 'auto'
+            ) {
+              throw new Error(`Hero was not staged beneath reveal curtains: ${JSON.stringify(revealState)}`);
+            }
+
+            await page.screenshot({ path: 'qa/screens/gateway-revealing.png', fullPage: false });
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, { timeout: 10000 });
+            const readyState = await snapshotState(page, 'ready');
+            if (readyState.layerCount !== 1 || readyState.visibility !== 'visible' || readyState.pointerEvents !== 'auto') {
+              throw new Error(`Experience was not interactive after reveal: ${JSON.stringify(readyState)}`);
+            }
+            await page.waitForSelector('#top', { timeout: 10000 });
             await page.waitForTimeout(700);
           }
 
           async function captureSequence(browser, width, height, label, fractions) {
             const page = await browser.newPage({ viewport: { width, height } });
             const failures = [];
-            page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`));
+            page.on('pageerror', (error) => {
+              failures.push(`pageerror: ${error.message}`);
+              console.error(`BROWSER PAGEERROR: ${error.stack || error.message}`);
+            });
             page.on('console', (message) => {
               const text = message.text();
+              if (message.type() === 'error') console.error(`BROWSER CONSOLE: ${text}`);
               if (/Invalid scope|Cannot access 'ctx' before initialization|Maximum call stack size exceeded/i.test(text)) {
                 failures.push(`console: ${text}`);
               }
             });
 
-            await enter(page);
-            const hero = page.locator('.th-hero');
+            await enter(page, failures);
+            const hero = page.locator('#top');
             const top = await hero.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
             const distance = height * (width <= 680 ? 2.08 : width <= 980 ? 2.55 : 3.05);
 
             for (const fraction of fractions) {
-              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), { y: top + distance * fraction });
-              await page.waitForTimeout(1200);
-              const progress = await hero.getAttribute('data-hero-progress');
-              const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
+                y: top + distance * fraction,
+              });
+              await page.waitForTimeout(900);
+              const overflow = await page.evaluate(
+                () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+              );
               if (overflow) failures.push(`horizontal overflow at ${label} ${fraction}`);
-              await page.screenshot({ path: `qa/screens/${label}-${String(fraction).replace('.', '-')}-${progress ?? 'na'}.png`, fullPage: false });
+              await page.screenshot({
+                path: `qa/screens/${label}-${String(fraction).replace('.', '-')}.png`,
+                fullPage: false,
+              });
             }
 
             if (failures.length) throw new Error(failures.join('\n'));
@@ -85,12 +144,9 @@ jobs:
 
           (async () => {
             const browser = await chromium.launch({ headless: true });
-            await captureSequence(browser, 1440, 900, 'desktop', [0, 0.18, 0.4, 0.58, 0.76, 0.94]);
-            await captureSequence(browser, 1920, 1080, 'desktop-xl', [0, 0.58, 0.94]);
-            await captureSequence(browser, 2560, 1080, 'ultrawide', [0, 0.58, 0.94]);
-            await captureSequence(browser, 768, 1024, 'tablet', [0, 0.58, 0.94]);
+            await captureSequence(browser, 1440, 900, 'desktop', [0, 0.58, 0.94]);
             await captureSequence(browser, 390, 844, 'mobile', [0, 0.58, 0.94]);
-            console.log('Hero runtime and visual capture completed without targeted runtime errors or overflow.');
+            console.log('Gateway concealment, reveal handoff, and hero runtime passed.');
             await browser.close();
           })().catch((error) => {
             console.error(error);

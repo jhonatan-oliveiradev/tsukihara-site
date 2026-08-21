@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const imageAssets = [
   "/assets_hq/logotipo.png",
@@ -20,16 +20,37 @@ const imageAssets = [
 
 const fetchAssets = ["/models/japanese_temple/scene.gltf", "/models/crimson_katana/scene.gltf"];
 
-type CinematicPreloaderProps = {
-  onComplete: () => void;
+export type EntryGatewayPhase = "loading" | "entry" | "revealing";
+
+type EntryCopy = {
+  overline: string;
+  line: string;
+  withSound: string;
+  silent: string;
 };
 
-export function CinematicPreloader({ onComplete }: CinematicPreloaderProps) {
+type CinematicPreloaderProps = {
+  phase: EntryGatewayPhase;
+  copy: EntryCopy;
+  onLoaded: () => void;
+  onChoose: (withSound: boolean) => Promise<void> | void;
+  onRevealComplete: () => void;
+};
+
+export function CinematicPreloader({
+  phase,
+  copy,
+  onLoaded,
+  onChoose,
+  onRevealComplete,
+}: CinematicPreloaderProps) {
   const [progress, setProgress] = useState(0);
-  const [leaving, setLeaving] = useState(false);
+  const [choicePending, setChoicePending] = useState(false);
+  const announcedLoaded = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
+    let loadedTimer: number | undefined;
     const total = imageAssets.length + fetchAssets.length + 2;
     let loaded = 0;
 
@@ -89,33 +110,98 @@ export function CinematicPreloader({ onComplete }: CinematicPreloaderProps) {
 
     Promise.allSettled([...imagePromises, ...fetchPromises, audioPromise, videoPromise]).then(
       () => {
-        if (cancelled) return;
+        if (cancelled || announcedLoaded.current) return;
+        announcedLoaded.current = true;
         setProgress(100);
-        window.setTimeout(() => setLeaving(true), 260);
-        window.setTimeout(onComplete, 900);
+        loadedTimer = window.setTimeout(onLoaded, 520);
       },
     );
 
     return () => {
       cancelled = true;
+      if (loadedTimer) window.clearTimeout(loadedTimer);
     };
-  }, [onComplete]);
+  }, [onLoaded]);
+
+  useEffect(() => {
+    if (phase !== "revealing") return;
+    const revealTimer = window.setTimeout(onRevealComplete, 1320);
+    return () => window.clearTimeout(revealTimer);
+  }, [onRevealComplete, phase]);
+
+  const choose = (withSound: boolean) => {
+    if (phase !== "entry" || choicePending) return;
+    setChoicePending(true);
+    const result = onChoose(withSound);
+    void Promise.resolve(result).catch(() => setChoicePending(false));
+  };
 
   return (
-    <div className={`ix-preloader${leaving ? "is-leaving" : ""}`} aria-live="polite">
-      <div className="ix-preloader-moon" aria-hidden="true" />
-      <div className="ix-preloader-inner">
-        <span className="ix-preloader-jp">月の原</span>
-        <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={540} height={300} priority />
-        <div className="ix-preloader-progress">
-          <b>{String(progress).padStart(3, "0")}</b>
-          <span>%</span>
+    <div
+      className={`ix-entry-gateway ix-entry-gateway-${phase}`}
+      data-phase={phase}
+      aria-live="polite"
+    >
+      <div className="ix-gateway-curtain ix-gateway-curtain-top" aria-hidden="true" />
+      <div className="ix-gateway-curtain ix-gateway-curtain-bottom" aria-hidden="true" />
+
+      <div className="ix-gateway-atmosphere" aria-hidden="true">
+        <div className="ix-gateway-orbit ix-gateway-orbit-a" />
+        <div className="ix-gateway-orbit ix-gateway-orbit-b" />
+        <div className="ix-gateway-moon" />
+        <span className="ix-gateway-kanji">記憶</span>
+        <i className="ix-gateway-axis ix-gateway-axis-x" />
+        <i className="ix-gateway-axis ix-gateway-axis-y" />
+      </div>
+
+      <div className="ix-gateway-loading" aria-hidden={phase !== "loading"}>
+        <div className="ix-gateway-loading-copy">
+          <span className="ix-gateway-kicker">月の原 · MEMORY RESTORATION</span>
+          <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={540} height={300} priority />
+          <small>記憶を復元しています · RESTAURANDO MEMÓRIAS</small>
         </div>
-        <div className="ix-preloader-line" aria-hidden="true">
+
+        <div className="ix-gateway-progress" aria-label={`${progress}%`}>
+          <span className="ix-gateway-progress-index">0</span>
+          <strong>{String(progress).padStart(3, "0")}</strong>
+          <em>%</em>
+        </div>
+
+        <div className="ix-gateway-progress-line" aria-hidden="true">
           <i style={{ transform: `scaleX(${progress / 100})` }} />
         </div>
-        <small>記憶を復元しています · RESTAURANDO MEMÓRIAS</small>
       </div>
+
+      <div className="ix-gateway-entry" aria-hidden={phase === "loading"}>
+        <span className="ix-gateway-kicker">{copy.overline}</span>
+        <Image src="/assets_hq/logotipo.png" alt="Tsukihara" width={560} height={315} priority />
+        <p>{copy.line}</p>
+        <div className="ix-gateway-actions">
+          <button
+            type="button"
+            disabled={choicePending || phase !== "entry"}
+            onClick={() => choose(true)}
+          >
+            <span>01</span>
+            {copy.withSound}
+            <i />
+          </button>
+          <button
+            type="button"
+            disabled={choicePending || phase !== "entry"}
+            onClick={() => choose(false)}
+          >
+            <span>02</span>
+            {copy.silent}
+            <i />
+          </button>
+        </div>
+        <small className="ix-gateway-entry-note">
+          音はいつでも変更できます · O som pode ser alterado a qualquer momento
+        </small>
+      </div>
+
+      <div className="ix-gateway-reveal-line" aria-hidden="true" />
     </div>
   );
 }
