@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import "./editorial-overrides.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Beneath the Moon",
@@ -9,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#07070a",
+  themeColor: "#050609",
   colorScheme: "dark",
 };
 
