@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AkariMosaicPin } from "@/components/experience/akari-mosaic-pin";
 import "./globals.css";
 import "./immersive-v2.css";
 import "./hero-parallax.css";
@@ -28,7 +29,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        {children}
+        <AkariMosaicPin />
+      </body>
     </html>
   );
 }
