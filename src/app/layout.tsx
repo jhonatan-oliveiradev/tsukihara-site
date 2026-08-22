@@ -18,6 +18,7 @@ import "./akari-mosaic-copy-balance.css";
 import "./nine-realms-world.css";
 import "./nine-realms-world-calibration.css";
 import "./nine-realms-world-stability.css";
+import "./nine-realms-inspector-motion.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Eclipse of the Nine Realms",
