@@ -29,3 +29,5 @@ jobs:
           git add src/components/experience/nine-realms-map.tsx
           git commit -m "style: format world map inspector motion"
           git push origin HEAD:fix/world-map-inspector-motion
+
+# Temporary formatter workflow; removed after the formatting commit lands.
