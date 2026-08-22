@@ -15,6 +15,7 @@ import "./akari-chapter-refinement.css";
 import "./akari-mosaic.css";
 import "./akari-mosaic-mobile-fix.css";
 import "./akari-mosaic-copy-balance.css";
+import "./kintsugi-lunar-chapter.css";
 import "./nine-realms-world.css";
 import "./nine-realms-world-calibration.css";
 import "./nine-realms-world-stability.css";
