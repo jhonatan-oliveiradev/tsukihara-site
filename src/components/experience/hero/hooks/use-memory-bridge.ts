@@ -65,7 +65,9 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
           });
           gsap.set(temple, {
             autoAlpha:
-              progress < 0.76 ? 0.42 : Math.max(0, 0.42 * (1 - (progress - 0.76) / 0.2)),
+              progress < 0.76
+                ? 0.42
+                : Math.max(0, 0.42 * (1 - (progress - 0.76) / 0.2)),
             scale: 1.035,
             clipPath: "inset(0% 0% 0% 0% round 0%)",
           });
