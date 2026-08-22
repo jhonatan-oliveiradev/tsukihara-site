@@ -72,6 +72,10 @@ export function KintsugiChapter({ copy, locale }: KintsugiChapterProps) {
           />
         </div>
 
+        <div className="ix-kintsugi-entry-veil" data-kintsugi-entry-veil aria-hidden="true">
+          <Image src="/ruptura-separador.png" alt="" fill sizes="112vw" />
+        </div>
+
         <div className="ix-kintsugi-copy">
           <div className="ix-section-label">
             <span>{copy.threshold.label}</span>
