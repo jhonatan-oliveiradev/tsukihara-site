@@ -21,6 +21,7 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
     const eyebrow = q("[data-memory-eyebrow]");
     const jp = q("[data-memory-jp]");
     const ashes = q("[data-memory-ash]");
+    const rupture = q("[data-memory-rupture]");
 
     if (!bridge.length) return;
 
@@ -49,24 +50,29 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
       filter: "blur(14px)",
     });
     gsap.set(ashes, { autoAlpha: 0, y: 20 });
+    gsap.set(rupture, { autoAlpha: 0, yPercent: 24, scaleX: 1.035 });
 
     if (reduced) {
       const trigger = ScrollTrigger.create({
         trigger: root,
         start: () => getScrollBounds(0.82).start,
         end: () => getScrollBounds(0.82).end,
-        onEnter: () => {
+        onUpdate: ({ progress }) => {
           gsap.set(bridge, { autoAlpha: 1 });
-          gsap.set(temple, {
-            autoAlpha: 0.45,
-            scale: 1.035,
-            clipPath: "inset(0% 0% 0% 0% round 0%)",
-          });
           gsap.set([...eyebrow, ...jp, ...glyphs], {
-            autoAlpha: 1,
+            autoAlpha: progress < 0.72 ? 1 : 0,
             y: 0,
             scale: 1,
             filter: "none",
+          });
+          gsap.set(temple, {
+            autoAlpha: progress < 0.78 ? 0.42 : Math.max(0, 0.42 * (1 - (progress - 0.78) / 0.22)),
+            scale: 1.035,
+            clipPath: "inset(0% 0% 0% 0% round 0%)",
+          });
+          gsap.set(rupture, {
+            autoAlpha: progress > 0.76 ? Math.min(1, (progress - 0.76) / 0.18) : 0,
+            yPercent: progress > 0.76 ? Math.max(0, 24 - ((progress - 0.76) / 0.18) * 24) : 24,
           });
         },
         onLeaveBack: () => gsap.set(bridge, { autoAlpha: 0 }),
@@ -112,10 +118,10 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
       .to(
         temple,
         {
-          autoAlpha: 0.48,
+          autoAlpha: 0.5,
           scale: 1.035,
           clipPath: "inset(0% 0% 0% 0% round 0%)",
-          duration: 0.42,
+          duration: 0.38,
           ease: "power2.inOut",
         },
         0.38,
@@ -138,18 +144,40 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
         0.72,
       )
       .to(
-        ashes,
+        rupture,
+        {
+          autoAlpha: 1,
+          yPercent: 0,
+          scaleX: 1,
+          duration: 0.2,
+          ease: "power2.out",
+        },
+        0.76,
+      )
+      .to(
+        temple,
         {
           autoAlpha: 0,
-          y: (index) => -92 - (index % 5) * 8,
-          x: (index) => ((index % 7) - 3) * 22,
-          duration: 0.26,
+          scale: 1.065,
+          filter: "blur(2.5px)",
+          duration: 0.2,
+          ease: "power2.in",
+        },
+        0.78,
+      )
+      .to(haze, { autoAlpha: 0.28, xPercent: 8, duration: 0.2 }, 0.8)
+      .to(
+        ashes,
+        {
+          autoAlpha: 0.18,
+          y: (index) => -108 - (index % 5) * 9,
+          x: (index) => ((index % 7) - 3) * 24,
+          duration: 0.22,
           stagger: { each: 0.004, from: "random" },
           ease: "power2.in",
         },
-        0.72,
-      )
-      .to(temple, { autoAlpha: 0.58, scale: 1.035, duration: 0.28 }, 0.72);
+        0.78,
+      );
 
     const trigger = ScrollTrigger.create({
       trigger: root,
