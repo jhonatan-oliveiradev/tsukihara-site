@@ -11,6 +11,7 @@ import "./entry-gateway.css";
 import "./memory-bridge.css";
 import "./akari-chapter.css";
 import "./akari-chapter-refinement.css";
+import "./akari-mosaic.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Eclipse of the Nine Realms",
