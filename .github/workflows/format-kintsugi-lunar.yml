@@ -36,3 +36,5 @@ jobs:
           git add docs/superpowers/plans/2026-08-22-kintsugi-lunar-cinematic-chapter.md docs/superpowers/specs/2026-08-22-kintsugi-lunar-cinematic-chapter-design.md src/app/kintsugi-lunar-chapter.css src/components/experience/kintsugi-lunar-chapter.tsx src/components/experience/kintsugi-lunar/asset-slot.tsx src/components/experience/kintsugi-lunar/use-kintsugi-lunar-timeline.ts
           git commit -m "style: format Kintsugi Lunar chapter"
           git push origin HEAD:feat/kintsugi-lunar-cinematic-chapter
+
+# Temporary workflow; remove after formatter commit lands.
