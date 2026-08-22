@@ -89,49 +89,62 @@
   --focus-y: 43% !important;
 }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(1).is-active) .ix-world-map__popover {
-  left: 52% !important;
-  top: 7% !important;
-}
+/*
+ * Desktop popovers use viewport-safe anchors rather than the map's internal height.
+ * This keeps the panel adjacent to the realm's quadrant without clipping when the
+ * browser scrolls a hotspot into view.
+ */
+@media (min-width: 901px) {
+  .ix-world-map__popover {
+    position: fixed;
+    max-height: calc(100svh - 110px);
+    overflow-y: auto;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(2).is-active) .ix-world-map__popover {
-  left: 8% !important;
-  top: 8% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(1).is-active) .ix-world-map__popover {
+    left: 52% !important;
+    top: 82px !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(3).is-active) .ix-world-map__popover {
-  left: 68% !important;
-  top: 8% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(2).is-active) .ix-world-map__popover {
+    left: 8% !important;
+    top: 82px !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(4).is-active) .ix-world-map__popover {
-  left: 57% !important;
-  top: 42% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(3).is-active) .ix-world-map__popover {
+    left: 68% !important;
+    top: 82px !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(5).is-active) .ix-world-map__popover {
-  left: 70% !important;
-  top: 48% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(4).is-active) .ix-world-map__popover {
+    left: 57% !important;
+    top: max(110px, calc(50svh - 170px)) !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(6).is-active) .ix-world-map__popover {
-  left: 52% !important;
-  top: 50% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(5).is-active) .ix-world-map__popover {
+    left: 70% !important;
+    top: max(110px, calc(100svh - 390px)) !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(7).is-active) .ix-world-map__popover {
-  left: 8% !important;
-  top: 49% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(6).is-active) .ix-world-map__popover {
+    left: 52% !important;
+    top: max(110px, calc(100svh - 390px)) !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(8).is-active) .ix-world-map__popover {
-  left: 8% !important;
-  top: 24% !important;
-}
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(7).is-active) .ix-world-map__popover {
+    left: 8% !important;
+    top: max(110px, calc(100svh - 390px)) !important;
+  }
 
-.ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(9).is-active) .ix-world-map__popover {
-  left: 53% !important;
-  top: 26% !important;
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(8).is-active) .ix-world-map__popover {
+    left: 8% !important;
+    top: max(110px, calc(50svh - 170px)) !important;
+  }
+
+  .ix-world-map__scene:has(.ix-world-map__hotspot:nth-child(9).is-active) .ix-world-map__popover {
+    left: 53% !important;
+    top: max(110px, calc(50svh - 170px)) !important;
+  }
 }
 
 /* The map is very luminous, so the diegetic panel needs a firmer ink surface. */
