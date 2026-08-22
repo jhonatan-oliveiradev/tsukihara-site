@@ -96,9 +96,21 @@ jobs:
 
             const firstHotspot = page.locator('.ix-world-map__hotspot').first();
             await firstHotspot.hover();
-            await page.waitForTimeout(400);
-            if (!(await page.locator('.ix-world-map__popover').isVisible())) {
+            await page.waitForTimeout(420);
+            const popover = page.locator('.ix-world-map__popover');
+            if (!(await popover.isVisible())) {
               errors.push('desktop map popover did not open on hover');
+            } else {
+              const popoverBox = await popover.boundingBox();
+              if (
+                !popoverBox ||
+                popoverBox.x < 0 ||
+                popoverBox.y < 0 ||
+                popoverBox.x + popoverBox.width > 1440 ||
+                popoverBox.y + popoverBox.height > 900
+              ) {
+                errors.push(`desktop popover clips viewport: ${JSON.stringify(popoverBox)}`);
+              }
             }
 
             await page.locator('.ix-world-map__hotspot').nth(3).focus();
@@ -122,20 +134,32 @@ jobs:
             const hotspots = page.locator('.ix-world-map__hotspot');
             if ((await hotspots.count()) !== 9) errors.push('mobile map does not expose 9 hotspots');
             await hotspots.nth(1).click();
-            await page.waitForTimeout(350);
+            await page.waitForTimeout(480);
             const sheet = page.locator('.ix-world-map__sheet');
             if (!(await sheet.isVisible())) errors.push('mobile bottom sheet did not open');
 
             const before = await sheet.locator('h3').textContent();
-            await sheet.locator('.ix-world-map__sheet-actions button').nth(2).click();
-            await page.waitForTimeout(250);
+            await sheet
+              .locator('.ix-world-map__sheet-actions button')
+              .nth(2)
+              .evaluate((button) => button.click());
+            await page.waitForTimeout(320);
             const after = await sheet.locator('h3').textContent();
             if (!before || !after || before === after) errors.push('mobile next realm control did not advance');
 
-            const overflow = await page.evaluate(
-              () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-            );
-            if (overflow) errors.push('horizontal overflow on mobile map');
+            const mobileState = await page.evaluate(() => {
+              const panel = document.querySelector('.ix-world-map__sheet')?.getBoundingClientRect();
+              return {
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+                panelFits:
+                  Boolean(panel) &&
+                  panel.left >= 0 &&
+                  panel.right <= window.innerWidth &&
+                  panel.bottom <= window.innerHeight,
+              };
+            });
+            if (mobileState.overflow) errors.push('horizontal overflow on mobile map');
+            if (!mobileState.panelFits) errors.push('mobile bottom sheet clips viewport');
             await page.screenshot({ path: 'qa/realms/mobile-map.png', fullPage: false });
 
             if (errors.length) throw new Error(errors.join('\n'));
@@ -149,12 +173,14 @@ jobs:
             });
             const page = await context.newPage();
             await enter(page);
+            const shaderState = await page.evaluate(() => {
+              const shader = document.querySelector('.ix-ripple-distortion__shader');
+              return shader ? getComputedStyle(shader).display : 'not-mounted';
+            });
+            if (shaderState !== 'none') {
+              throw new Error(`ripple shader remains enabled in reduced motion: ${shaderState}`);
+            }
             await scrollTo(page, '#world-map');
-            const state = await page.evaluate(() => ({
-              shaderDisplay: getComputedStyle(document.querySelector('.ix-ripple-distortion__shader')).display,
-              focusCount: document.querySelectorAll('.ix-world-map__image--focus').length,
-            }));
-            if (state.shaderDisplay !== 'none') throw new Error('ripple shader remains enabled in reduced motion');
             await page.screenshot({ path: 'qa/realms/reduced-map.png', fullPage: false });
             await context.close();
           }
