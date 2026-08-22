@@ -1,8 +1,5 @@
 import Image from "next/image";
-import {
-  kintsugiAssets,
-  type KintsugiAssetCode,
-} from "@/content/kintsugi-lunar";
+import { kintsugiAssets, type KintsugiAssetCode } from "@/content/kintsugi-lunar";
 
 type KintsugiAssetSlotProps = {
   code: KintsugiAssetCode;

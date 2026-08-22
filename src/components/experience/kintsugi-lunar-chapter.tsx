@@ -33,8 +33,16 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
 
           <KintsugiAssetSlot code="K14" className="ix-kl-moon" sizes="42vw" />
           <KintsugiAssetSlot code="K06" className="ix-kl-energy" sizes="100vw" />
-          <KintsugiAssetSlot code="K15" className="ix-kl-fragment ix-kl-fragment--left" sizes="28vw" />
-          <KintsugiAssetSlot code="K15" className="ix-kl-fragment ix-kl-fragment--right" sizes="24vw" />
+          <KintsugiAssetSlot
+            code="K15"
+            className="ix-kl-fragment ix-kl-fragment--left"
+            sizes="28vw"
+          />
+          <KintsugiAssetSlot
+            code="K15"
+            className="ix-kl-fragment ix-kl-fragment--right"
+            sizes="24vw"
+          />
 
           <svg
             className="ix-kl-fracture"
@@ -49,30 +57,48 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
           </svg>
 
           <div className="ix-kl-character" aria-hidden="true">
-            <KintsugiAssetSlot code="K01" className="ix-kl-character__state ix-kl-character__state--standard" sizes="48vw" />
-            <KintsugiAssetSlot code="K02" className="ix-kl-character__state ix-kl-character__state--kintsugi" sizes="48vw" />
-            <KintsugiAssetSlot code="K13" className="ix-kl-character__state ix-kl-character__state--climax" sizes="52vw" />
+            <KintsugiAssetSlot
+              code="K01"
+              className="ix-kl-character__state ix-kl-character__state--standard"
+              sizes="48vw"
+            />
+            <KintsugiAssetSlot
+              code="K02"
+              className="ix-kl-character__state ix-kl-character__state--kintsugi"
+              sizes="48vw"
+            />
+            <KintsugiAssetSlot
+              code="K13"
+              className="ix-kl-character__state ix-kl-character__state--climax"
+              sizes="52vw"
+            />
           </div>
 
           <div className="ix-kl-relic-art" aria-hidden="true">
-            {copy.relics.map((relic) => (
-              <KintsugiAssetSlot
-                key={relic.label}
-                code={relic.asset}
-                className="ix-kl-relic-art__item"
-                sizes="34vw"
-              />
-            )).map((node, index) => (
-              <div key={index} data-kl-relic-art className="ix-kl-relic-art__frame">
-                {node}
-              </div>
-            ))}
+            {copy.relics
+              .map((relic) => (
+                <KintsugiAssetSlot
+                  key={relic.label}
+                  code={relic.asset}
+                  className="ix-kl-relic-art__item"
+                  sizes="34vw"
+                />
+              ))
+              .map((node, index) => (
+                <div key={index} data-kl-relic-art className="ix-kl-relic-art__frame">
+                  {node}
+                </div>
+              ))}
           </div>
 
           <div className="ix-kl-gameplay-art" aria-hidden="true">
             {copy.gameplay.pillars.map((pillar, index) => (
               <div key={pillar.title} data-kl-gameplay-art className="ix-kl-gameplay-art__frame">
-                <KintsugiAssetSlot code={pillar.asset} className="ix-kl-gameplay-art__image" sizes="64vw" />
+                <KintsugiAssetSlot
+                  code={pillar.asset}
+                  className="ix-kl-gameplay-art__image"
+                  sizes="64vw"
+                />
                 <span>0{index + 1}</span>
               </div>
             ))}
@@ -99,7 +125,10 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
               <p>{copy.awakening.body}</p>
             </article>
 
-            <article data-kl-copy="transformation" className="ix-kl-copy ix-kl-copy--transformation">
+            <article
+              data-kl-copy="transformation"
+              className="ix-kl-copy ix-kl-copy--transformation"
+            >
               <p className="ix-kl-eyebrow">03 — TRANSFORMATION</p>
               <h3>{copy.transformation.first}</h3>
               <p>{copy.transformation.second}</p>
@@ -130,7 +159,11 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
 
             <div className="ix-kl-gameplay-copy-group">
               {copy.gameplay.pillars.map((pillar, index) => (
-                <article key={pillar.title} data-kl-gameplay className="ix-kl-copy ix-kl-copy--gameplay">
+                <article
+                  key={pillar.title}
+                  data-kl-gameplay
+                  className="ix-kl-copy ix-kl-copy--gameplay"
+                >
                   <p className="ix-kl-eyebrow">{copy.gameplay.eyebrow}</p>
                   <small>0{index + 1} / 04</small>
                   <h3>{pillar.title}</h3>
@@ -178,7 +211,9 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
 
           <div className="ix-kl-progress" aria-hidden="true">
             <span>01</span>
-            <i><b data-kl-progress /></i>
+            <i>
+              <b data-kl-progress />
+            </i>
             <span>06</span>
           </div>
 
@@ -201,7 +236,11 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
 
         <section className="ix-kl-mobile__beat">
           <p className="ix-kl-eyebrow">02 — AWAKENING</p>
-          <h3>{copy.awakening.lead[0]}<br />{copy.awakening.lead[1]}</h3>
+          <h3>
+            {copy.awakening.lead[0]}
+            <br />
+            {copy.awakening.lead[1]}
+          </h3>
           <p>{copy.awakening.body}</p>
           <div className="ix-kl-mobile__restore">
             <KintsugiAssetSlot code="K07" sizes="100vw" />
@@ -260,7 +299,11 @@ export function KintsugiLunarChapter({ locale }: KintsugiLunarChapterProps) {
           <KintsugiAssetSlot code="K14" sizes="90vw" />
           <KintsugiAssetSlot code="K13" sizes="94vw" />
           <div>
-            <h3>{copy.climax.lines[0]}<br />{copy.climax.lines[1]}</h3>
+            <h3>
+              {copy.climax.lines[0]}
+              <br />
+              {copy.climax.lines[1]}
+            </h3>
             <p>{copy.climax.body}</p>
           </div>
         </section>

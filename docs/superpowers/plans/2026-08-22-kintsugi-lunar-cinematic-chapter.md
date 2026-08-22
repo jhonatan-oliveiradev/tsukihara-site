@@ -26,10 +26,12 @@
 ### Task 1: Content and asset contract
 
 **Files:**
+
 - Create: `src/content/kintsugi-lunar.ts`
 - Create: `src/components/experience/kintsugi-lunar/asset-slot.tsx`
 
 **Interfaces:**
+
 - Produce `KintsugiAssetCode`, `kintsugiAssets`, `kintsugiLunarCopy`, `KintsugiAssetSlot`.
 - PT/EN copy contains opening, awakening, transformation, relics, gameplay, risk, climax and closing.
 
@@ -41,10 +43,12 @@
 ### Task 2: Cinematic chapter semantic structure
 
 **Files:**
+
 - Create: `src/components/experience/kintsugi-lunar-chapter.tsx`
 - Create: `src/app/kintsugi-lunar-chapter.css`
 
 **Interfaces:**
+
 - Consume Task 1 content/assets.
 - Produce semantic section `#kintsugi-lunar` with `data-kintsugi-lunar-stage` and data hooks used by Task 3.
 
@@ -58,10 +62,12 @@
 ### Task 3: Dedicated scroll timeline
 
 **Files:**
+
 - Create: `src/components/experience/kintsugi-lunar/use-kintsugi-lunar-timeline.ts`
 - Modify: `src/components/experience/kintsugi-lunar-chapter.tsx`
 
 **Interfaces:**
+
 - `useKintsugiLunarTimeline(rootRef)` creates/reverts only chapter-owned ScrollTriggers.
 
 - [ ] Detect desktop (`min-width: 901px`) and reduced motion.
@@ -75,10 +81,12 @@
 ### Task 4: Integrate chapter in story order
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 - Modify: `src/app/layout.tsx`
 
 **Interfaces:**
+
 - Import `KintsugiLunarChapter` and stylesheet only.
 
 - [ ] Insert new component immediately after `CharacterSpotlight`.
@@ -90,9 +98,11 @@
 ### Task 5: Visual/reduced-motion QA
 
 **Files:**
+
 - Create: `.github/workflows/kintsugi-lunar-visual.yml`
 
 **Interfaces:**
+
 - Browser QA validates chapter presence/order, sticky desktop state, no copy overlap, mobile flow, reduced-motion and no horizontal overflow.
 
 - [ ] Capture 1440×900 at rupture, awakening, transformation, relic, gameplay and climax milestones.

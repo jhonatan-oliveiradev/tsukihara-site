@@ -40,11 +40,21 @@ export function useKintsugiLunarTimeline(rootRef: RefObject<HTMLElement | null>)
         const seam = root.querySelector<HTMLElement>("[data-kl-exit-seam]");
         const progress = root.querySelector<HTMLElement>("[data-kl-progress]");
         const relicArt = Array.from(root.querySelectorAll<HTMLElement>("[data-kl-relic-art]"));
-        const gameplayArt = Array.from(root.querySelectorAll<HTMLElement>("[data-kl-gameplay-art]"));
+        const gameplayArt = Array.from(
+          root.querySelectorAll<HTMLElement>("[data-kl-gameplay-art]"),
+        );
 
-        const narrative = [opening, awakening, transformation, complete, ...relics, ...gameplay, risk, climax, closing].filter(
-          Boolean,
-        ) as HTMLElement[];
+        const narrative = [
+          opening,
+          awakening,
+          transformation,
+          complete,
+          ...relics,
+          ...gameplay,
+          risk,
+          climax,
+          closing,
+        ].filter(Boolean) as HTMLElement[];
 
         gsap.set(narrative, { autoAlpha: 0, y: 24 });
         gsap.set(opening, { autoAlpha: 1, y: 0 });
@@ -144,7 +154,11 @@ export function useKintsugiLunarTimeline(rootRef: RefObject<HTMLElement | null>)
             { autoAlpha: 1, yPercent: 0, scale: 1, duration: 7, ease: "power3.out" },
             27,
           );
-          timeline.to(standardAkari, { autoAlpha: 0.18, filter: "brightness(.58) saturate(.7)", duration: 14 }, 39);
+          timeline.to(
+            standardAkari,
+            { autoAlpha: 0.18, filter: "brightness(.58) saturate(.7)", duration: 14 },
+            39,
+          );
         }
         if (transformedAkari) {
           timeline.to(
@@ -154,7 +168,8 @@ export function useKintsugiLunarTimeline(rootRef: RefObject<HTMLElement | null>)
           );
         }
         if (moon) timeline.to(moon, { autoAlpha: 0.72, scale: 1, duration: 13 }, 39);
-        if (restored) timeline.to(restored, { clipPath: "inset(0 0% 0 0)", autoAlpha: 0.82, duration: 13 }, 39);
+        if (restored)
+          timeline.to(restored, { clipPath: "inset(0 0% 0 0)", autoAlpha: 0.82, duration: 13 }, 39);
         hide(transformation, 43);
         show(complete, 45);
         hide(complete, 53);
@@ -171,7 +186,11 @@ export function useKintsugiLunarTimeline(rootRef: RefObject<HTMLElement | null>)
               { autoAlpha: 1, xPercent: 0, scale: 1, duration: 2.8, ease: "power3.out" },
               at,
             );
-            timeline.to(art, { autoAlpha: index === relics.length - 1 ? 0.2 : 0, duration: 1.8 }, at + 3.4);
+            timeline.to(
+              art,
+              { autoAlpha: index === relics.length - 1 ? 0.2 : 0, duration: 1.8 },
+              at + 3.4,
+            );
           }
         });
         hide(relics[relics.length - 1] ?? null, 69);
@@ -195,14 +214,25 @@ export function useKintsugiLunarTimeline(rootRef: RefObject<HTMLElement | null>)
 
         show(risk, 88);
         if (energy) timeline.to(energy, { autoAlpha: 0.24, duration: 4 }, 88);
-        if (moon) timeline.to(moon, { autoAlpha: 0.9, filter: "saturate(1.18) brightness(.78)", duration: 6 }, 89);
+        if (moon)
+          timeline.to(
+            moon,
+            { autoAlpha: 0.9, filter: "saturate(1.18) brightness(.78)", duration: 6 },
+            89,
+          );
         hide(risk, 94);
 
         show(climax, 95);
         if (standardAkari) timeline.to(standardAkari, { autoAlpha: 0, duration: 2 }, 94);
         if (transformedAkari) timeline.to(transformedAkari, { autoAlpha: 0.18, duration: 2 }, 94);
-        if (climaxAkari) timeline.to(climaxAkari, { autoAlpha: 1, scale: 1, duration: 4, ease: "power3.out" }, 94);
-        if (restored) timeline.to(restored, { autoAlpha: 1, filter: "brightness(.72) saturate(.92)", duration: 4 }, 95);
+        if (climaxAkari)
+          timeline.to(climaxAkari, { autoAlpha: 1, scale: 1, duration: 4, ease: "power3.out" }, 94);
+        if (restored)
+          timeline.to(
+            restored,
+            { autoAlpha: 1, filter: "brightness(.72) saturate(.92)", duration: 4 },
+            95,
+          );
         if (seam) timeline.to(seam, { scaleX: 1, duration: 3.4, ease: "power2.inOut" }, 97);
         hide(climax, 98);
         show(closing, 98.2);

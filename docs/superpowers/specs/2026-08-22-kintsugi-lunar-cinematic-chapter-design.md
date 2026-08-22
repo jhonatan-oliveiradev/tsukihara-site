@@ -200,23 +200,23 @@ When `prefers-reduced-motion: reduce` is active:
 
 The implementation uses existing assets now but exposes stable future K-slots.
 
-| Slot | Final purpose | Initial placeholder strategy |
-| --- | --- | --- |
-| K01 | Akari standard | existing canonical/full-body Akari asset |
-| K02 | Akari Kintsugi | closest current crimson/Kintsugi character state |
-| K03 | Kitsune mask | existing Akari detail/mask crop if usable |
-| K04 | Lunar katana | current katana detail or existing crimson katana model/render |
-| K05 | Kintsugi fissures | generated SVG/CSS transparent fracture overlay |
-| K06 | Kintsugi energy | CSS/SVG trails + restrained particles |
-| K07 | Broken environment | `templo-hanamori_2.png` |
-| K08 | Restored environment | `templo-hanamori.png` |
-| K09 | Restore gameplay | existing scene placeholder |
-| K10 | Reveal gameplay | existing scene placeholder |
-| K11 | Traverse gameplay | existing scene placeholder |
-| K12 | Fight gameplay | existing battle/video frame placeholder where appropriate |
-| K13 | Kintsugi climax hero | closest current transformed Akari state |
-| K14 | Blood Moon | existing `Blood_Moon.png` / hero Blood Moon asset |
-| K15 | Environmental fragments | existing shrine ruins, petals, stones and foreground assets |
+| Slot | Final purpose           | Initial placeholder strategy                                  |
+| ---- | ----------------------- | ------------------------------------------------------------- |
+| K01  | Akari standard          | existing canonical/full-body Akari asset                      |
+| K02  | Akari Kintsugi          | closest current crimson/Kintsugi character state              |
+| K03  | Kitsune mask            | existing Akari detail/mask crop if usable                     |
+| K04  | Lunar katana            | current katana detail or existing crimson katana model/render |
+| K05  | Kintsugi fissures       | generated SVG/CSS transparent fracture overlay                |
+| K06  | Kintsugi energy         | CSS/SVG trails + restrained particles                         |
+| K07  | Broken environment      | `templo-hanamori_2.png`                                       |
+| K08  | Restored environment    | `templo-hanamori.png`                                         |
+| K09  | Restore gameplay        | existing scene placeholder                                    |
+| K10  | Reveal gameplay         | existing scene placeholder                                    |
+| K11  | Traverse gameplay       | existing scene placeholder                                    |
+| K12  | Fight gameplay          | existing battle/video frame placeholder where appropriate     |
+| K13  | Kintsugi climax hero    | closest current transformed Akari state                       |
+| K14  | Blood Moon              | existing `Blood_Moon.png` / hero Blood Moon asset             |
+| K15  | Environmental fragments | existing shrine ruins, petals, stones and foreground assets   |
 
 When K01–K15 are produced, asset replacement should be limited to the central slot manifest and minor art-direction coordinates, not component architecture.
 
