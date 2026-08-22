@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AkariMosaicPin } from "@/components/experience/akari-mosaic-pin";
 import "./globals.css";
 import "./immersive-v2.css";
 import "./hero-parallax.css";
@@ -11,6 +12,8 @@ import "./entry-gateway.css";
 import "./memory-bridge.css";
 import "./akari-chapter.css";
 import "./akari-chapter-refinement.css";
+import "./akari-mosaic.css";
+import "./akari-mosaic-mobile-fix.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Eclipse of the Nine Realms",
@@ -26,7 +29,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        {children}
+        <AkariMosaicPin />
+      </body>
     </html>
   );
 }
