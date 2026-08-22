@@ -1,0 +1,93 @@
+name: World map realm hit areas
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  hitareas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-hitareas.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-hitareas.log
+          exit 1
+      - name: Validate full realm hover regions
+        run: |
+          cat > /tmp/world-map-hitareas.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          const expected = [
+            ['Hanamori', 0],
+            ['Kurogane', 1],
+            ['Mizukyo', 2],
+            ['Amahara', 3],
+            ['Hinokagura', 4],
+            ['Yumegakure', 5],
+            ['Yoru no Mori', 6],
+            ['Gekkai', 7],
+            ['Tsuki no Miya', 8],
+          ];
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
+            await page.locator('.ix-gateway-actions button').nth(1).evaluate((button) => button.click());
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
+            await page.locator('#world-map').evaluate((element) =>
+              window.scrollTo({
+                top: element.getBoundingClientRect().top + window.scrollY + 120,
+                behavior: 'instant',
+              }),
+            );
+            await page.waitForTimeout(800);
+
+            const regions = page.locator('.ix-world-map__region-hits polygon');
+            if ((await regions.count()) !== 9) {
+              throw new Error(`expected 9 realm hit regions, got ${await regions.count()}`);
+            }
+
+            for (const [name, index] of expected) {
+              await regions.nth(index).hover();
+              await page.waitForTimeout(160);
+              const title = await page.locator('.ix-world-map__popover h3').textContent();
+              if (title?.trim() !== name) {
+                throw new Error(`region ${index} expected ${name}, got ${title}`);
+              }
+            }
+
+            await regions.nth(4).click();
+            await page.waitForTimeout(180);
+            const selected = await page.locator('.ix-world-map__hotspot').nth(4).getAttribute('aria-pressed');
+            if (selected !== 'true') throw new Error('clicking a realm region did not persist selection');
+
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node /tmp/world-map-hitareas.cjs

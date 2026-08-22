@@ -89,6 +89,43 @@
   --focus-y: 43% !important;
 }
 
+/* The artwork is composed of irregular floating islands. The interaction layer must
+ * follow those islands instead of relying on tiny circular markers. */
+.ix-world-map__region-hits {
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.ix-world-map__region-hits polygon {
+  fill: rgba(255, 255, 255, 0.001);
+  stroke: transparent;
+  stroke-width: 0.25;
+  cursor: pointer;
+  pointer-events: all;
+  transition:
+    fill 260ms ease,
+    stroke 260ms ease;
+}
+
+.ix-world-map__region-hits polygon.is-active {
+  fill: rgba(255, 255, 255, 0.006);
+}
+
+/* Keep the visible seals above the hit polygons; they remain keyboard controls and
+ * visual anchors while the entire island responds to mouse/touch interaction. */
+.ix-world-map__hotspots {
+  pointer-events: none;
+}
+
+.ix-world-map__hotspot {
+  pointer-events: auto;
+}
+
 /*
  * Desktop popovers use viewport-safe anchors rather than the map's internal height.
  * This keeps the panel adjacent to the realm's quadrant without clipping when the

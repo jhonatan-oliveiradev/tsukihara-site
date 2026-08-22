@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
 import { realmMapCalibration } from "@/content/realm-map-calibration";
 import {
   realmWorld,
@@ -15,6 +22,18 @@ type NineRealmsMapProps = {
   onExploreRealm: (id: RealmId) => void;
 };
 
+const realmHitAreas: Record<RealmId, string> = {
+  gekkai: "6,30 16,18 29,18 37,27 34,41 23,51 8,48",
+  kurogane: "20,12 39,9 50,19 45,33 34,40 24,34",
+  hanamori: "39,8 57,6 65,17 61,31 50,36 42,29",
+  mizukyo: "58,12 78,13 87,25 82,39 69,41 60,31",
+  amahara: "73,31 92,27 98,43 93,60 78,61 68,49",
+  hinokagura: "58,54 77,48 88,58 86,78 69,88 56,76",
+  yumegakure: "38,57 58,54 65,70 58,91 39,91 31,74",
+  "yoru-no-mori": "12,47 34,41 43,55 36,75 19,82 7,69",
+  "tsuki-no-miya": "39,31 59,29 68,42 61,58 42,59 33,45",
+};
+
 function getRealm(id: RealmId | null) {
   return id ? (realmWorld.find((realm) => realm.id === id) ?? null) : null;
 }
@@ -22,6 +41,7 @@ function getRealm(id: RealmId | null) {
 export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
   const rootRef = useRef<HTMLElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
+  const previewClearTimerRef = useRef<number | null>(null);
   const [previewId, setPreviewId] = useState<RealmId | null>(null);
   const [selectedId, setSelectedId] = useState<RealmId | null>(null);
   const [inView, setInView] = useState(false);
@@ -42,10 +62,40 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(
+    () => () => {
+      if (previewClearTimerRef.current !== null) {
+        window.clearTimeout(previewClearTimerRef.current);
+      }
+    },
+    [],
+  );
+
   const activeIndex = useMemo(
     () => (activeId ? realmWorld.findIndex((realm) => realm.id === activeId) : -1),
     [activeId],
   );
+
+  const cancelPreviewClear = () => {
+    if (previewClearTimerRef.current !== null) {
+      window.clearTimeout(previewClearTimerRef.current);
+      previewClearTimerRef.current = null;
+    }
+  };
+
+  const previewRealm = (id: RealmId) => {
+    cancelPreviewClear();
+    setPreviewId(id);
+  };
+
+  const schedulePreviewClear = () => {
+    if (selectedId) return;
+    cancelPreviewClear();
+    previewClearTimerRef.current = window.setTimeout(() => {
+      setPreviewId(null);
+      previewClearTimerRef.current = null;
+    }, 140);
+  };
 
   const setTilt = (event: PointerEvent<HTMLDivElement>) => {
     const node = sceneRef.current;
@@ -66,10 +116,11 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     node.style.setProperty("--map-ry", "0deg");
     node.style.setProperty("--map-tx", "0px");
     node.style.setProperty("--map-ty", "0px");
-    if (!selectedId) setPreviewId(null);
+    schedulePreviewClear();
   };
 
   const selectRealm = (realm: RealmWorldEntry) => {
+    cancelPreviewClear();
     setSelectedId((current) => (current === realm.id ? null : realm.id));
     setPreviewId(realm.id);
   };
@@ -78,11 +129,13 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     const current = activeIndex >= 0 ? activeIndex : 0;
     const next = (current + direction + realmWorld.length) % realmWorld.length;
     const realm = realmWorld[next];
+    cancelPreviewClear();
     setSelectedId(realm.id);
     setPreviewId(realm.id);
   };
 
   const closeSelection = () => {
+    cancelPreviewClear();
     setSelectedId(null);
     setPreviewId(null);
   };
@@ -168,6 +221,28 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
               })}
             </svg>
 
+            <svg
+              className="ix-world-map__region-hits"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              onPointerLeave={schedulePreviewClear}
+            >
+              {realmWorld.map((realm) => (
+                <polygon
+                  key={realm.id}
+                  points={realmHitAreas[realm.id]}
+                  className={realm.id === activeId ? "is-active" : ""}
+                  onPointerEnter={() => previewRealm(realm.id)}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    selectRealm(realm);
+                  }}
+                />
+              ))}
+            </svg>
+
             <div className="ix-world-map__mother-moon" aria-hidden="true">
               <i />
               <i />
@@ -194,9 +269,9 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                     }
                     aria-label={`${locale === "pt" ? "Explorar" : "Explore"} ${realm.title}, ${local.label}`}
                     aria-pressed={selectedId === realm.id}
-                    onPointerEnter={() => setPreviewId(realm.id)}
-                    onFocus={() => setPreviewId(realm.id)}
-                    onBlur={() => !selectedId && setPreviewId(null)}
+                    onPointerEnter={() => previewRealm(realm.id)}
+                    onFocus={() => previewRealm(realm.id)}
+                    onBlur={schedulePreviewClear}
                     onClick={(event) => {
                       event.stopPropagation();
                       selectRealm(realm);
@@ -244,7 +319,8 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                   "--realm-glow": activeRealm.glow,
                 } as CSSProperties
               }
-              onPointerEnter={() => setPreviewId(activeRealm.id)}
+              onPointerEnter={cancelPreviewClear}
+              onPointerLeave={schedulePreviewClear}
               onPointerDown={(event) => event.stopPropagation()}
             >
               <div className="ix-world-map__popover-topline">
