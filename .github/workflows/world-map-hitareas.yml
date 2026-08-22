@@ -71,7 +71,7 @@ jobs:
               throw new Error(`expected 9 realm hit regions, got ${await regions.count()}`);
             }
 
-            await regions.nth(0).hover();
+            await regions.nth(0).dispatchEvent('pointerover', { pointerType: 'mouse' });
             await page.waitForTimeout(55);
             const earlyInspector = page.locator('.ix-world-map__inspector');
             if ((await earlyInspector.count()) > 0 && (await earlyInspector.isVisible())) {
