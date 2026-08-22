@@ -1,0 +1,204 @@
+name: Nine Realms map visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-realms.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-realms.log
+          exit 1
+      - name: Capture Nine Realms
+        run: |
+          mkdir -p qa/realms
+          cat > qa/realms.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          async function enter(page) {
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
+            const buttons = page.locator('.ix-gateway-actions button');
+            await buttons.nth(1).evaluate((button) => button.click());
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
+            await page.waitForSelector('#realms', { timeout: 10000 });
+            await page.waitForSelector('#world-map', { timeout: 10000 });
+            await page.waitForTimeout(500);
+          }
+
+          async function scrollTo(page, selector) {
+            await page.locator(selector).evaluate((element) =>
+              window.scrollTo({
+                top: element.getBoundingClientRect().top + window.scrollY + 8,
+                behavior: 'instant',
+              }),
+            );
+            await page.waitForTimeout(700);
+          }
+
+          async function desktop(browser) {
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+            const errors = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await enter(page);
+            await scrollTo(page, '#realms');
+
+            const atlas = await page.evaluate(() => ({
+              tabs: document.querySelectorAll('.ix-realm-index [role="tab"]').length,
+              overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+              stageVisible: Boolean(document.querySelector('[data-realm-stage]')?.getBoundingClientRect().height),
+            }));
+            if (atlas.tabs !== 9) errors.push(`expected 9 realm tabs, got ${atlas.tabs}`);
+            if (atlas.overflow) errors.push('horizontal overflow in realm atlas');
+            if (!atlas.stageVisible) errors.push('realm stage is not visible');
+
+            await page.locator('[data-realm-id="tsuki-no-miya"]').click();
+            await page.waitForTimeout(450);
+            const selectedTitle = await page.locator('.ix-realm-stage-copy h3').textContent();
+            if (!selectedTitle?.includes('Tsuki no Miya')) {
+              errors.push(`realm explorer did not select Tsuki no Miya: ${selectedTitle}`);
+            }
+            await page.screenshot({ path: 'qa/realms/desktop-atlas.png', fullPage: false });
+
+            await scrollTo(page, '#world-map');
+            const map = await page.evaluate(() => ({
+              hotspots: document.querySelectorAll('.ix-world-map__hotspot').length,
+              overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+              mapWidth: document.querySelector('.ix-world-map__object')?.getBoundingClientRect().width ?? 0,
+            }));
+            if (map.hotspots !== 9) errors.push(`expected 9 map hotspots, got ${map.hotspots}`);
+            if (map.overflow) errors.push('horizontal overflow in world map');
+            if (map.mapWidth < 700) errors.push(`world map too small on desktop: ${map.mapWidth}`);
+
+            const firstHotspot = page.locator('.ix-world-map__hotspot').first();
+            await firstHotspot.hover();
+            await page.waitForTimeout(420);
+            const popover = page.locator('.ix-world-map__popover');
+            if (!(await popover.isVisible())) {
+              errors.push('desktop map popover did not open on hover');
+            } else {
+              const popoverBox = await popover.boundingBox();
+              if (
+                !popoverBox ||
+                popoverBox.x < 0 ||
+                popoverBox.y < 0 ||
+                popoverBox.x + popoverBox.width > 1440 ||
+                popoverBox.y + popoverBox.height > 900
+              ) {
+                errors.push(`desktop popover clips viewport: ${JSON.stringify(popoverBox)}`);
+              }
+            }
+
+            await page.locator('.ix-world-map__hotspot').nth(3).focus();
+            await page.keyboard.press('Enter');
+            await page.waitForTimeout(350);
+            const pressed = await page.locator('.ix-world-map__hotspot').nth(3).getAttribute('aria-pressed');
+            if (pressed !== 'true') errors.push('keyboard selection did not persist');
+            await page.screenshot({ path: 'qa/realms/desktop-map.png', fullPage: false });
+
+            if (errors.length) throw new Error(errors.join('\n'));
+            await page.close();
+          }
+
+          async function mobile(browser) {
+            const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+            const errors = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await enter(page);
+            await scrollTo(page, '#world-map');
+
+            const hotspots = page.locator('.ix-world-map__hotspot');
+            if ((await hotspots.count()) !== 9) errors.push('mobile map does not expose 9 hotspots');
+            await hotspots.nth(1).click();
+            await page.waitForTimeout(480);
+            const sheet = page.locator('.ix-world-map__sheet');
+            if (!(await sheet.isVisible())) errors.push('mobile bottom sheet did not open');
+
+            const before = await sheet.locator('h3').textContent();
+            await sheet
+              .locator('.ix-world-map__sheet-actions button')
+              .nth(2)
+              .evaluate((button) => button.click());
+            await page.waitForTimeout(320);
+            const after = await sheet.locator('h3').textContent();
+            if (!before || !after || before === after) errors.push('mobile next realm control did not advance');
+
+            const mobileState = await page.evaluate(() => {
+              const panel = document.querySelector('.ix-world-map__sheet')?.getBoundingClientRect();
+              return {
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+                panelFits:
+                  Boolean(panel) &&
+                  panel.left >= 0 &&
+                  panel.right <= window.innerWidth &&
+                  panel.bottom <= window.innerHeight,
+              };
+            });
+            if (mobileState.overflow) errors.push('horizontal overflow on mobile map');
+            if (!mobileState.panelFits) errors.push('mobile bottom sheet clips viewport');
+            await page.screenshot({ path: 'qa/realms/mobile-map.png', fullPage: false });
+
+            if (errors.length) throw new Error(errors.join('\n'));
+            await page.close();
+          }
+
+          async function reduced(browser) {
+            const context = await browser.newContext({
+              viewport: { width: 1280, height: 800 },
+              reducedMotion: 'reduce',
+            });
+            const page = await context.newPage();
+            await enter(page);
+            const shaderState = await page.evaluate(() => {
+              const shader = document.querySelector('.ix-ripple-distortion__shader');
+              return shader ? getComputedStyle(shader).display : 'not-mounted';
+            });
+            if (shaderState !== 'none') {
+              throw new Error(`ripple shader remains enabled in reduced motion: ${shaderState}`);
+            }
+            await scrollTo(page, '#world-map');
+            await page.screenshot({ path: 'qa/realms/reduced-map.png', fullPage: false });
+            await context.close();
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            await desktop(browser);
+            await mobile(browser);
+            await reduced(browser);
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node qa/realms.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nine-realms-map-visual
+          path: qa/realms
