@@ -1,0 +1,216 @@
+.th-memory-bridge {
+  position: absolute;
+  inset: 0;
+  z-index: 84;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  background: #000;
+  isolation: isolate;
+}
+
+.th-memory-bridge::before,
+.th-memory-bridge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.th-memory-bridge::before {
+  z-index: 4;
+  background:
+    radial-gradient(circle at 50% 54%, rgba(117, 23, 30, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.5));
+}
+
+.th-memory-bridge::after {
+  z-index: 8;
+  opacity: 0.16;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 238, 220, 0.12) 0 0.55px, transparent 0.8px),
+    radial-gradient(circle at 72% 58%, rgba(198, 93, 92, 0.13) 0 0.65px, transparent 0.9px),
+    radial-gradient(circle at 45% 76%, rgba(255, 255, 255, 0.08) 0 0.45px, transparent 0.8px);
+  background-size:
+    117px 101px,
+    149px 131px,
+    89px 107px;
+  mix-blend-mode: screen;
+}
+
+.th-memory-temple {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.045);
+  transform-origin: 50% 54%;
+  filter: grayscale(0.82) brightness(0.22) saturate(0.38) contrast(1.18);
+  will-change: opacity, transform, filter, clip-path;
+  clip-path: inset(34% 24% 34% 24% round 50%);
+}
+
+.th-memory-temple img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.th-memory-haze {
+  position: absolute;
+  z-index: 3;
+  inset: 38% -20% -10%;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(120, 32, 37, 0.12), transparent 44%),
+    linear-gradient(90deg, transparent, rgba(129, 134, 145, 0.05), transparent);
+  filter: blur(36px);
+}
+
+.th-memory-copy {
+  position: absolute;
+  z-index: 12;
+  top: 50%;
+  left: 50%;
+  width: min(820px, 82vw);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.th-memory-eyebrow,
+.th-memory-jp {
+  display: block;
+  opacity: 0;
+  color: rgba(225, 213, 203, 0.42);
+  font: 500 0.58rem/1.4 var(--font-sans, Arial, sans-serif);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.th-memory-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.26em;
+  row-gap: 0.04em;
+  margin: 1rem auto 1.25rem;
+  max-width: 17ch;
+  color: #e9e1d7;
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(2.4rem, 4.7vw, 5.8rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  text-shadow: 0 0 34px rgba(175, 63, 63, 0.08);
+}
+
+.th-memory-word {
+  display: inline-flex;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.th-memory-title [data-memory-glyph] {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(14px);
+  transform: translate3d(0, 26px, 0) scale(0.82);
+  will-change: transform, opacity, filter;
+}
+
+.th-memory-jp {
+  color: rgba(197, 80, 83, 0.48);
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  text-transform: none;
+}
+
+.th-memory-ashes {
+  position: absolute;
+  z-index: 14;
+  inset: 0;
+  overflow: hidden;
+}
+
+.th-memory-ashes i {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  opacity: 0;
+  background: rgba(216, 202, 188, 0.72);
+  box-shadow: 0 0 8px rgba(154, 61, 62, 0.26);
+  will-change: transform, opacity;
+}
+
+.th-memory-ashes i:nth-child(5n + 1) {
+  left: 12%;
+  top: 68%;
+}
+.th-memory-ashes i:nth-child(5n + 2) {
+  left: 31%;
+  top: 42%;
+}
+.th-memory-ashes i:nth-child(5n + 3) {
+  left: 52%;
+  top: 61%;
+}
+.th-memory-ashes i:nth-child(5n + 4) {
+  left: 69%;
+  top: 38%;
+}
+.th-memory-ashes i:nth-child(5n) {
+  left: 86%;
+  top: 58%;
+}
+.th-memory-ashes i:nth-child(3n) {
+  width: 1px;
+  height: 1px;
+}
+.th-memory-ashes i:nth-child(4n) {
+  width: 3px;
+  height: 3px;
+  background: rgba(158, 69, 70, 0.58);
+}
+
+@media (max-width: 680px) {
+  .th-memory-bridge {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    z-index: 90;
+  }
+
+  .th-memory-temple img {
+    object-position: 56% center;
+  }
+
+  .th-memory-copy {
+    width: min(88vw, 560px);
+  }
+
+  .th-memory-title {
+    max-width: 12ch;
+    column-gap: 0.2em;
+    font-size: clamp(2.05rem, 9.6vw, 3.25rem);
+  }
+
+  .th-memory-eyebrow,
+  .th-memory-jp {
+    font-size: 0.5rem;
+    letter-spacing: 0.16em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .th-memory-ashes {
+    display: none;
+  }
+
+  .th-memory-title [data-memory-glyph] {
+    filter: none !important;
+    transform: none !important;
+  }
+}
