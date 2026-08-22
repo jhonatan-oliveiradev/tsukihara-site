@@ -1,0 +1,78 @@
+@media (max-width: 900px) {
+  .akari-chapter {
+    overflow: visible;
+  }
+
+  .akari-details--mosaic {
+    position: relative;
+    overflow: visible;
+  }
+
+  .akari-details--mosaic .akari-mosaic-layout {
+    position: sticky;
+    top: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 58svh) minmax(0, 42svh);
+    align-self: start;
+    width: 100%;
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+
+  .akari-details--mosaic .akari-mosaic-stage {
+    position: relative;
+    inset: auto;
+    min-height: 0;
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy {
+    position: relative;
+    z-index: 20;
+    inset: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    display: flex;
+    min-height: 0;
+    padding: 1.3rem 24px 2.8rem;
+    background:
+      radial-gradient(circle at 0 48%, rgba(153, 36, 47, 0.1), transparent 33%),
+      #020305;
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy .akari-details__items {
+    position: relative;
+    min-height: 0;
+    margin: 0.65rem 0 0;
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy .akari-detail {
+    position: relative;
+    inset: auto;
+    align-content: start;
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy .akari-details__progress {
+    position: absolute;
+    right: 24px;
+    bottom: 1.15rem;
+    left: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .akari-details--mosaic .akari-mosaic-layout {
+    grid-template-rows: minmax(0, 54svh) minmax(0, 46svh);
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy {
+    padding: 1rem 18px 2.4rem;
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy .akari-details__progress {
+    right: 18px;
+    left: 18px;
+  }
+}
