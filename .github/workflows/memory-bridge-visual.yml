@@ -53,18 +53,19 @@ jobs:
             return page.evaluate(() => {
               const bridge = document.querySelector('[data-memory-bridge]');
               const temple = document.querySelector('[data-memory-temple]');
-              const rupture = document.querySelector('[data-memory-rupture]');
+              const veil = document.querySelector('[data-kintsugi-entry-veil]');
               const kintsugi = document.querySelector('#gate');
               const bridgeStyle = bridge ? getComputedStyle(bridge) : null;
               const templeStyle = temple ? getComputedStyle(temple) : null;
-              const ruptureStyle = rupture ? getComputedStyle(rupture) : null;
+              const veilStyle = veil ? getComputedStyle(veil) : null;
               const kintsugiRect = kintsugi?.getBoundingClientRect();
 
               return {
                 bridgeOpacity: bridgeStyle ? Number(bridgeStyle.opacity) : null,
                 bridgeVisibility: bridgeStyle?.visibility ?? null,
                 templeOpacity: templeStyle ? Number(templeStyle.opacity) : null,
-                ruptureOpacity: ruptureStyle ? Number(ruptureStyle.opacity) : null,
+                veilOpacity: veilStyle ? Number(veilStyle.opacity) : null,
+                veilHeight: veil?.getBoundingClientRect().height ?? null,
                 kintsugiTop: kintsugiRect?.top ?? null,
                 overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
               };
@@ -112,9 +113,9 @@ jobs:
                   `bridge temple still readable at ${label} handoff ${release}: ${state.templeOpacity}`,
                 );
               }
-              if (state.ruptureOpacity === null || state.ruptureOpacity < 0.72) {
+              if (state.veilOpacity === null || state.veilOpacity < 0.95 || !state.veilHeight) {
                 errors.push(
-                  `rupture missing at ${label} handoff ${release}: ${state.ruptureOpacity}`,
+                  `Kintsugi entry veil missing at ${label} handoff ${release}: ${JSON.stringify(state)}`,
                 );
               }
               if (state.kintsugiTop === null || state.kintsugiTop >= height) {
