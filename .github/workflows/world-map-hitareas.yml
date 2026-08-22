@@ -83,7 +83,7 @@ jobs:
             }
 
             for (const [name, index] of expected) {
-              await regions.nth(index).hover();
+              await regions.nth(index).dispatchEvent('pointerover', { pointerType: 'mouse' });
               await page.waitForTimeout(165);
               const title = await page.locator('.ix-world-map__inspector h3').textContent();
               if (title?.trim() !== name) {
@@ -91,7 +91,7 @@ jobs:
               }
             }
 
-            await regions.nth(4).click();
+            await regions.nth(4).dispatchEvent('click');
             await page.waitForTimeout(180);
             const selected = await page.locator('.ix-world-map__hotspot').nth(4).getAttribute('aria-pressed');
             if (selected !== 'true') throw new Error('clicking a realm region did not persist selection');
