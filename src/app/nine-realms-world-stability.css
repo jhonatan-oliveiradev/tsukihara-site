@@ -1,0 +1,244 @@
+/* World-map stabilization: keep the artwork spatially calm and move UI outside the 3D stage. */
+.ix-world-map__scene {
+  perspective: none;
+}
+
+.ix-world-map__object {
+  transform: translate3d(calc(-50% + var(--map-tx)), calc(-50% + var(--map-ty)), 0) !important;
+  transition: transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-world-map__hotspot {
+  width: clamp(58px, 7vw, 104px);
+}
+
+.ix-world-map__hotspot-ring {
+  inset: 4%;
+  border-color: rgba(230, 204, 176, 0.2);
+  opacity: 0.48;
+  transform: scale(0.9);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.34);
+}
+
+.ix-world-map__hotspot-node {
+  inset: 22%;
+  opacity: 0.72;
+  transform: scale(0.9);
+  filter: drop-shadow(0 2px 7px rgba(0, 0, 0, 0.75));
+}
+
+.ix-world-map__hotspot-label {
+  position: absolute;
+  top: calc(100% - 5px);
+  left: 50%;
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  width: max-content;
+  max-width: 150px;
+  padding: 0.28rem 0.42rem;
+  border: 1px solid rgba(226, 201, 174, 0.1);
+  background: rgba(3, 4, 7, 0.72);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.28);
+  color: rgba(238, 231, 220, 0.68);
+  transform: translateX(-50%);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+  transition:
+    color 260ms ease,
+    border-color 260ms ease,
+    background 260ms ease,
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-world-map__hotspot-label b {
+  color: rgba(218, 84, 99, 0.72);
+  font-family: var(--display), Cinzel, serif;
+  font-size: 0.42rem;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
+.ix-world-map__hotspot-label em {
+  overflow: hidden;
+  font-family: var(--display), Cinzel, serif;
+  font-size: clamp(0.46rem, 0.55vw, 0.58rem);
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ix-world-map__hotspot:hover .ix-world-map__hotspot-label,
+.ix-world-map__hotspot:focus-visible .ix-world-map__hotspot-label,
+.ix-world-map__hotspot.is-active .ix-world-map__hotspot-label {
+  border-color: color-mix(in srgb, var(--realm-glow) 42%, rgba(226, 201, 174, 0.2));
+  background: rgba(3, 4, 7, 0.91);
+  color: var(--ivory);
+  transform: translateX(-50%) translateY(3px);
+}
+
+.ix-world-map__region-hits polygon {
+  cursor: pointer;
+}
+
+.ix-world-map__region-hits polygon:hover,
+.ix-world-map__region-hits polygon.is-active {
+  fill: rgba(164, 12, 38, 0.025);
+  stroke: rgba(226, 191, 164, 0.1);
+  stroke-width: 0.18;
+  vector-effect: non-scaling-stroke;
+}
+
+.ix-world-map__inspector {
+  --realm-glow: #a40c26;
+  position: absolute;
+  z-index: 42;
+  top: 50%;
+  width: min(330px, 26vw);
+  min-width: 285px;
+  max-height: min(510px, calc(100% - 60px));
+  padding: 1.25rem 1.35rem 1.15rem;
+  overflow-y: auto;
+  border: 1px solid rgba(226, 199, 168, 0.16);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--realm-glow) 8%, transparent), transparent 42%),
+    rgba(3, 4, 7, 0.97);
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.65),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.012);
+  backdrop-filter: blur(14px);
+  transform: translateY(-50%);
+  animation: ix-map-inspector-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ix-world-map__inspector.is-right {
+  right: clamp(12px, 2.4vw, 42px);
+}
+
+.ix-world-map__inspector.is-left {
+  left: clamp(12px, 2.4vw, 42px);
+}
+
+.ix-world-map__inspector::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 46%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--realm-glow), transparent);
+}
+
+.ix-world-map__inspector > small {
+  display: block;
+  color: rgba(238, 231, 220, 0.48);
+  font-size: 0.52rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.ix-world-map__inspector h3 {
+  margin: 0.35rem 0 0.25rem;
+  color: var(--ivory);
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(1.55rem, 2vw, 2.3rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.ix-world-map__inspector > b {
+  color: color-mix(in srgb, var(--realm-glow) 70%, #e5c6a3);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.ix-world-map__inspector > p {
+  margin: 1rem 0 1.05rem;
+  color: rgba(242, 233, 221, 0.72);
+  font-size: 0.73rem;
+  line-height: 1.7;
+}
+
+.ix-world-map__inspector dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin: 0 0 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ix-world-map__inspector dt {
+  color: rgba(238, 231, 220, 0.34);
+  font-size: 0.45rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.ix-world-map__inspector dd {
+  margin: 0.28rem 0 0;
+  color: rgba(238, 231, 220, 0.7);
+  font-size: 0.62rem;
+}
+
+.ix-world-map__inspector > button {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.35rem 0 0.2rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--realm-glow) 58%, transparent);
+  background: transparent;
+  color: var(--ivory);
+  font-family: var(--display), Cinzel, serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@keyframes ix-map-inspector-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-50% + 12px)) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  .ix-world-map__inspector {
+    display: none;
+  }
+
+  .ix-world-map__hotspot {
+    width: clamp(50px, 11vw, 68px);
+  }
+
+  .ix-world-map__hotspot-label {
+    display: none;
+  }
+
+  .ix-world-map__hotspot-ring {
+    opacity: 0.6;
+  }
+
+  .ix-world-map__hotspot-node {
+    opacity: 0.82;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-world-map__object,
+  .ix-world-map__inspector {
+    transition: none !important;
+    animation: none !important;
+  }
+}

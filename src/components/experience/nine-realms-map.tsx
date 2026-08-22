@@ -40,7 +40,7 @@ function getRealm(id: RealmId | null) {
 
 export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
   const rootRef = useRef<HTMLElement>(null);
-  const sceneRef = useRef<HTMLDivElement>(null);
+  const objectRef = useRef<HTMLDivElement>(null);
   const previewClearTimerRef = useRef<number | null>(null);
   const [previewId, setPreviewId] = useState<RealmId | null>(null);
   const [selectedId, setSelectedId] = useState<RealmId | null>(null);
@@ -94,28 +94,25 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     previewClearTimerRef.current = window.setTimeout(() => {
       setPreviewId(null);
       previewClearTimerRef.current = null;
-    }, 140);
+    }, 180);
   };
 
-  const setTilt = (event: PointerEvent<HTMLDivElement>) => {
-    const node = sceneRef.current;
+  const setDrift = (event: PointerEvent<HTMLDivElement>) => {
+    const node = objectRef.current;
     if (!node || event.pointerType === "touch") return;
-    const rect = node.getBoundingClientRect();
+    const rect = event.currentTarget.getBoundingClientRect();
     const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
     const ny = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-    node.style.setProperty("--map-rx", `${(-ny * 1.1).toFixed(2)}deg`);
-    node.style.setProperty("--map-ry", `${(nx * 1.4).toFixed(2)}deg`);
-    node.style.setProperty("--map-tx", `${(nx * 3.5).toFixed(2)}px`);
-    node.style.setProperty("--map-ty", `${(ny * 2.5).toFixed(2)}px`);
+    node.style.setProperty("--map-tx", `${(nx * 2.2).toFixed(2)}px`);
+    node.style.setProperty("--map-ty", `${(ny * 1.6).toFixed(2)}px`);
   };
 
-  const resetTilt = () => {
-    const node = sceneRef.current;
-    if (!node) return;
-    node.style.setProperty("--map-rx", "0deg");
-    node.style.setProperty("--map-ry", "0deg");
-    node.style.setProperty("--map-tx", "0px");
-    node.style.setProperty("--map-ty", "0px");
+  const resetDrift = () => {
+    const node = objectRef.current;
+    if (node) {
+      node.style.setProperty("--map-tx", "0px");
+      node.style.setProperty("--map-ty", "0px");
+    }
     schedulePreviewClear();
   };
 
@@ -170,16 +167,15 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
 
       <div className="ix-world-map__experience">
         <div
-          ref={sceneRef}
           className="ix-world-map__scene"
-          onPointerMove={setTilt}
-          onPointerLeave={resetTilt}
+          onPointerMove={setDrift}
+          onPointerLeave={resetDrift}
           onPointerDown={(event) => {
             if (event.target === event.currentTarget) closeSelection();
           }}
         >
           <div className="ix-world-map__shadow" aria-hidden="true" />
-          <div className="ix-world-map__object" style={focusMaskStyle}>
+          <div ref={objectRef} className="ix-world-map__object" style={focusMaskStyle}>
             <Image
               src="/9_reinos_mapa_isometrico.png"
               alt="Mapa isométrico dos Nove Reinos de Tsukihara"
@@ -281,7 +277,10 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                     <span className="ix-world-map__hotspot-node" aria-hidden="true">
                       <Image src={realm.emblem} alt="" width={72} height={72} />
                     </span>
-                    <small aria-hidden="true">{String(index + 1).padStart(2, "0")}</small>
+                    <span className="ix-world-map__hotspot-label" aria-hidden="true">
+                      <b>{String(index + 1).padStart(2, "0")}</b>
+                      <em>{realm.title}</em>
+                    </span>
                   </button>
                 );
               })}
@@ -308,45 +307,39 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
               </div>
             )}
           </div>
-
-          {activeRealm && activeCopy && activeMapPoint && (
-            <aside
-              className="ix-world-map__popover"
-              style={
-                {
-                  left: `${activeMapPoint.popoverX}%`,
-                  top: `${activeMapPoint.popoverY}%`,
-                  "--realm-glow": activeRealm.glow,
-                } as CSSProperties
-              }
-              onPointerEnter={cancelPreviewClear}
-              onPointerLeave={schedulePreviewClear}
-              onPointerDown={(event) => event.stopPropagation()}
-            >
-              <div className="ix-world-map__popover-topline">
-                <span>{String(activeIndex + 1).padStart(2, "0")} / 09</span>
-                <Image src={activeRealm.emblem} alt="" width={46} height={46} />
-              </div>
-              <small>{activeCopy.label}</small>
-              <h3>{activeRealm.title}</h3>
-              <b>{activeRealm.aspect}</b>
-              <p>{activeCopy.copy}</p>
-              <dl>
-                <div>
-                  <dt>{copy.labels.state}</dt>
-                  <dd>{activeCopy.state}</dd>
-                </div>
-                <div>
-                  <dt>{copy.labels.threat}</dt>
-                  <dd>{activeCopy.threat}</dd>
-                </div>
-              </dl>
-              <button type="button" onClick={() => onExploreRealm(activeRealm.id)}>
-                {copy.labels.explore} <span aria-hidden="true">→</span>
-              </button>
-            </aside>
-          )}
         </div>
+
+        {activeRealm && activeCopy && (
+          <aside
+            className={`ix-world-map__inspector ${activeMapPoint && activeMapPoint.x > 58 ? "is-left" : "is-right"}`}
+            style={{ "--realm-glow": activeRealm.glow } as CSSProperties}
+            onPointerEnter={cancelPreviewClear}
+            onPointerLeave={schedulePreviewClear}
+            onPointerDown={(event) => event.stopPropagation()}
+          >
+            <div className="ix-world-map__popover-topline">
+              <span>{String(activeIndex + 1).padStart(2, "0")} / 09</span>
+              <Image src={activeRealm.emblem} alt="" width={46} height={46} />
+            </div>
+            <small>{activeCopy.label}</small>
+            <h3>{activeRealm.title}</h3>
+            <b>{activeRealm.aspect}</b>
+            <p>{activeCopy.copy}</p>
+            <dl>
+              <div>
+                <dt>{copy.labels.state}</dt>
+                <dd>{activeCopy.state}</dd>
+              </div>
+              <div>
+                <dt>{copy.labels.threat}</dt>
+                <dd>{activeCopy.threat}</dd>
+              </div>
+            </dl>
+            <button type="button" onClick={() => onExploreRealm(activeRealm.id)}>
+              {copy.labels.explore} <span aria-hidden="true">→</span>
+            </button>
+          </aside>
+        )}
 
         <div className="ix-world-map__footer">
           <p>{copy.intro.hint}</p>
