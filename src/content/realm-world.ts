@@ -10,15 +10,7 @@ export type RealmId =
   | "tsuki-no-miya";
 
 export type RealmParticle =
-  | "petals"
-  | "sparks"
-  | "water"
-  | "snow"
-  | "ash"
-  | "dream"
-  | "spores"
-  | "fragments"
-  | "moon-dust";
+  "petals" | "sparks" | "water" | "snow" | "ash" | "dream" | "spores" | "fragments" | "moon-dust";
 
 export type RealmWorldEntry = {
   id: RealmId;

@@ -138,8 +138,7 @@
   overflow: clip;
   background:
     radial-gradient(circle at 50% 56%, rgba(111, 22, 35, 0.11), transparent 31%),
-    radial-gradient(circle at 50% 20%, rgba(220, 211, 191, 0.035), transparent 28%),
-    #030407;
+    radial-gradient(circle at 50% 20%, rgba(220, 211, 191, 0.035), transparent 28%), #030407;
   isolation: isolate;
 }
 
@@ -274,7 +273,8 @@
 }
 
 .ix-world-map.has-active .ix-world-map__image--base {
-  filter: brightness(0.82) saturate(0.86) contrast(1.03) drop-shadow(0 32px 34px rgba(0, 0, 0, 0.34));
+  filter: brightness(0.82) saturate(0.86) contrast(1.03)
+    drop-shadow(0 32px 34px rgba(0, 0, 0, 0.34));
 }
 
 .ix-world-map__image--focus {
@@ -352,7 +352,12 @@
 }
 
 .ix-world-map__mother-moon::before {
-  background: radial-gradient(circle, rgba(239, 220, 197, 0.35), rgba(164, 12, 38, 0.08) 52%, transparent 74%);
+  background: radial-gradient(
+    circle,
+    rgba(239, 220, 197, 0.35),
+    rgba(164, 12, 38, 0.08) 52%,
+    transparent 74%
+  );
   box-shadow: 0 0 30px rgba(192, 116, 105, 0.19);
   animation: ix-mother-moon 5.5s ease-in-out infinite;
 }
@@ -785,7 +790,11 @@
     overflow-y: auto;
     border: 1px solid rgba(226, 199, 168, 0.14);
     background:
-      linear-gradient(135deg, color-mix(in srgb, var(--realm-glow) 10%, transparent), transparent 46%),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--realm-glow) 10%, transparent),
+        transparent 46%
+      ),
       rgba(4, 5, 8, 0.97);
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62);
     backdrop-filter: blur(12px);

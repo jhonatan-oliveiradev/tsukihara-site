@@ -5,11 +5,7 @@ import { JpRevealText } from "@/components/experience/jp-reveal-text";
 import { NineRealmsMap } from "@/components/experience/nine-realms-map";
 import { RippleDistortionImage } from "@/components/experience/ripple-distortion-image";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
-import {
-  realmWorld,
-  realmWorldCopy,
-  type RealmId,
-} from "@/content/realm-world";
+import { realmWorld, realmWorldCopy, type RealmId } from "@/content/realm-world";
 
 type Copy = (typeof immersiveCopy)[Locale];
 
@@ -51,7 +47,10 @@ export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
 
         <div className="ix-realm-atlas-grid">
           <div className="ix-realm-stage" data-realm-stage>
-            <div key={active.id} className="ix-realm-stage-layer is-active ix-realm-stage-layer--mounted">
+            <div
+              key={active.id}
+              className="ix-realm-stage-layer is-active ix-realm-stage-layer--mounted"
+            >
               <RippleDistortionImage
                 src={active.image}
                 alt={active.title}

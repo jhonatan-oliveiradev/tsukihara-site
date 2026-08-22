@@ -1,14 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import {
   realmWorld,
   realmWorldCopy,
@@ -22,7 +15,7 @@ type NineRealmsMapProps = {
 };
 
 function getRealm(id: RealmId | null) {
-  return id ? realmWorld.find((realm) => realm.id === id) ?? null : null;
+  return id ? (realmWorld.find((realm) => realm.id === id) ?? null) : null;
 }
 
 export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
@@ -279,7 +272,10 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
       </div>
 
       {activeRealm && activeCopy && (
-        <aside className="ix-world-map__sheet" style={{ "--realm-glow": activeRealm.glow } as CSSProperties}>
+        <aside
+          className="ix-world-map__sheet"
+          style={{ "--realm-glow": activeRealm.glow } as CSSProperties}
+        >
           <div className="ix-world-map__sheet-head">
             <div>
               <span>{String(activeIndex + 1).padStart(2, "0")} / 09</span>
