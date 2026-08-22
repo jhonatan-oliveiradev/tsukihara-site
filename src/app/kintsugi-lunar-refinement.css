@@ -1,0 +1,30 @@
+.ix-kl-gameplay-art {
+  z-index: 17;
+}
+
+.ix-kl-gameplay-art__frame {
+  overflow: hidden;
+  clip-path: polygon(5% 0, 100% 0, 96% 100%, 0 100%);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.24);
+}
+
+.ix-kl-gameplay-art__frame::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(229, 198, 185, 0.08);
+  border-left-color: rgba(218, 153, 166, 0.18);
+  clip-path: inherit;
+}
+
+.ix-kl-gameplay-art__image img {
+  filter: brightness(0.58) saturate(0.76) contrast(1.06);
+}
+
+@media (max-width: 900px) {
+  .ix-kl-gameplay-art {
+    z-index: auto;
+  }
+}

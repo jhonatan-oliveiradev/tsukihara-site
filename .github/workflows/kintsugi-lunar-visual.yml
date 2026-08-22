@@ -1,0 +1,186 @@
+name: Kintsugi Lunar visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-kintsugi-lunar.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-kintsugi-lunar.log
+          exit 1
+      - name: Capture Kintsugi Lunar chapter
+        run: |
+          mkdir -p qa/kintsugi-lunar
+          cat > qa/kintsugi-lunar.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          async function enter(page) {
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
+            await page.locator('.ix-gateway-actions button').nth(1).evaluate((button) => button.click());
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
+            await page.waitForSelector('#kintsugi-lunar', { timeout: 10000 });
+          }
+
+          async function placeChapterProgress(page, fraction) {
+            await page.locator('#kintsugi-lunar').evaluate((section, progress) => {
+              const max = section.scrollHeight - window.innerHeight;
+              window.scrollTo({
+                top: section.getBoundingClientRect().top + window.scrollY + max * progress,
+                behavior: 'instant',
+              });
+            }, fraction);
+            await page.waitForTimeout(700);
+          }
+
+          async function desktop(browser, viewport, prefix) {
+            const page = await browser.newPage({ viewport });
+            const errors = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await enter(page);
+
+            const structure = await page.evaluate(() => {
+              const akari = document.querySelector('#akari');
+              const chapter = document.querySelector('#kintsugi-lunar');
+              const oldKintsugi = document.querySelector('.ix-kintsugi');
+              const pillars = document.querySelector('[data-pillar]')?.closest('section');
+              return {
+                chapterExists: Boolean(chapter),
+                oldKintsugiExists: Boolean(oldKintsugi),
+                afterAkari: Boolean(akari && chapter && akari.compareDocumentPosition(chapter) & Node.DOCUMENT_POSITION_FOLLOWING),
+                beforePillars: Boolean(chapter && pillars && chapter.compareDocumentPosition(pillars) & Node.DOCUMENT_POSITION_FOLLOWING),
+                desktopHeight: chapter?.getBoundingClientRect().height ?? 0,
+              };
+            });
+
+            if (!structure.chapterExists) errors.push('Kintsugi Lunar chapter missing');
+            if (!structure.oldKintsugiExists) errors.push('existing Kintsugi section was removed');
+            if (!structure.afterAkari) errors.push('chapter is not after Akari');
+            if (!structure.beforePillars) errors.push('chapter is not before Experience Pillars');
+            if (structure.desktopHeight < viewport.height * 3.5) {
+              errors.push(`desktop chapter too short: ${structure.desktopHeight}`);
+            }
+
+            const milestones = [
+              ['rupture', 0.04],
+              ['awakening', 0.2],
+              ['transformation', 0.39],
+              ['relic', 0.61],
+              ['gameplay', 0.77],
+              ['risk', 0.91],
+              ['climax', 0.965],
+            ];
+
+            for (const [name, progress] of milestones) {
+              await placeChapterProgress(page, progress);
+              const state = await page.evaluate(() => {
+                const visibleCopies = [...document.querySelectorAll('.ix-kl-desktop .ix-kl-copy')].filter((element) => {
+                  const style = getComputedStyle(element);
+                  return style.visibility !== 'hidden' && Number(style.opacity) > 0.08;
+                });
+                return {
+                  visibleCopies: visibleCopies.length,
+                  overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+                  stageHeight: document.querySelector('.ix-kl-stage')?.getBoundingClientRect().height ?? 0,
+                };
+              });
+              if (state.visibleCopies > 2) errors.push(`${name}: narrative overlap (${state.visibleCopies} copies)`);
+              if (state.overflow) errors.push(`${name}: horizontal overflow`);
+              if (Math.abs(state.stageHeight - viewport.height) > 8) {
+                errors.push(`${name}: sticky stage height mismatch (${state.stageHeight})`);
+              }
+              await page.screenshot({ path: `qa/kintsugi-lunar/${prefix}-${name}.png`, fullPage: false });
+            }
+
+            if (errors.length) throw new Error(errors.join('\n'));
+            await page.close();
+          }
+
+          async function mobile(browser) {
+            const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+            const errors = [];
+            await enter(page);
+            await page.locator('#kintsugi-lunar').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(500);
+            const state = await page.evaluate(() => ({
+              desktopDisplay: getComputedStyle(document.querySelector('.ix-kl-desktop')).display,
+              mobileDisplay: getComputedStyle(document.querySelector('.ix-kl-mobile')).display,
+              gameplayCount: document.querySelectorAll('.ix-kl-mobile__gameplay article').length,
+              relicCount: document.querySelectorAll('.ix-kl-mobile__relics article').length,
+              overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+            }));
+            if (state.desktopDisplay !== 'none') errors.push('desktop sticky chapter is visible on mobile');
+            if (state.mobileDisplay === 'none') errors.push('mobile flow is hidden');
+            if (state.gameplayCount !== 4) errors.push(`expected 4 mobile gameplay pillars, got ${state.gameplayCount}`);
+            if (state.relicCount !== 3) errors.push(`expected 3 mobile relics, got ${state.relicCount}`);
+            if (state.overflow) errors.push('mobile horizontal overflow');
+            await page.screenshot({ path: 'qa/kintsugi-lunar/mobile-opening.png', fullPage: false });
+            await page.locator('.ix-kl-mobile__climax').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(350);
+            await page.screenshot({ path: 'qa/kintsugi-lunar/mobile-climax.png', fullPage: false });
+            if (errors.length) throw new Error(errors.join('\n'));
+            await page.close();
+          }
+
+          async function reduced(browser) {
+            const context = await browser.newContext({
+              viewport: { width: 1280, height: 800 },
+              reducedMotion: 'reduce',
+            });
+            const page = await context.newPage();
+            await enter(page);
+            await page.locator('#kintsugi-lunar').scrollIntoViewIfNeeded();
+            const state = await page.evaluate(() => ({
+              desktopDisplay: getComputedStyle(document.querySelector('.ix-kl-desktop')).display,
+              mobileDisplay: getComputedStyle(document.querySelector('.ix-kl-mobile')).display,
+              closingVisible: Boolean(document.querySelector('.ix-kl-mobile__closing')),
+            }));
+            if (state.desktopDisplay !== 'none') throw new Error('reduced-motion still uses desktop scrub chapter');
+            if (state.mobileDisplay === 'none' || !state.closingVisible) throw new Error('reduced-motion readable flow unavailable');
+            await page.screenshot({ path: 'qa/kintsugi-lunar/reduced.png', fullPage: false });
+            await context.close();
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            await desktop(browser, { width: 1440, height: 900 }, 'desktop');
+            await desktop(browser, { width: 2560, height: 1080 }, 'ultrawide');
+            await mobile(browser);
+            await reduced(browser);
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node qa/kintsugi-lunar.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kintsugi-lunar-visual
+          path: qa/kintsugi-lunar
