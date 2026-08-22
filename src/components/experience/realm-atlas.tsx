@@ -51,21 +51,15 @@ export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
 
         <div className="ix-realm-atlas-grid">
           <div className="ix-realm-stage" data-realm-stage>
-            {realmWorld.map((realm) => (
-              <div
-                key={realm.id}
-                className={`ix-realm-stage-layer ${realm.id === active.id ? "is-active" : ""}`}
-                aria-hidden={realm.id !== active.id}
-              >
-                <RippleDistortionImage
-                  src={realm.image}
-                  alt={realm.title}
-                  active={realm.id === active.id}
-                  tint="#a40c26"
-                  sizes="(max-width: 760px) 100vw, 72vw"
-                />
-              </div>
-            ))}
+            <div key={active.id} className="ix-realm-stage-layer is-active ix-realm-stage-layer--mounted">
+              <RippleDistortionImage
+                src={active.image}
+                alt={active.title}
+                active
+                tint="#a40c26"
+                sizes="(max-width: 760px) 100vw, 72vw"
+              />
+            </div>
             <div className="ix-realm-stage-vignette" aria-hidden="true" />
             <div className="ix-realm-stage-meta">
               <span>{String(activeIndex + 1).padStart(2, "0")}</span>
