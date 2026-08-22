@@ -24,6 +24,15 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
 
     if (!bridge.length) return;
 
+    const getScrollBounds = (startRatio: number) => {
+      const rootTop = root.getBoundingClientRect().top + window.scrollY;
+      const travel = Math.max(1, root.offsetHeight - window.innerHeight);
+      return {
+        start: rootTop + travel * startRatio,
+        end: rootTop + travel,
+      };
+    };
+
     gsap.set(bridge, { autoAlpha: 0 });
     gsap.set(temple, {
       autoAlpha: 0,
@@ -44,8 +53,8 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
     if (reduced) {
       const trigger = ScrollTrigger.create({
         trigger: root,
-        start: "82% top",
-        end: "bottom bottom",
+        start: () => getScrollBounds(0.82).start,
+        end: () => getScrollBounds(0.82).end,
         onEnter: () => {
           gsap.set(bridge, { autoAlpha: 1 });
           gsap.set(temple, {
@@ -61,6 +70,7 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
           });
         },
         onLeaveBack: () => gsap.set(bridge, { autoAlpha: 0 }),
+        invalidateOnRefresh: true,
       });
 
       return () => trigger.kill();
@@ -143,8 +153,8 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
 
     const trigger = ScrollTrigger.create({
       trigger: root,
-      start: "70% top",
-      end: "bottom bottom",
+      start: () => getScrollBounds(0.7).start,
+      end: () => getScrollBounds(0.7).end,
       scrub: 1.1,
       animation: timeline,
       invalidateOnRefresh: true,
