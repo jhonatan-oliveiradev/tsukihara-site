@@ -91,6 +91,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  column-gap: 0.26em;
+  row-gap: 0.04em;
   margin: 1rem auto 1.25rem;
   max-width: 17ch;
   color: #e9e1d7;
@@ -103,7 +105,13 @@
   text-shadow: 0 0 34px rgba(175, 63, 63, 0.08);
 }
 
-.th-memory-title > span {
+.th-memory-word {
+  display: inline-flex;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.th-memory-title [data-memory-glyph] {
   display: inline-block;
   opacity: 0;
   filter: blur(14px);
@@ -184,7 +192,8 @@
   }
 
   .th-memory-title {
-    max-width: 13ch;
+    max-width: 12ch;
+    column-gap: 0.2em;
     font-size: clamp(2.05rem, 9.6vw, 3.25rem);
   }
 
@@ -200,7 +209,7 @@
     display: none;
   }
 
-  .th-memory-title > span {
+  .th-memory-title [data-memory-glyph] {
     filter: none !important;
     transform: none !important;
   }
