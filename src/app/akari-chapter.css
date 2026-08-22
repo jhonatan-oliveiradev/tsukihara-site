@@ -1,0 +1,800 @@
+.akari-chapter {
+  position: relative;
+  z-index: 9;
+  overflow: clip;
+  color: var(--ivory);
+  background:
+    radial-gradient(circle at 78% 14%, rgba(131, 29, 42, 0.16), transparent 25%),
+    linear-gradient(180deg, #030407 0%, #060508 48%, #030407 100%);
+  isolation: isolate;
+}
+
+.akari-chapter::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0.16;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 24%, rgba(255, 242, 226, 0.12) 0 0.6px, transparent 0.9px),
+    radial-gradient(circle at 72% 62%, rgba(191, 76, 83, 0.1) 0 0.6px, transparent 0.9px);
+  background-size:
+    139px 113px,
+    181px 151px;
+}
+
+.akari-chapter__kanji {
+  position: absolute;
+  z-index: 0;
+  top: 4.5rem;
+  right: -0.035em;
+  color: rgba(173, 53, 65, 0.05);
+  font:
+    400 clamp(15rem, 32vw, 38rem) / 0.8 "Yu Mincho",
+    serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+.akari-intro {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr);
+  align-items: center;
+  min-height: 118svh;
+  padding: clamp(7rem, 13vh, 11rem) clamp(24px, 5vw, 96px);
+}
+
+.akari-intro__copy {
+  position: relative;
+  z-index: 5;
+  max-width: 720px;
+}
+
+.akari-overline {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 1.5rem;
+  color: rgba(232, 219, 205, 0.44);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.akari-overline span {
+  color: rgba(216, 71, 82, 0.88);
+  font-family: var(--display), Cinzel, serif;
+}
+
+.akari-overline::after {
+  content: "";
+  width: min(12vw, 120px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(177, 55, 65, 0.64), transparent);
+}
+
+.akari-intro h2 {
+  margin: 0;
+  max-width: 10.2ch;
+  color: #f1e8dc;
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(3.7rem, 6.8vw, 8.4rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.akari-intro__body {
+  display: grid;
+  gap: 1rem;
+  max-width: 58ch;
+  margin-top: 2rem;
+  color: rgba(235, 226, 215, 0.58);
+  font-size: clamp(0.86rem, 1vw, 1rem);
+  line-height: 1.85;
+}
+
+.akari-intro__body p,
+.akari-editorial__copy p,
+.akari-editorial__copy ul,
+.akari-detail p,
+.akari-closing p {
+  margin: 0;
+}
+
+.akari-intro__thesis {
+  display: grid;
+  gap: 0.22rem;
+  margin-top: 2.2rem;
+  padding-left: 1.15rem;
+  border-left: 1px solid rgba(190, 62, 70, 0.6);
+  color: rgba(233, 224, 212, 0.48);
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(0.92rem, 1.15vw, 1.15rem);
+  letter-spacing: 0.01em;
+}
+
+.akari-intro__thesis strong {
+  color: rgba(241, 232, 220, 0.9);
+  font-weight: 400;
+}
+
+.akari-intro__visual {
+  position: relative;
+  align-self: stretch;
+  min-height: 94svh;
+  margin-right: min(-5vw, -24px);
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 100%);
+}
+
+.akari-intro__visual::after {
+  content: "";
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #030407 0%, transparent 28%),
+    linear-gradient(180deg, #030407 0%, transparent 14%, transparent 78%, #030407 100%);
+}
+
+.akari-intro__focus {
+  z-index: 1;
+  object-fit: cover;
+  object-position: center 34%;
+  opacity: 0.34;
+  filter: grayscale(0.68) saturate(0.6) contrast(1.08) brightness(0.66);
+  transform: scale(1.035);
+}
+
+.akari-intro__figure {
+  z-index: 3;
+  object-fit: contain;
+  object-position: 58% bottom;
+  opacity: 0.92;
+  filter: drop-shadow(0 38px 42px rgba(0, 0, 0, 0.58));
+}
+
+.akari-intro__halo {
+  position: absolute;
+  z-index: 2;
+  top: 18%;
+  left: 46%;
+  width: min(38vw, 590px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(194, 88, 92, 0.1);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(171, 46, 56, 0.18), transparent 68%);
+  box-shadow: 0 0 100px rgba(141, 30, 42, 0.12);
+}
+
+.akari-intro__vertical {
+  position: absolute;
+  z-index: 8;
+  top: 17%;
+  right: 2.8vw;
+  color: rgba(232, 220, 207, 0.26);
+  font-family: "Yu Mincho", serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.5em;
+  writing-mode: vertical-rl;
+}
+
+.akari-editorial {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.55fr) minmax(320px, 0.8fr) minmax(400px, 1.25fr);
+  gap: clamp(2rem, 5vw, 7rem);
+  align-items: start;
+  padding: clamp(7rem, 12vh, 10rem) clamp(24px, 5vw, 96px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(105deg, rgba(113, 23, 33, 0.08), transparent 36%);
+}
+
+.akari-editorial__identity {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.akari-editorial__identity span {
+  color: rgba(218, 75, 84, 0.82);
+  font:
+    500 0.62rem/1 var(--display),
+    Cinzel,
+    serif;
+  letter-spacing: 0.22em;
+}
+
+.akari-editorial__identity strong {
+  max-width: 24ch;
+  color: rgba(239, 231, 220, 0.52);
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.akari-editorial__copy {
+  display: grid;
+  gap: 1.65rem;
+  color: rgba(236, 226, 215, 0.6);
+  font-size: 0.9rem;
+  line-height: 1.85;
+}
+
+.akari-editorial__copy ul {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0;
+  list-style: none;
+}
+
+.akari-editorial__copy li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.akari-editorial__copy li::before {
+  content: "";
+  position: absolute;
+  top: 0.78em;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #a73541;
+  box-shadow: 0 0 10px rgba(190, 66, 77, 0.4);
+}
+
+.akari-editorial blockquote {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  max-width: 15ch;
+  color: #eee4d8;
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(2rem, 3.25vw, 4.1rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.akari-editorial blockquote::before {
+  content: "“";
+  position: absolute;
+  top: -0.38em;
+  left: -0.28em;
+  color: rgba(166, 48, 60, 0.22);
+  font-size: 3.4em;
+  line-height: 1;
+}
+
+.akari-editorial__relic {
+  position: absolute;
+  right: -4vw;
+  bottom: -18%;
+  width: min(31vw, 520px);
+  aspect-ratio: 1;
+  opacity: 0.09;
+  filter: grayscale(1) sepia(0.2);
+  transform: rotate(-5deg);
+  pointer-events: none;
+}
+
+.akari-editorial__relic img {
+  object-fit: contain;
+}
+
+.akari-details {
+  position: relative;
+  min-height: 510svh;
+  background: #020305;
+}
+
+.akari-details__sticky {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(420px, 0.88fr);
+  height: 100svh;
+  overflow: hidden;
+}
+
+.akari-details__visuals {
+  position: relative;
+  min-width: 0;
+  background: #020305;
+}
+
+.akari-details__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.akari-details__frame::after {
+  content: "";
+  position: absolute;
+  z-index: 12;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 72% 45%, rgba(153, 37, 49, 0.12), transparent 30%),
+    linear-gradient(90deg, transparent 58%, #020305 100%),
+    linear-gradient(180deg, #020305 0%, transparent 15%, transparent 82%, #020305 100%);
+}
+
+.akari-details__image {
+  position: absolute;
+  inset: -2%;
+  opacity: 0;
+  transform: scale(1.04) translateY(8px);
+  transition:
+    opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 900ms ease;
+  filter: grayscale(0.42) brightness(0.7) saturate(0.68) contrast(1.08) blur(2px);
+  will-change: opacity, transform, filter;
+}
+
+.akari-details__image.is-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  filter: grayscale(0.24) brightness(0.72) saturate(0.78) contrast(1.08) blur(0);
+}
+
+.akari-details__image img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.akari-details__scan {
+  position: absolute;
+  z-index: 15;
+  top: 0;
+  bottom: 0;
+  left: 67%;
+  width: 1px;
+  opacity: 0.35;
+  background: linear-gradient(transparent, #b33f4b 24%, #d8b08b 50%, #b33f4b 76%, transparent);
+  box-shadow: 0 0 22px rgba(184, 58, 70, 0.16);
+}
+
+.akari-details__counter {
+  position: absolute;
+  z-index: 20;
+  right: 2.4vw;
+  bottom: 5vh;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: rgba(236, 226, 215, 0.28);
+  font:
+    500 0.55rem/1 var(--display),
+    Cinzel,
+    serif;
+  letter-spacing: 0.12em;
+}
+
+.akari-details__counter i {
+  width: 48px;
+  height: 1px;
+  background: rgba(190, 72, 80, 0.42);
+}
+
+.akari-details__content {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(6rem, 10vh, 9rem) clamp(28px, 5vw, 90px) clamp(4rem, 8vh, 7rem)
+    clamp(24px, 4vw, 72px);
+  background: radial-gradient(circle at 0% 50%, rgba(140, 32, 42, 0.08), transparent 28%), #020305;
+}
+
+.akari-details__items {
+  position: relative;
+  min-height: 390px;
+  margin-top: 1.4rem;
+}
+
+.akari-detail {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 1.5rem;
+  align-content: center;
+  opacity: 0;
+  transform: translateY(28px);
+  pointer-events: none;
+  transition:
+    opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.akari-detail.is-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.akari-detail__index {
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+  padding-top: 0.18rem;
+}
+
+.akari-detail__index span {
+  color: rgba(197, 68, 78, 0.8);
+  font:
+    500 0.62rem/1 var(--display),
+    Cinzel,
+    serif;
+}
+
+.akari-detail__index em {
+  color: rgba(236, 225, 211, 0.24);
+  font-family: "Yu Mincho", serif;
+  font-size: 1.35rem;
+  font-style: normal;
+  writing-mode: vertical-rl;
+}
+
+.akari-detail small {
+  display: block;
+  margin-bottom: 1rem;
+  color: rgba(226, 211, 196, 0.4);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+.akari-detail h3 {
+  margin: 0;
+  max-width: 12ch;
+  color: #eee5d9;
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(2.8rem, 4.5vw, 5.8rem);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.akari-detail p {
+  max-width: 45ch;
+  margin-top: 1.45rem;
+  color: rgba(233, 223, 211, 0.54);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.akari-details__progress {
+  position: absolute;
+  right: clamp(28px, 5vw, 90px);
+  bottom: 5vh;
+  left: clamp(24px, 4vw, 72px);
+  height: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.akari-details__progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0.02);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #6f1722, #cf5360, #d6af89);
+  box-shadow: 0 0 12px rgba(205, 68, 80, 0.3);
+}
+
+.akari-closing {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 116svh;
+  padding: clamp(8rem, 15vh, 14rem) clamp(24px, 5vw, 96px);
+  overflow: hidden;
+  background: radial-gradient(circle at 24% 56%, rgba(135, 29, 40, 0.11), transparent 28%), #030407;
+}
+
+.akari-closing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, #030407 12%, transparent 50%, #030407 92%);
+}
+
+.akari-closing__portrait {
+  position: absolute;
+  z-index: 1;
+  inset: 0 42% 0 -5%;
+  opacity: 0.22;
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 72%, transparent);
+}
+
+.akari-closing__portrait img {
+  object-fit: contain;
+  object-position: center bottom;
+  filter: grayscale(0.55) brightness(0.56) saturate(0.64);
+}
+
+.akari-closing__copy {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  justify-items: center;
+  width: min(1050px, 86vw);
+  text-align: center;
+}
+
+.akari-closing__copy > span {
+  margin-bottom: 2.5rem;
+  color: rgba(183, 64, 74, 0.58);
+  font-family: "Yu Mincho", serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.6em;
+}
+
+.akari-closing__copy p,
+.akari-closing__copy strong {
+  max-width: 17ch;
+  font-family: var(--display), Cinzel, Georgia, serif;
+  font-size: clamp(3rem, 5.7vw, 7.1rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.akari-closing__copy p {
+  color: rgba(238, 229, 218, 0.42);
+}
+
+.akari-closing__copy strong {
+  margin-top: 0.22em;
+  color: #f1e7da;
+}
+
+@media (max-width: 1100px) {
+  .akari-intro {
+    grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+  }
+
+  .akari-editorial {
+    grid-template-columns: 0.55fr 1fr;
+  }
+
+  .akari-editorial blockquote {
+    grid-column: 1 / -1;
+    max-width: 19ch;
+    margin-top: 2rem;
+  }
+
+  .akari-details__sticky {
+    grid-template-columns: 1fr 0.9fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .akari-chapter__kanji {
+    top: 7rem;
+    right: -0.12em;
+    font-size: 74vw;
+  }
+
+  .akari-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: auto;
+    padding: 8rem 20px 0;
+  }
+
+  .akari-intro__copy {
+    z-index: 8;
+  }
+
+  .akari-intro h2 {
+    max-width: 11ch;
+    font-size: clamp(3.25rem, 14.5vw, 5.1rem);
+  }
+
+  .akari-intro__body {
+    font-size: 0.85rem;
+  }
+
+  .akari-intro__visual {
+    width: calc(100% + 40px);
+    min-height: 76svh;
+    margin: -1rem -20px 0;
+    mask-image: linear-gradient(180deg, transparent, #000 12%, #000 90%, transparent);
+  }
+
+  .akari-intro__visual::after {
+    background: linear-gradient(180deg, #030407 0%, transparent 18%, transparent 78%, #030407 100%);
+  }
+
+  .akari-intro__focus {
+    object-position: 56% 36%;
+    opacity: 0.28;
+  }
+
+  .akari-intro__figure {
+    object-position: 58% bottom;
+  }
+
+  .akari-intro__halo {
+    top: 26%;
+    left: 37%;
+    width: 74vw;
+  }
+
+  .akari-editorial {
+    display: flex;
+    flex-direction: column;
+    gap: 2.6rem;
+    padding: 6.5rem 20px;
+  }
+
+  .akari-editorial blockquote {
+    max-width: 14ch;
+    font-size: clamp(2.3rem, 9vw, 3.6rem);
+  }
+
+  .akari-editorial__relic {
+    width: 70vw;
+    opacity: 0.05;
+  }
+
+  .akari-details {
+    min-height: 470svh;
+  }
+
+  .akari-details__sticky {
+    display: block;
+    height: 100svh;
+  }
+
+  .akari-details__visuals {
+    position: absolute;
+    inset: 0;
+  }
+
+  .akari-details__frame::after {
+    background:
+      linear-gradient(180deg, rgba(2, 3, 5, 0.26) 0%, rgba(2, 3, 5, 0.58) 48%, #020305 74%),
+      radial-gradient(circle at 58% 26%, rgba(157, 39, 49, 0.1), transparent 28%);
+  }
+
+  .akari-details__image {
+    inset: 0;
+  }
+
+  .akari-details__image img {
+    object-position: center top;
+  }
+
+  .akari-details__scan,
+  .akari-details__counter {
+    display: none;
+  }
+
+  .akari-details__content {
+    position: absolute;
+    z-index: 20;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    padding: 0 20px 7vh;
+    background: transparent;
+  }
+
+  .akari-details__content > .akari-overline {
+    margin-bottom: 0.75rem;
+  }
+
+  .akari-details__items {
+    min-height: 310px;
+    margin: 0;
+  }
+
+  .akari-detail {
+    grid-template-columns: 50px 1fr;
+    gap: 0.7rem;
+    align-content: end;
+  }
+
+  .akari-detail__index em {
+    display: none;
+  }
+
+  .akari-detail h3 {
+    max-width: 11ch;
+    font-size: clamp(2.5rem, 10.5vw, 3.9rem);
+  }
+
+  .akari-detail p {
+    max-width: 34ch;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .akari-details__progress {
+    right: 20px;
+    bottom: 3.7vh;
+    left: 20px;
+  }
+
+  .akari-closing {
+    min-height: 105svh;
+    padding: 7rem 20px;
+  }
+
+  .akari-closing__portrait {
+    inset: 0 -16% 0 -48%;
+    opacity: 0.12;
+  }
+
+  .akari-closing__copy {
+    width: 100%;
+  }
+
+  .akari-closing__copy p,
+  .akari-closing__copy strong {
+    font-size: clamp(2.8rem, 11.5vw, 4.7rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .akari-details {
+    min-height: auto;
+  }
+
+  .akari-details__sticky {
+    position: relative;
+    display: block;
+    height: auto;
+  }
+
+  .akari-details__visuals {
+    position: relative;
+    min-height: 72svh;
+  }
+
+  .akari-details__content {
+    position: relative;
+    padding: 5rem 24px;
+  }
+
+  .akari-details__items {
+    display: grid;
+    gap: 3rem;
+    min-height: auto;
+  }
+
+  .akari-detail {
+    position: relative;
+    opacity: 1;
+    transform: none;
+  }
+
+  .akari-details__image:not(:first-child),
+  .akari-details__progress,
+  .akari-details__scan {
+    display: none;
+  }
+}
