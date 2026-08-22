@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { HeroCamera } from "@/components/experience/hero/hero-camera";
 import { HeroScene } from "@/components/experience/hero/hero-scene";
 import { useHeroTimeline } from "@/components/experience/hero/hooks/use-hero-timeline";
+import { useMemoryBridge } from "@/components/experience/hero/hooks/use-memory-bridge";
 import { JpRevealText } from "@/components/experience/jp-reveal-text";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
@@ -54,6 +55,7 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
   const rootRef = useRef<HTMLElement>(null);
   const beat = narrative[locale];
   useHeroTimeline(rootRef);
+  useMemoryBridge(rootRef);
 
   return (
     <section ref={rootRef} id="top" data-section className="th-hero">
@@ -137,12 +139,7 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
 
         <div className="th-memory-bridge" data-memory-bridge aria-hidden="true">
           <div className="th-memory-temple" data-memory-temple>
-            <Image
-              src="/assets_hq/templo-hanamori_2.png"
-              alt=""
-              fill
-              sizes="100vw"
-            />
+            <Image src="/assets_hq/templo-hanamori_2.png" alt="" fill sizes="100vw" />
           </div>
           <div className="th-memory-haze" data-memory-haze />
           <div className="th-memory-copy" data-memory-copy>
