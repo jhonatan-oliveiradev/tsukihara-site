@@ -1,14 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { realmMapCalibration } from "@/content/realm-map-calibration";
 import {
   realmWorld,
