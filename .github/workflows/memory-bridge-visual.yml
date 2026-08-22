@@ -1,0 +1,105 @@
+name: Memory bridge visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-memory.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-memory.log
+          exit 1
+      - name: Capture memory bridge
+        run: |
+          mkdir -p qa/memory-bridge
+          cat > qa/memory-bridge.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          async function enter(page) {
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
+            const buttons = page.locator('.ix-gateway-actions button');
+            await buttons.nth(1).evaluate((button) => button.click());
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, { timeout: 12000 });
+            await page.waitForSelector('#top', { timeout: 10000 });
+            await page.waitForTimeout(700);
+          }
+
+          async function capture(browser, width, height, label) {
+            const page = await browser.newPage({ viewport: { width, height } });
+            const errors = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await enter(page);
+
+            const hero = page.locator('#top');
+            const top = await hero.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+            const heroHeight = await hero.evaluate((el) => el.getBoundingClientRect().height);
+            const travel = Math.max(1, heroHeight - height);
+
+            for (const fraction of [0.76, 0.84, 0.91, 0.97]) {
+              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
+                y: top + travel * fraction,
+              });
+              await page.waitForTimeout(1000);
+              const state = await page.evaluate(() => {
+                const bridge = document.querySelector('[data-memory-bridge]');
+                const temple = document.querySelector('[data-memory-temple]');
+                const bridgeStyle = bridge ? getComputedStyle(bridge) : null;
+                const templeStyle = temple ? getComputedStyle(temple) : null;
+                return {
+                  bridgeOpacity: bridgeStyle ? Number(bridgeStyle.opacity) : null,
+                  bridgeVisibility: bridgeStyle?.visibility ?? null,
+                  templeOpacity: templeStyle ? Number(templeStyle.opacity) : null,
+                  overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+                };
+              });
+              if (state.overflow) errors.push(`horizontal overflow at ${label} ${fraction}`);
+              console.log(label, fraction, state);
+              await page.screenshot({
+                path: `qa/memory-bridge/${label}-${String(fraction).replace('.', '-')}.png`,
+                fullPage: false,
+              });
+            }
+
+            if (errors.length) throw new Error(errors.join('\n'));
+            await page.close();
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            await capture(browser, 1440, 900, 'desktop');
+            await capture(browser, 390, 844, 'mobile');
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node qa/memory-bridge.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: memory-bridge-visual
+          path: qa/memory-bridge
