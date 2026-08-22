@@ -1,7 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
+import { realmMapCalibration } from "@/content/realm-map-calibration";
 import {
   realmWorld,
   realmWorldCopy,
@@ -28,6 +36,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
   const activeId = selectedId ?? previewId;
   const activeRealm = getRealm(activeId);
   const activeCopy = activeRealm ? copy.realms[activeRealm.id] : null;
+  const activeMapPoint = activeRealm ? realmMapCalibration[activeRealm.id] : null;
 
   useEffect(() => {
     const node = rootRef.current;
@@ -85,13 +94,14 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     setPreviewId(null);
   };
 
-  const focusMaskStyle = activeRealm
-    ? ({
-        "--focus-x": `${activeRealm.map.x}%`,
-        "--focus-y": `${activeRealm.map.y}%`,
-        "--focus-glow": activeRealm.glow,
-      } as CSSProperties)
-    : undefined;
+  const focusMaskStyle =
+    activeRealm && activeMapPoint
+      ? ({
+          "--focus-x": `${activeMapPoint.x}%`,
+          "--focus-y": `${activeMapPoint.y}%`,
+          "--focus-glow": activeRealm.glow,
+        } as CSSProperties)
+      : undefined;
 
   return (
     <section
@@ -150,16 +160,19 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
               preserveAspectRatio="none"
               aria-hidden="true"
             >
-              {realmWorld.map((realm) => (
-                <line
-                  key={realm.id}
-                  x1="50"
-                  y1="49"
-                  x2={realm.map.x}
-                  y2={realm.map.y}
-                  className={realm.id === activeId ? "is-active" : ""}
-                />
-              ))}
+              {realmWorld.map((realm) => {
+                const point = realmMapCalibration[realm.id];
+                return (
+                  <line
+                    key={realm.id}
+                    x1="50"
+                    y1="43"
+                    x2={point.x}
+                    y2={point.y}
+                    className={realm.id === activeId ? "is-active" : ""}
+                  />
+                );
+              })}
             </svg>
 
             <div className="ix-world-map__mother-moon" aria-hidden="true">
@@ -172,6 +185,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
               {realmWorld.map((realm, index) => {
                 const active = realm.id === activeId;
                 const local = copy.realms[realm.id];
+                const point = realmMapCalibration[realm.id];
                 return (
                   <button
                     key={realm.id}
@@ -179,16 +193,15 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                     className={`ix-world-map__hotspot ${active ? "is-active" : ""}`}
                     style={
                       {
-                        left: `${realm.map.x}%`,
-                        top: `${realm.map.y}%`,
-                        "--realm-radius": `${realm.map.radius}%`,
+                        left: `${point.x}%`,
+                        top: `${point.y}%`,
+                        "--realm-radius": `${point.radius}%`,
                         "--realm-glow": realm.glow,
                       } as CSSProperties
                     }
                     aria-label={`${locale === "pt" ? "Explorar" : "Explore"} ${realm.title}, ${local.label}`}
                     aria-pressed={selectedId === realm.id}
                     onPointerEnter={() => setPreviewId(realm.id)}
-                    onPointerLeave={() => !selectedId && setPreviewId(null)}
                     onFocus={() => setPreviewId(realm.id)}
                     onBlur={() => !selectedId && setPreviewId(null)}
                     onClick={(event) => {
@@ -206,7 +219,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
               })}
             </div>
 
-            {activeRealm && (
+            {activeRealm && activeMapPoint && (
               <div
                 className={`ix-world-map__particles is-${activeRealm.particle}`}
                 style={{ "--realm-glow": activeRealm.glow } as CSSProperties}
@@ -217,8 +230,8 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                     key={`${activeRealm.id}-${index}`}
                     style={
                       {
-                        "--particle-x": `${(activeRealm.map.x + ((index * 17) % 19) - 9 + 100) % 100}%`,
-                        "--particle-y": `${(activeRealm.map.y + ((index * 13) % 17) - 8 + 100) % 100}%`,
+                        "--particle-x": `${(activeMapPoint.x + ((index * 17) % 19) - 9 + 100) % 100}%`,
+                        "--particle-y": `${(activeMapPoint.y + ((index * 13) % 17) - 8 + 100) % 100}%`,
                         "--particle-delay": `${index * -0.17}s`,
                       } as CSSProperties
                     }
@@ -228,16 +241,17 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
             )}
           </div>
 
-          {activeRealm && activeCopy && (
+          {activeRealm && activeCopy && activeMapPoint && (
             <aside
               className="ix-world-map__popover"
               style={
                 {
-                  left: `${activeRealm.map.popoverX}%`,
-                  top: `${activeRealm.map.popoverY}%`,
+                  left: `${activeMapPoint.popoverX}%`,
+                  top: `${activeMapPoint.popoverY}%`,
                   "--realm-glow": activeRealm.glow,
                 } as CSSProperties
               }
+              onPointerEnter={() => setPreviewId(activeRealm.id)}
               onPointerDown={(event) => event.stopPropagation()}
             >
               <div className="ix-world-map__popover-topline">
