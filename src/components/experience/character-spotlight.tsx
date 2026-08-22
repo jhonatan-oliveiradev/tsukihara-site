@@ -13,8 +13,9 @@ type CharacterSpotlightProps = {
   locale: Locale;
 };
 
-const mosaicTiles = Array.from({ length: 6 }, (_, index) =>
-  `/akari-details/detail_0${index + 1}.png`,
+const mosaicTiles = Array.from(
+  { length: 6 },
+  (_, index) => `/akari-details/detail_0${index + 1}.png`,
 );
 
 const narrative = {
@@ -358,7 +359,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
                 {mosaicTiles.map((image, index) => (
                   <div
                     key={image}
-                    className={`akari-mosaic-tile akari-mosaic-tile--${index + 1}${index === 0 ? " is-revealed is-current" : ""}`}
+                    className={`akari-mosaic-tile akari-mosaic-tile--${index + 1}${index === 0 ? "is-revealed is-current" : ""}`}
                     data-akari-mosaic-tile
                   >
                     <Image
@@ -396,7 +397,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <article
                   key={detail.label}
-                  className={`akari-detail${index === 0 ? " is-active" : ""}`}
+                  className={`akari-detail${index === 0 ? "is-active" : ""}`}
                   data-akari-detail-item
                   hidden={index !== 0}
                 >

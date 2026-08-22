@@ -16,9 +16,7 @@
   padding: clamp(3.5rem, 6vh, 5.5rem) clamp(1.2rem, 2.7vw, 3rem);
   overflow: hidden;
   perspective: 1400px;
-  background:
-    radial-gradient(circle at 48% 48%, rgba(108, 24, 35, 0.13), transparent 42%),
-    #020305;
+  background: radial-gradient(circle at 48% 48%, rgba(108, 24, 35, 0.13), transparent 42%), #020305;
 }
 
 .akari-mosaic-stage::before {
@@ -109,7 +107,13 @@
   pointer-events: none;
   background:
     linear-gradient(90deg, rgba(2, 3, 5, 0.12), transparent 34%),
-    linear-gradient(180deg, rgba(2, 3, 5, 0.22), transparent 20%, transparent 80%, rgba(2, 3, 5, 0.28));
+    linear-gradient(
+      180deg,
+      rgba(2, 3, 5, 0.22),
+      transparent 20%,
+      transparent 80%,
+      rgba(2, 3, 5, 0.28)
+    );
 }
 
 .akari-mosaic-grid {
@@ -268,9 +272,7 @@
 
 .akari-mosaic-copy {
   border-left: 1px solid rgba(255, 255, 255, 0.055);
-  background:
-    radial-gradient(circle at 0 48%, rgba(153, 36, 47, 0.1), transparent 33%),
-    #020305;
+  background: radial-gradient(circle at 0 48%, rgba(153, 36, 47, 0.1), transparent 33%), #020305;
 }
 
 .akari-mosaic-copy .akari-details__items {
