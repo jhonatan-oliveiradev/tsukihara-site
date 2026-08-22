@@ -1,0 +1,38 @@
+name: Format Kintsugi Lunar chapter
+
+on:
+  push:
+    branches:
+      - feat/kintsugi-lunar-cinematic-chapter
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/kintsugi-lunar-cinematic-chapter
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: >-
+          npx prettier --write
+          docs/superpowers/plans/2026-08-22-kintsugi-lunar-cinematic-chapter.md
+          docs/superpowers/specs/2026-08-22-kintsugi-lunar-cinematic-chapter-design.md
+          src/app/kintsugi-lunar-chapter.css
+          src/components/experience/kintsugi-lunar-chapter.tsx
+          src/components/experience/kintsugi-lunar/asset-slot.tsx
+          src/components/experience/kintsugi-lunar/use-kintsugi-lunar-timeline.ts
+      - name: Commit formatted files
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/superpowers/plans/2026-08-22-kintsugi-lunar-cinematic-chapter.md docs/superpowers/specs/2026-08-22-kintsugi-lunar-cinematic-chapter-design.md src/app/kintsugi-lunar-chapter.css src/components/experience/kintsugi-lunar-chapter.tsx src/components/experience/kintsugi-lunar/asset-slot.tsx src/components/experience/kintsugi-lunar/use-kintsugi-lunar-timeline.ts
+          git commit -m "style: format Kintsugi Lunar chapter"
+          git push origin HEAD:feat/kintsugi-lunar-cinematic-chapter
