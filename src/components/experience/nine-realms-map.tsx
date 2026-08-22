@@ -1,14 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { realmMapCalibration } from "@/content/realm-map-calibration";
 import {
   realmWorld,
@@ -42,14 +35,18 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
   const rootRef = useRef<HTMLElement>(null);
   const objectRef = useRef<HTMLDivElement>(null);
   const previewClearTimerRef = useRef<number | null>(null);
+  const hoverIntentTimerRef = useRef<number | null>(null);
   const [previewId, setPreviewId] = useState<RealmId | null>(null);
   const [selectedId, setSelectedId] = useState<RealmId | null>(null);
+  const [presentedId, setPresentedId] = useState<RealmId | null>(null);
   const [inView, setInView] = useState(false);
   const copy = realmWorldCopy[locale];
   const activeId = selectedId ?? previewId;
   const activeRealm = getRealm(activeId);
-  const activeCopy = activeRealm ? copy.realms[activeRealm.id] : null;
   const activeMapPoint = activeRealm ? realmMapCalibration[activeRealm.id] : null;
+  const presentedRealm = getRealm(presentedId);
+  const presentedCopy = presentedRealm ? copy.realms[presentedRealm.id] : null;
+  const presentedMapPoint = presentedRealm ? realmMapCalibration[presentedRealm.id] : null;
 
   useEffect(() => {
     const node = rootRef.current;
@@ -67,6 +64,9 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
       if (previewClearTimerRef.current !== null) {
         window.clearTimeout(previewClearTimerRef.current);
       }
+      if (hoverIntentTimerRef.current !== null) {
+        window.clearTimeout(hoverIntentTimerRef.current);
+      }
     },
     [],
   );
@@ -74,6 +74,10 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
   const activeIndex = useMemo(
     () => (activeId ? realmWorld.findIndex((realm) => realm.id === activeId) : -1),
     [activeId],
+  );
+  const presentedIndex = useMemo(
+    () => (presentedId ? realmWorld.findIndex((realm) => realm.id === presentedId) : -1),
+    [presentedId],
   );
 
   const cancelPreviewClear = () => {
@@ -83,18 +87,39 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     }
   };
 
+  const cancelHoverIntent = () => {
+    if (hoverIntentTimerRef.current !== null) {
+      window.clearTimeout(hoverIntentTimerRef.current);
+      hoverIntentTimerRef.current = null;
+    }
+  };
+
   const previewRealm = (id: RealmId) => {
     cancelPreviewClear();
+    cancelHoverIntent();
+    setPresentedId(id);
     setPreviewId(id);
+  };
+
+  const schedulePreviewRealm = (id: RealmId) => {
+    if (selectedId) return;
+    cancelPreviewClear();
+    cancelHoverIntent();
+    hoverIntentTimerRef.current = window.setTimeout(() => {
+      setPresentedId(id);
+      setPreviewId(id);
+      hoverIntentTimerRef.current = null;
+    }, 105);
   };
 
   const schedulePreviewClear = () => {
     if (selectedId) return;
+    cancelHoverIntent();
     cancelPreviewClear();
     previewClearTimerRef.current = window.setTimeout(() => {
       setPreviewId(null);
       previewClearTimerRef.current = null;
-    }, 180);
+    }, 220);
   };
 
   const setDrift = (event: PointerEvent<HTMLDivElement>) => {
@@ -118,6 +143,8 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
 
   const selectRealm = (realm: RealmWorldEntry) => {
     cancelPreviewClear();
+    cancelHoverIntent();
+    setPresentedId(realm.id);
     setSelectedId((current) => (current === realm.id ? null : realm.id));
     setPreviewId(realm.id);
   };
@@ -127,12 +154,15 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
     const next = (current + direction + realmWorld.length) % realmWorld.length;
     const realm = realmWorld[next];
     cancelPreviewClear();
+    cancelHoverIntent();
+    setPresentedId(realm.id);
     setSelectedId(realm.id);
     setPreviewId(realm.id);
   };
 
   const closeSelection = () => {
     cancelPreviewClear();
+    cancelHoverIntent();
     setSelectedId(null);
     setPreviewId(null);
   };
@@ -229,7 +259,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                   key={realm.id}
                   points={realmHitAreas[realm.id]}
                   className={realm.id === activeId ? "is-active" : ""}
-                  onPointerEnter={() => previewRealm(realm.id)}
+                  onPointerEnter={() => schedulePreviewRealm(realm.id)}
                   onPointerDown={(event) => event.stopPropagation()}
                   onClick={(event) => {
                     event.stopPropagation();
@@ -265,7 +295,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
                     }
                     aria-label={`${locale === "pt" ? "Explorar" : "Explore"} ${realm.title}, ${local.label}`}
                     aria-pressed={selectedId === realm.id}
-                    onPointerEnter={() => previewRealm(realm.id)}
+                    onPointerEnter={() => schedulePreviewRealm(realm.id)}
                     onFocus={() => previewRealm(realm.id)}
                     onBlur={schedulePreviewClear}
                     onClick={(event) => {
@@ -309,35 +339,39 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
           </div>
         </div>
 
-        {activeRealm && activeCopy && (
+        {presentedRealm && presentedCopy && (
           <aside
-            className={`ix-world-map__inspector ${activeMapPoint && activeMapPoint.x > 58 ? "is-left" : "is-right"}`}
-            style={{ "--realm-glow": activeRealm.glow } as CSSProperties}
+            className={`ix-world-map__inspector ${activeId ? "is-visible" : ""} ${presentedMapPoint && presentedMapPoint.x > 58 ? "is-left" : "is-right"}`}
+            style={{ "--realm-glow": presentedRealm.glow } as CSSProperties}
             onPointerEnter={cancelPreviewClear}
             onPointerLeave={schedulePreviewClear}
             onPointerDown={(event) => event.stopPropagation()}
+            aria-live="polite"
+            aria-hidden={!activeId}
           >
-            <div className="ix-world-map__popover-topline">
-              <span>{String(activeIndex + 1).padStart(2, "0")} / 09</span>
-              <Image src={activeRealm.emblem} alt="" width={46} height={46} />
+            <div key={presentedRealm.id} className="ix-world-map__inspector-content">
+              <div className="ix-world-map__popover-topline">
+                <span>{String(presentedIndex + 1).padStart(2, "0")} / 09</span>
+                <Image src={presentedRealm.emblem} alt="" width={46} height={46} />
+              </div>
+              <small>{presentedCopy.label}</small>
+              <h3>{presentedRealm.title}</h3>
+              <b>{presentedRealm.aspect}</b>
+              <p>{presentedCopy.copy}</p>
+              <dl>
+                <div>
+                  <dt>{copy.labels.state}</dt>
+                  <dd>{presentedCopy.state}</dd>
+                </div>
+                <div>
+                  <dt>{copy.labels.threat}</dt>
+                  <dd>{presentedCopy.threat}</dd>
+                </div>
+              </dl>
+              <button type="button" onClick={() => onExploreRealm(presentedRealm.id)}>
+                {copy.labels.explore} <span aria-hidden="true">→</span>
+              </button>
             </div>
-            <small>{activeCopy.label}</small>
-            <h3>{activeRealm.title}</h3>
-            <b>{activeRealm.aspect}</b>
-            <p>{activeCopy.copy}</p>
-            <dl>
-              <div>
-                <dt>{copy.labels.state}</dt>
-                <dd>{activeCopy.state}</dd>
-              </div>
-              <div>
-                <dt>{copy.labels.threat}</dt>
-                <dd>{activeCopy.threat}</dd>
-              </div>
-            </dl>
-            <button type="button" onClick={() => onExploreRealm(activeRealm.id)}>
-              {copy.labels.explore} <span aria-hidden="true">→</span>
-            </button>
           </aside>
         )}
 
@@ -347,7 +381,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
         </div>
       </div>
 
-      {activeRealm && activeCopy && (
+      {activeRealm && (
         <aside
           className="ix-world-map__sheet"
           style={{ "--realm-glow": activeRealm.glow } as CSSProperties}
@@ -355,7 +389,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
           <div className="ix-world-map__sheet-head">
             <div>
               <span>{String(activeIndex + 1).padStart(2, "0")} / 09</span>
-              <small>{activeCopy.label}</small>
+              <small>{copy.realms[activeRealm.id].label}</small>
             </div>
             <button type="button" onClick={closeSelection} aria-label={copy.labels.close}>
               ×
@@ -368,7 +402,7 @@ export function NineRealmsMap({ locale, onExploreRealm }: NineRealmsMapProps) {
               <b>{activeRealm.aspect}</b>
             </div>
           </div>
-          <p>{activeCopy.copy}</p>
+          <p>{copy.realms[activeRealm.id].copy}</p>
           <div className="ix-world-map__sheet-actions">
             <button type="button" onClick={() => stepRealm(-1)} aria-label={copy.labels.previous}>
               ←

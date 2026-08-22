@@ -29,7 +29,8 @@ jobs:
           exit 1
       - name: Validate full realm hover regions
         run: |
-          cat > /tmp/world-map-hitareas.cjs <<'NODE'
+          mkdir -p qa
+          cat > qa/world-map-hitareas.cjs <<'NODE'
           const { chromium } = require('playwright');
 
           const expected = [
@@ -70,16 +71,27 @@ jobs:
               throw new Error(`expected 9 realm hit regions, got ${await regions.count()}`);
             }
 
+            await regions.nth(0).dispatchEvent('pointerover', { pointerType: 'mouse' });
+            await page.waitForTimeout(55);
+            const earlyInspector = page.locator('.ix-world-map__inspector');
+            if ((await earlyInspector.count()) > 0 && (await earlyInspector.isVisible())) {
+              throw new Error('hover intent opened the inspector too early');
+            }
+            await page.waitForTimeout(100);
+            if (!(await page.locator('.ix-world-map__inspector.is-visible').isVisible())) {
+              throw new Error('inspector did not open after hover intent delay');
+            }
+
             for (const [name, index] of expected) {
-              await regions.nth(index).hover();
-              await page.waitForTimeout(160);
-              const title = await page.locator('.ix-world-map__popover h3').textContent();
+              await regions.nth(index).dispatchEvent('pointerover', { pointerType: 'mouse' });
+              await page.waitForTimeout(165);
+              const title = await page.locator('.ix-world-map__inspector h3').textContent();
               if (title?.trim() !== name) {
                 throw new Error(`region ${index} expected ${name}, got ${title}`);
               }
             }
 
-            await regions.nth(4).click();
+            await regions.nth(4).dispatchEvent('click');
             await page.waitForTimeout(180);
             const selected = await page.locator('.ix-world-map__hotspot').nth(4).getAttribute('aria-pressed');
             if (selected !== 'true') throw new Error('clicking a realm region did not persist selection');
@@ -90,4 +102,4 @@ jobs:
             process.exit(1);
           });
           NODE
-          node /tmp/world-map-hitareas.cjs
+          node qa/world-map-hitareas.cjs
