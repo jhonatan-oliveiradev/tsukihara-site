@@ -29,3 +29,5 @@ jobs:
           git add src/components/experience/nine-realms-map.tsx
           git commit -m "style: format Nine Realms map component"
           git push origin HEAD:feat/nine-realms-world-map
+
+# Temporary workflow; removed after the formatter commit lands.
