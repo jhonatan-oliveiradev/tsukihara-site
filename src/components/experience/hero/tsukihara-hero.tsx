@@ -170,6 +170,9 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
               <i key={index} data-memory-ash />
             ))}
           </div>
+          <div className="th-memory-rupture" data-memory-rupture>
+            <Image src="/ruptura-separador.png" alt="" fill sizes="110vw" />
+          </div>
         </div>
       </div>
     </section>
