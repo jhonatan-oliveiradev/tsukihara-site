@@ -167,6 +167,18 @@
 }
 
 @media (max-width: 680px) {
+  .th-memory-bridge {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    z-index: 90;
+  }
+
+  .th-memory-temple img {
+    object-position: 56% center;
+  }
+
   .th-memory-copy {
     width: min(88vw, 560px);
   }
