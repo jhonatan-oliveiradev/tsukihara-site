@@ -42,7 +42,9 @@ jobs:
             );
             const buttons = page.locator('.ix-gateway-actions button');
             await buttons.nth(1).evaluate((button) => button.click());
-            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, { timeout: 12000 });
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
             await page.waitForSelector('#akari', { timeout: 10000 });
             await page.waitForTimeout(600);
           }
@@ -63,15 +65,54 @@ jobs:
                 y: top + travel * fraction,
               });
               await page.waitForTimeout(850);
-              const state = await page.evaluate(() => ({
-                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-                activeImages: document.querySelectorAll('[data-akari-detail-image].is-active').length,
-                activeItems: document.querySelectorAll('[data-akari-detail-item].is-active').length,
-              }));
+              const state = await page.evaluate(() => {
+                const itemStates = Array.from(
+                  document.querySelectorAll('[data-akari-detail-item]'),
+                ).map((element) => {
+                  const style = getComputedStyle(element);
+                  return {
+                    opacity: Number(style.opacity),
+                    visibility: style.visibility,
+                  };
+                });
+                const headline = document.querySelector('.akari-intro h2');
+                const headlineBox = headline?.getBoundingClientRect();
+                return {
+                  overflow:
+                    document.documentElement.scrollWidth >
+                    document.documentElement.clientWidth + 1,
+                  activeImages: document.querySelectorAll('[data-akari-detail-image].is-active')
+                    .length,
+                  activeItems: document.querySelectorAll('[data-akari-detail-item].is-active').length,
+                  visibleItems: itemStates.filter(
+                    (item) => item.visibility !== 'hidden' && item.opacity > 0.05,
+                  ).length,
+                  headlineText: headline?.textContent?.trim() ?? '',
+                  headlineHeight: headlineBox?.height ?? 0,
+                };
+              });
+
               if (state.overflow) errors.push(`horizontal overflow at ${label} ${fraction}`);
-              if (fraction > 0.35 && fraction < 0.9 && (state.activeImages !== 1 || state.activeItems !== 1)) {
+              if (
+                fraction > 0.35 &&
+                fraction < 0.9 &&
+                (state.activeImages !== 1 ||
+                  state.activeItems !== 1 ||
+                  state.visibleItems !== 1)
+              ) {
                 errors.push(`invalid detail state at ${label} ${fraction}: ${JSON.stringify(state)}`);
               }
+              if (fraction === 0.02) {
+                if (!state.headlineText.includes('Lua') && !state.headlineText.includes('Moon')) {
+                  errors.push(`unexpected Akari headline at ${label}: ${state.headlineText}`);
+                }
+                if (state.headlineHeight > height * 0.68) {
+                  errors.push(
+                    `Akari headline is too tall at ${label}: ${state.headlineHeight}/${height}`,
+                  );
+                }
+              }
+
               await page.screenshot({
                 path: `qa/akari/${label}-${String(fraction).replace('.', '-')}.png`,
                 fullPage: false,
