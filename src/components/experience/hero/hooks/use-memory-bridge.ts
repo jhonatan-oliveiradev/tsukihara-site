@@ -21,7 +21,6 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
     const eyebrow = q("[data-memory-eyebrow]");
     const jp = q("[data-memory-jp]");
     const ashes = q("[data-memory-ash]");
-    const rupture = q("[data-memory-rupture]");
 
     if (!bridge.length) return;
 
@@ -50,7 +49,6 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
       filter: "blur(14px)",
     });
     gsap.set(ashes, { autoAlpha: 0, y: 20 });
-    gsap.set(rupture, { autoAlpha: 0, yPercent: 24, scaleX: 1.035 });
 
     if (reduced) {
       const trigger = ScrollTrigger.create({
@@ -66,13 +64,10 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
             filter: "none",
           });
           gsap.set(temple, {
-            autoAlpha: progress < 0.78 ? 0.42 : Math.max(0, 0.42 * (1 - (progress - 0.78) / 0.22)),
+            autoAlpha:
+              progress < 0.76 ? 0.42 : Math.max(0, 0.42 * (1 - (progress - 0.76) / 0.2)),
             scale: 1.035,
             clipPath: "inset(0% 0% 0% 0% round 0%)",
-          });
-          gsap.set(rupture, {
-            autoAlpha: progress > 0.76 ? Math.min(1, (progress - 0.76) / 0.18) : 0,
-            yPercent: progress > 0.76 ? Math.max(0, 24 - ((progress - 0.76) / 0.18) * 24) : 24,
           });
         },
         onLeaveBack: () => gsap.set(bridge, { autoAlpha: 0 }),
@@ -144,17 +139,6 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
         0.72,
       )
       .to(
-        rupture,
-        {
-          autoAlpha: 1,
-          yPercent: 0,
-          scaleX: 1,
-          duration: 0.2,
-          ease: "power2.out",
-        },
-        0.76,
-      )
-      .to(
         temple,
         {
           autoAlpha: 0,
@@ -163,13 +147,13 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
           duration: 0.2,
           ease: "power2.in",
         },
-        0.78,
+        0.76,
       )
-      .to(haze, { autoAlpha: 0.28, xPercent: 8, duration: 0.2 }, 0.8)
+      .to(haze, { autoAlpha: 0.28, xPercent: 8, duration: 0.22 }, 0.78)
       .to(
         ashes,
         {
-          autoAlpha: 0.18,
+          autoAlpha: 0.14,
           y: (index) => -108 - (index % 5) * 9,
           x: (index) => ((index % 7) - 3) * 24,
           duration: 0.22,
