@@ -25,6 +25,9 @@ const narrative = {
     eclipseTitle: "A lua esqueceu. Mas você lembra.",
     eclipseBody:
       "Com a máscara kitsune, Akari enxerga fragmentos apagados e os restaura por instantes — escolhendo quais partes do mundo devem voltar a existir.",
+    bridgeEyebrow: "ENTRE O ESQUECIMENTO E A MEMÓRIA",
+    bridgeTitle: "Nem tudo o que desaparece deixa de existir.",
+    bridgeJp: "消えたものは、まだそこにある。",
     phaseSerene: "Lua-Mãe",
     phaseOmen: "Presságio",
     phaseEclipse: "Eclipse Carmesim",
@@ -38,6 +41,9 @@ const narrative = {
     eclipseTitle: "The moon forgot. But you remember.",
     eclipseBody:
       "Through her kitsune mask, Akari sees erased fragments and restores them for a moment — choosing which pieces of the world may exist again.",
+    bridgeEyebrow: "BETWEEN OBLIVION AND MEMORY",
+    bridgeTitle: "Not everything that disappears ceases to exist.",
+    bridgeJp: "消えたものは、まだそこにある。",
     phaseSerene: "Moon-Mother",
     phaseOmen: "Omen",
     phaseEclipse: "Crimson Eclipse",
@@ -125,8 +131,41 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
             <i />
           </a>
         </div>
+
         <div className="th-hero-blackout" data-hero-blackout aria-hidden="true" />
         <div className="th-hero-eclipse-curtain" data-hero-eclipse-curtain aria-hidden="true" />
+
+        <div className="th-memory-bridge" data-memory-bridge aria-hidden="true">
+          <div className="th-memory-temple" data-memory-temple>
+            <Image
+              src="/assets_hq/templo-hanamori_2.png"
+              alt=""
+              fill
+              sizes="100vw"
+            />
+          </div>
+          <div className="th-memory-haze" data-memory-haze />
+          <div className="th-memory-copy" data-memory-copy>
+            <span className="th-memory-eyebrow" data-memory-eyebrow>
+              {beat.bridgeEyebrow}
+            </span>
+            <strong className="th-memory-title" aria-label={beat.bridgeTitle}>
+              {Array.from(beat.bridgeTitle).map((character, index) => (
+                <span key={`${character}-${index}`} data-memory-glyph aria-hidden="true">
+                  {character === " " ? "\u00A0" : character}
+                </span>
+              ))}
+            </strong>
+            <span className="th-memory-jp" lang="ja" data-memory-jp>
+              {beat.bridgeJp}
+            </span>
+          </div>
+          <div className="th-memory-ashes" data-memory-ashes>
+            {Array.from({ length: 30 }, (_, index) => (
+              <i key={index} data-memory-ash />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
