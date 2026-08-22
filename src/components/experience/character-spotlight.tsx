@@ -22,10 +22,7 @@ const narrative = {
       "Akari atravessa os Nove Reinos carregando mais do que uma espada.",
       "Cada lugar que desaparece deixa nela uma marca. Cada memória perdida se torna uma cicatriz. E enquanto o Eclipse Carmesim apaga nomes, caminhos e histórias inteiras, ela escolhe fazer o oposto: lembrar, restaurar e seguir em frente com aquilo que foi quebrado.",
     ],
-    thesis: [
-      "Seu poder não nasce da ausência de feridas.",
-      "Nasce da capacidade de carregá-las.",
-    ],
+    thesis: ["Seu poder não nasce da ausência de feridas.", "Nasce da capacidade de carregá-las."],
     identity: "Espadachim • Guardiã Lunar • Portadora do Kintsugi",
     editorial:
       "Entre o mundo que existiu e aquele que está sendo esquecido, Akari permanece como uma das últimas ligações entre os dois.",
@@ -85,10 +82,7 @@ const narrative = {
       "Akari crosses the Nine Realms carrying more than a sword.",
       "Every place that disappears leaves a mark on her. Every lost memory becomes a scar. And while the Crimson Eclipse erases names, paths and entire histories, she chooses the opposite: to remember, restore and move forward with what was broken.",
     ],
-    thesis: [
-      "Her power is not born from the absence of wounds.",
-      "It is born from carrying them.",
-    ],
+    thesis: ["Her power is not born from the absence of wounds.", "It is born from carrying them."],
     identity: "Swordswoman • Lunar Guardian • Bearer of Kintsugi",
     editorial:
       "Between the world that existed and the one being forgotten, Akari remains one of the last links between them.",
@@ -294,7 +288,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <div
                   key={detail.image}
-                  className={`akari-details__image${index === 0 ? " is-active" : ""}`}
+                  className={`akari-details__image${index === 0 ? "is-active" : ""}`}
                   data-akari-detail-image
                 >
                   <Image src={detail.image} alt="" fill sizes="(max-width: 760px) 100vw, 55vw" />
@@ -318,7 +312,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <article
                   key={detail.label}
-                  className={`akari-detail${index === 0 ? " is-active" : ""}`}
+                  className={`akari-detail${index === 0 ? "is-active" : ""}`}
                   data-akari-detail-item
                 >
                   <div className="akari-detail__index">
