@@ -33,6 +33,11 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
       };
     };
 
+    const getReducedTempleAlpha = (progress: number) => {
+      if (progress < 0.76) return 0.42;
+      return Math.max(0, 0.42 * (1 - (progress - 0.76) / 0.2));
+    };
+
     gsap.set(bridge, { autoAlpha: 0 });
     gsap.set(temple, {
       autoAlpha: 0,
@@ -64,10 +69,7 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
             filter: "none",
           });
           gsap.set(temple, {
-            autoAlpha:
-              progress < 0.76
-                ? 0.42
-                : Math.max(0, 0.42 * (1 - (progress - 0.76) / 0.2)),
+            autoAlpha: getReducedTempleAlpha(progress),
             scale: 1.035,
             clipPath: "inset(0% 0% 0% 0% round 0%)",
           });
