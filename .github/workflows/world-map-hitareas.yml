@@ -71,7 +71,7 @@ jobs:
             }
 
             for (const [name, index] of expected) {
-              await regions.nth(index).hover({ position: { x: 2, y: 2 } });
+              await regions.nth(index).hover();
               await page.waitForTimeout(160);
               const title = await page.locator('.ix-world-map__popover h3').textContent();
               if (title?.trim() !== name) {
@@ -79,12 +79,11 @@ jobs:
               }
             }
 
-            await regions.nth(4).click({ position: { x: 3, y: 3 } });
+            await regions.nth(4).click();
             await page.waitForTimeout(180);
             const selected = await page.locator('.ix-world-map__hotspot').nth(4).getAttribute('aria-pressed');
             if (selected !== 'true') throw new Error('clicking a realm region did not persist selection');
 
-            await page.screenshot({ path: '/tmp/world-map-hitareas.png', fullPage: false });
             await browser.close();
           })().catch((error) => {
             console.error(error);
