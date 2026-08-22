@@ -16,6 +16,7 @@ import {
 import { ExperiencePillars } from "@/components/experience/experience-pillars";
 import { FallingSakura } from "@/components/experience/falling-sakura";
 import { KintsugiChapter } from "@/components/experience/kintsugi-chapter";
+import { KintsugiLunarChapter } from "@/components/experience/kintsugi-lunar-chapter";
 import { NavLabelSwap } from "@/components/experience/nav-label-swap";
 import { RealmAtlas } from "@/components/experience/realm-atlas";
 import { TrailerChapter } from "@/components/experience/trailer-chapter";
@@ -363,6 +364,7 @@ export function ImmersiveExperience() {
           <RealmAtlas copy={copy} locale={locale} />
           <TrailerChapter copy={copy} locale={locale} />
           <CharacterSpotlight copy={copy} locale={locale} />
+          <KintsugiLunarChapter locale={locale} />
           <ExperiencePillars copy={copy} locale={locale} />
           <CinematicEpilogue copy={copy} locale={locale} />
         </main>
