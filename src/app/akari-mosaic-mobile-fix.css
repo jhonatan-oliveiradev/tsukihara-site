@@ -52,6 +52,18 @@
     align-content: start;
   }
 
+  .akari-details--mosaic .akari-mosaic-copy .akari-detail[hidden] {
+    display: none !important;
+  }
+
+  .akari-details--mosaic .akari-mosaic-copy .akari-detail.is-active {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
   .akari-details--mosaic .akari-mosaic-copy .akari-details__progress {
     position: absolute;
     right: 24px;
