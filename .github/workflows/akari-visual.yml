@@ -56,65 +56,116 @@ jobs:
             await enter(page);
 
             const section = page.locator('#akari');
-            const top = await section.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-            const sectionHeight = await section.evaluate((el) => el.getBoundingClientRect().height);
-            const travel = Math.max(1, sectionHeight - height);
+            const sectionTop = await section.evaluate(
+              (element) => element.getBoundingClientRect().top + window.scrollY,
+            );
 
-            for (const fraction of [0.02, 0.18, 0.38, 0.52, 0.68, 0.84, 0.97]) {
+            await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
+              y: sectionTop + 40,
+            });
+            await page.waitForTimeout(500);
+
+            const intro = await page.evaluate(() => {
+              const headline = document.querySelector('.akari-intro h2');
+              const headlineBox = headline?.getBoundingClientRect();
+              return {
+                overflow:
+                  document.documentElement.scrollWidth >
+                  document.documentElement.clientWidth + 1,
+                headlineText: headline?.textContent?.trim() ?? '',
+                headlineHeight: headlineBox?.height ?? 0,
+              };
+            });
+
+            if (intro.overflow) errors.push(`horizontal overflow in Akari intro at ${label}`);
+            if (!intro.headlineText.includes('Lua') && !intro.headlineText.includes('Moon')) {
+              errors.push(`unexpected Akari headline at ${label}: ${intro.headlineText}`);
+            }
+            if (intro.headlineHeight > height * 0.68) {
+              errors.push(`Akari headline is too tall at ${label}: ${intro.headlineHeight}/${height}`);
+            }
+
+            await page.screenshot({ path: `qa/akari/${label}-intro.png`, fullPage: false });
+
+            const details = page.locator('[data-akari-details-stage]');
+            const detailsTop = await details.evaluate(
+              (element) => element.getBoundingClientRect().top + window.scrollY,
+            );
+            const detailsHeight = await details.evaluate(
+              (element) => element.getBoundingClientRect().height,
+            );
+            const travel = Math.max(1, detailsHeight - height);
+            const fractions = [0.02, 0.17, 0.32, 0.47, 0.62, 0.77, 0.96];
+
+            for (const fraction of fractions) {
               await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
-                y: top + travel * fraction,
+                y: detailsTop + travel * fraction,
               });
-              await page.waitForTimeout(850);
+              await page.waitForTimeout(800);
+
               const state = await page.evaluate(() => {
-                const itemStates = Array.from(
+                const board = document.querySelector('[data-akari-mosaic-board]');
+                const boardBox = board?.getBoundingClientRect();
+                const activeItems = document.querySelectorAll(
+                  '[data-akari-detail-item].is-active:not([hidden])',
+                ).length;
+                const visibleItems = Array.from(
                   document.querySelectorAll('[data-akari-detail-item]'),
-                ).map((element) => {
+                ).filter((element) => {
                   const style = getComputedStyle(element);
-                  return {
-                    opacity: Number(style.opacity),
-                    visibility: style.visibility,
-                  };
-                });
-                const headline = document.querySelector('.akari-intro h2');
-                const headlineBox = headline?.getBoundingClientRect();
+                  return !element.hidden && style.display !== 'none' && Number(style.opacity) > 0.05;
+                }).length;
+
                 return {
                   overflow:
                     document.documentElement.scrollWidth >
                     document.documentElement.clientWidth + 1,
-                  activeImages: document.querySelectorAll('[data-akari-detail-image].is-active')
-                    .length,
-                  activeItems: document.querySelectorAll('[data-akari-detail-item].is-active').length,
-                  visibleItems: itemStates.filter(
-                    (item) => item.visibility !== 'hidden' && item.opacity > 0.05,
+                  boardVisible:
+                    Boolean(boardBox) &&
+                    boardBox.width > 80 &&
+                    boardBox.height > 80 &&
+                    boardBox.bottom > 0 &&
+                    boardBox.top < window.innerHeight,
+                  revealedTiles: document.querySelectorAll(
+                    '[data-akari-mosaic-tile].is-revealed',
                   ).length,
-                  headlineText: headline?.textContent?.trim() ?? '',
-                  headlineHeight: headlineBox?.height ?? 0,
+                  currentTiles: document.querySelectorAll(
+                    '[data-akari-mosaic-tile].is-current',
+                  ).length,
+                  activeItems,
+                  visibleItems,
+                  figureRevealed: document
+                    .querySelector('[data-akari-mosaic-figure]')
+                    ?.classList.contains('is-revealed'),
                 };
               });
 
+              const phase = Math.min(6, Math.floor(fraction * 7));
+              const expectedTiles = Math.min(6, phase + 1);
+              const expectedComplete = phase >= 6;
+
               if (state.overflow) errors.push(`horizontal overflow at ${label} ${fraction}`);
-              if (
-                fraction > 0.35 &&
-                fraction < 0.9 &&
-                (state.activeImages !== 1 ||
-                  state.activeItems !== 1 ||
-                  state.visibleItems !== 1)
-              ) {
-                errors.push(`invalid detail state at ${label} ${fraction}: ${JSON.stringify(state)}`);
+              if (!state.boardVisible) errors.push(`mosaic board left viewport at ${label} ${fraction}`);
+              if (state.revealedTiles !== expectedTiles) {
+                errors.push(
+                  `unexpected tile assembly at ${label} ${fraction}: expected ${expectedTiles}, got ${state.revealedTiles}`,
+                );
               }
-              if (fraction === 0.02) {
-                if (!state.headlineText.includes('Lua') && !state.headlineText.includes('Moon')) {
-                  errors.push(`unexpected Akari headline at ${label}: ${state.headlineText}`);
-                }
-                if (state.headlineHeight > height * 0.68) {
-                  errors.push(
-                    `Akari headline is too tall at ${label}: ${state.headlineHeight}/${height}`,
-                  );
-                }
+              if (state.activeItems !== 1 || state.visibleItems !== 1) {
+                errors.push(`invalid narrative state at ${label} ${fraction}: ${JSON.stringify(state)}`);
+              }
+              if (!expectedComplete && state.currentTiles !== 1) {
+                errors.push(`missing current tile at ${label} ${fraction}: ${JSON.stringify(state)}`);
+              }
+              if (expectedComplete && state.currentTiles !== 0) {
+                errors.push(`current tile remains after completion at ${label}: ${JSON.stringify(state)}`);
+              }
+              if (Boolean(state.figureRevealed) !== expectedComplete) {
+                errors.push(`invalid full-figure reveal at ${label} ${fraction}: ${JSON.stringify(state)}`);
               }
 
               await page.screenshot({
-                path: `qa/akari/${label}-${String(fraction).replace('.', '-')}.png`,
+                path: `qa/akari/${label}-mosaic-${String(fraction).replace('.', '-')}.png`,
                 fullPage: false,
               });
             }
