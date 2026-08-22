@@ -288,7 +288,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <div
                   key={detail.image}
-                  className={`akari-details__image${index === 0 ? " is-active" : ""}`}
+                  className={`akari-details__image${index === 0 ? "is-active" : ""}`}
                   data-akari-detail-image
                 >
                   <Image src={detail.image} alt="" fill sizes="(max-width: 760px) 100vw, 55vw" />
@@ -312,7 +312,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <article
                   key={detail.label}
-                  className={`akari-detail${index === 0 ? " is-active" : ""}`}
+                  className={`akari-detail${index === 0 ? "is-active" : ""}`}
                   data-akari-detail-item
                 >
                   <div className="akari-detail__index">

@@ -30,7 +30,9 @@
   top: 4.5rem;
   right: -0.035em;
   color: rgba(173, 53, 65, 0.05);
-  font: 400 clamp(15rem, 32vw, 38rem) / 0.8 "Yu Mincho", serif;
+  font:
+    400 clamp(15rem, 32vw, 38rem) / 0.8 "Yu Mincho",
+    serif;
   pointer-events: none;
   user-select: none;
 }
@@ -202,7 +204,10 @@
 
 .akari-editorial__identity span {
   color: rgba(218, 75, 84, 0.82);
-  font: 500 0.62rem/1 var(--display), Cinzel, serif;
+  font:
+    500 0.62rem/1 var(--display),
+    Cinzel,
+    serif;
   letter-spacing: 0.22em;
 }
 
@@ -371,7 +376,10 @@
   align-items: center;
   gap: 0.8rem;
   color: rgba(236, 226, 215, 0.28);
-  font: 500 0.55rem/1 var(--display), Cinzel, serif;
+  font:
+    500 0.55rem/1 var(--display),
+    Cinzel,
+    serif;
   letter-spacing: 0.12em;
 }
 
@@ -388,10 +396,9 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  padding: clamp(6rem, 10vh, 9rem) clamp(28px, 5vw, 90px) clamp(4rem, 8vh, 7rem) clamp(24px, 4vw, 72px);
-  background:
-    radial-gradient(circle at 0% 50%, rgba(140, 32, 42, 0.08), transparent 28%),
-    #020305;
+  padding: clamp(6rem, 10vh, 9rem) clamp(28px, 5vw, 90px) clamp(4rem, 8vh, 7rem)
+    clamp(24px, 4vw, 72px);
+  background: radial-gradient(circle at 0% 50%, rgba(140, 32, 42, 0.08), transparent 28%), #020305;
 }
 
 .akari-details__items {
@@ -429,7 +436,10 @@
 
 .akari-detail__index span {
   color: rgba(197, 68, 78, 0.8);
-  font: 500 0.62rem/1 var(--display), Cinzel, serif;
+  font:
+    500 0.62rem/1 var(--display),
+    Cinzel,
+    serif;
 }
 
 .akari-detail__index em {
@@ -496,9 +506,7 @@
   min-height: 116svh;
   padding: clamp(8rem, 15vh, 14rem) clamp(24px, 5vw, 96px);
   overflow: hidden;
-  background:
-    radial-gradient(circle at 24% 56%, rgba(135, 29, 40, 0.11), transparent 28%),
-    #030407;
+  background: radial-gradient(circle at 24% 56%, rgba(135, 29, 40, 0.11), transparent 28%), #030407;
 }
 
 .akari-closing::before {
