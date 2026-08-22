@@ -8,7 +8,7 @@ on:
 jobs:
   visual:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,7 +27,7 @@ jobs:
           done
           cat /tmp/tsukihara-memory.log
           exit 1
-      - name: Capture memory bridge
+      - name: Capture memory bridge and Kintsugi handoff
         run: |
           mkdir -p qa/memory-bridge
           cat > qa/memory-bridge.cjs <<'NODE'
@@ -42,15 +42,42 @@ jobs:
             );
             const buttons = page.locator('.ix-gateway-actions button');
             await buttons.nth(1).evaluate((button) => button.click());
-            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, { timeout: 12000 });
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
             await page.waitForSelector('#top', { timeout: 10000 });
             await page.waitForTimeout(700);
+          }
+
+          async function readState(page) {
+            return page.evaluate(() => {
+              const bridge = document.querySelector('[data-memory-bridge]');
+              const temple = document.querySelector('[data-memory-temple]');
+              const rupture = document.querySelector('[data-memory-rupture]');
+              const kintsugi = document.querySelector('#gate');
+              const bridgeStyle = bridge ? getComputedStyle(bridge) : null;
+              const templeStyle = temple ? getComputedStyle(temple) : null;
+              const ruptureStyle = rupture ? getComputedStyle(rupture) : null;
+              const kintsugiRect = kintsugi?.getBoundingClientRect();
+
+              return {
+                bridgeOpacity: bridgeStyle ? Number(bridgeStyle.opacity) : null,
+                bridgeVisibility: bridgeStyle?.visibility ?? null,
+                templeOpacity: templeStyle ? Number(templeStyle.opacity) : null,
+                ruptureOpacity: ruptureStyle ? Number(ruptureStyle.opacity) : null,
+                kintsugiTop: kintsugiRect?.top ?? null,
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+              };
+            });
           }
 
           async function capture(browser, width, height, label) {
             const page = await browser.newPage({ viewport: { width, height } });
             const errors = [];
-            page.on('pageerror', (error) => errors.push(error.message));
+            page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
+            page.on('console', (message) => {
+              if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+            });
             await enter(page);
 
             const hero = page.locator('#top');
@@ -58,27 +85,47 @@ jobs:
             const heroHeight = await hero.evaluate((el) => el.getBoundingClientRect().height);
             const travel = Math.max(1, heroHeight - height);
 
-            for (const fraction of [0.76, 0.84, 0.91, 0.97]) {
+            for (const fraction of [0.82, 0.9, 0.97]) {
               await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
                 y: top + travel * fraction,
               });
-              await page.waitForTimeout(1000);
-              const state = await page.evaluate(() => {
-                const bridge = document.querySelector('[data-memory-bridge]');
-                const temple = document.querySelector('[data-memory-temple]');
-                const bridgeStyle = bridge ? getComputedStyle(bridge) : null;
-                const templeStyle = temple ? getComputedStyle(temple) : null;
-                return {
-                  bridgeOpacity: bridgeStyle ? Number(bridgeStyle.opacity) : null,
-                  bridgeVisibility: bridgeStyle?.visibility ?? null,
-                  templeOpacity: templeStyle ? Number(templeStyle.opacity) : null,
-                  overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-                };
-              });
-              if (state.overflow) errors.push(`horizontal overflow at ${label} ${fraction}`);
-              console.log(label, fraction, state);
+              await page.waitForTimeout(850);
+              const state = await readState(page);
+              if (state.overflow) errors.push(`horizontal overflow at ${label} bridge ${fraction}`);
+              console.log(label, 'bridge', fraction, state);
               await page.screenshot({
-                path: `qa/memory-bridge/${label}-${String(fraction).replace('.', '-')}.png`,
+                path: `qa/memory-bridge/${label}-bridge-${String(fraction).replace('.', '-')}.png`,
+                fullPage: false,
+              });
+            }
+
+            for (const release of [0.12, 0.52, 0.88]) {
+              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
+                y: top + travel + height * release,
+              });
+              await page.waitForTimeout(850);
+              const state = await readState(page);
+
+              if (state.overflow) errors.push(`horizontal overflow at ${label} handoff ${release}`);
+              if (state.templeOpacity === null || state.templeOpacity > 0.06) {
+                errors.push(
+                  `bridge temple still readable at ${label} handoff ${release}: ${state.templeOpacity}`,
+                );
+              }
+              if (state.ruptureOpacity === null || state.ruptureOpacity < 0.72) {
+                errors.push(
+                  `rupture missing at ${label} handoff ${release}: ${state.ruptureOpacity}`,
+                );
+              }
+              if (state.kintsugiTop === null || state.kintsugiTop >= height) {
+                errors.push(
+                  `Kintsugi did not enter viewport at ${label} handoff ${release}: ${state.kintsugiTop}`,
+                );
+              }
+
+              console.log(label, 'handoff', release, state);
+              await page.screenshot({
+                path: `qa/memory-bridge/${label}-handoff-${String(release).replace('.', '-')}.png`,
                 fullPage: false,
               });
             }
@@ -89,8 +136,11 @@ jobs:
 
           (async () => {
             const browser = await chromium.launch({ headless: true });
-            await capture(browser, 1440, 900, 'desktop');
             await capture(browser, 390, 844, 'mobile');
+            await capture(browser, 768, 1024, 'tablet');
+            await capture(browser, 1440, 900, 'desktop');
+            await capture(browser, 1920, 1080, 'fullhd');
+            await capture(browser, 2560, 1080, 'ultrawide');
             await browser.close();
           })().catch((error) => {
             console.error(error);
