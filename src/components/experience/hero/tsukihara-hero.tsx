@@ -147,9 +147,17 @@ export function TsukiharaHero({ copy, locale }: TsukiharaHeroProps) {
               {beat.bridgeEyebrow}
             </span>
             <strong className="th-memory-title" aria-label={beat.bridgeTitle}>
-              {Array.from(beat.bridgeTitle).map((character, index) => (
-                <span key={`${character}-${index}`} data-memory-glyph aria-hidden="true">
-                  {character === " " ? "\u00A0" : character}
+              {beat.bridgeTitle.split(" ").map((word, wordIndex) => (
+                <span className="th-memory-word" key={`${word}-${wordIndex}`}>
+                  {Array.from(word).map((character, characterIndex) => (
+                    <span
+                      key={`${character}-${wordIndex}-${characterIndex}`}
+                      data-memory-glyph
+                      aria-hidden="true"
+                    >
+                      {character}
+                    </span>
+                  ))}
                 </span>
               ))}
             </strong>
