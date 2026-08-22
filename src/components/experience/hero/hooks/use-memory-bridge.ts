@@ -53,7 +53,12 @@ export function useMemoryBridge(rootRef: RefObject<HTMLElement | null>) {
             scale: 1.035,
             clipPath: "inset(0% 0% 0% 0% round 0%)",
           });
-          gsap.set([...eyebrow, ...jp, ...glyphs], { autoAlpha: 1, y: 0, scale: 1, filter: "none" });
+          gsap.set([...eyebrow, ...jp, ...glyphs], {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            filter: "none",
+          });
         },
         onLeaveBack: () => gsap.set(bridge, { autoAlpha: 0 }),
       });

@@ -32,7 +32,10 @@
     radial-gradient(circle at 20% 30%, rgba(255, 238, 220, 0.12) 0 0.55px, transparent 0.8px),
     radial-gradient(circle at 72% 58%, rgba(198, 93, 92, 0.13) 0 0.65px, transparent 0.9px),
     radial-gradient(circle at 45% 76%, rgba(255, 255, 255, 0.08) 0 0.45px, transparent 0.8px);
-  background-size: 117px 101px, 149px 131px, 89px 107px;
+  background-size:
+    117px 101px,
+    149px 131px,
+    89px 107px;
   mix-blend-mode: screen;
 }
 
@@ -133,13 +136,35 @@
   will-change: transform, opacity;
 }
 
-.th-memory-ashes i:nth-child(5n + 1) { left: 12%; top: 68%; }
-.th-memory-ashes i:nth-child(5n + 2) { left: 31%; top: 42%; }
-.th-memory-ashes i:nth-child(5n + 3) { left: 52%; top: 61%; }
-.th-memory-ashes i:nth-child(5n + 4) { left: 69%; top: 38%; }
-.th-memory-ashes i:nth-child(5n) { left: 86%; top: 58%; }
-.th-memory-ashes i:nth-child(3n) { width: 1px; height: 1px; }
-.th-memory-ashes i:nth-child(4n) { width: 3px; height: 3px; background: rgba(158, 69, 70, 0.58); }
+.th-memory-ashes i:nth-child(5n + 1) {
+  left: 12%;
+  top: 68%;
+}
+.th-memory-ashes i:nth-child(5n + 2) {
+  left: 31%;
+  top: 42%;
+}
+.th-memory-ashes i:nth-child(5n + 3) {
+  left: 52%;
+  top: 61%;
+}
+.th-memory-ashes i:nth-child(5n + 4) {
+  left: 69%;
+  top: 38%;
+}
+.th-memory-ashes i:nth-child(5n) {
+  left: 86%;
+  top: 58%;
+}
+.th-memory-ashes i:nth-child(3n) {
+  width: 1px;
+  height: 1px;
+}
+.th-memory-ashes i:nth-child(4n) {
+  width: 3px;
+  height: 3px;
+  background: rgba(158, 69, 70, 0.58);
+}
 
 @media (max-width: 680px) {
   .th-memory-copy {
