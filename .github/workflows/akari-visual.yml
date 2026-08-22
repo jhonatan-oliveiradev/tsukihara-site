@@ -1,0 +1,103 @@
+name: Akari chapter visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm run start -- -p 3000 > /tmp/tsukihara-akari.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/tsukihara-akari.log
+          exit 1
+      - name: Capture Akari chapter
+        run: |
+          mkdir -p qa/akari
+          cat > qa/akari.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          async function enter(page) {
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('.ix-entry-gateway')?.dataset.phase === 'entry',
+              null,
+              { timeout: 45000 },
+            );
+            const buttons = page.locator('.ix-gateway-actions button');
+            await buttons.nth(1).evaluate((button) => button.click());
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, { timeout: 12000 });
+            await page.waitForSelector('#akari', { timeout: 10000 });
+            await page.waitForTimeout(600);
+          }
+
+          async function capture(browser, width, height, label) {
+            const page = await browser.newPage({ viewport: { width, height } });
+            const errors = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await enter(page);
+
+            const section = page.locator('#akari');
+            const top = await section.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+            const sectionHeight = await section.evaluate((el) => el.getBoundingClientRect().height);
+            const travel = Math.max(1, sectionHeight - height);
+
+            for (const fraction of [0.02, 0.18, 0.38, 0.52, 0.68, 0.84, 0.97]) {
+              await page.evaluate(({ y }) => window.scrollTo({ top: y, behavior: 'instant' }), {
+                y: top + travel * fraction,
+              });
+              await page.waitForTimeout(850);
+              const state = await page.evaluate(() => ({
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+                activeImages: document.querySelectorAll('[data-akari-detail-image].is-active').length,
+                activeItems: document.querySelectorAll('[data-akari-detail-item].is-active').length,
+              }));
+              if (state.overflow) errors.push(`horizontal overflow at ${label} ${fraction}`);
+              if (fraction > 0.35 && fraction < 0.9 && (state.activeImages !== 1 || state.activeItems !== 1)) {
+                errors.push(`invalid detail state at ${label} ${fraction}: ${JSON.stringify(state)}`);
+              }
+              await page.screenshot({
+                path: `qa/akari/${label}-${String(fraction).replace('.', '-')}.png`,
+                fullPage: false,
+              });
+            }
+
+            if (errors.length) throw new Error(errors.join('\n'));
+            await page.close();
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            await capture(browser, 390, 844, 'mobile');
+            await capture(browser, 768, 1024, 'tablet');
+            await capture(browser, 1440, 900, 'desktop');
+            await capture(browser, 1920, 1080, 'wide');
+            await capture(browser, 2560, 1080, 'ultrawide');
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node qa/akari.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: akari-chapter-visual
+          path: qa/akari
