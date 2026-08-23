@@ -222,13 +222,23 @@
 .ix-companions__halo--haku {
   top: 22%;
   right: 2%;
-  background: radial-gradient(circle, rgba(230, 196, 216, 0.24), rgba(191, 133, 171, 0.06) 45%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(230, 196, 216, 0.24),
+    rgba(191, 133, 171, 0.06) 45%,
+    transparent 70%
+  );
 }
 
 .ix-companions__halo--mochi {
   left: 3%;
   bottom: 12%;
-  background: radial-gradient(circle, rgba(154, 42, 64, 0.23), rgba(115, 28, 45, 0.08) 45%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(154, 42, 64, 0.23),
+    rgba(115, 28, 45, 0.08) 45%,
+    transparent 70%
+  );
 }
 
 .ix-companions-target {
@@ -319,9 +329,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 75% 28%, rgba(110, 30, 52, 0.16), transparent 38%),
-    #030407;
+  background: radial-gradient(circle at 75% 28%, rgba(110, 30, 52, 0.16), transparent 38%), #030407;
 }
 
 .ix-companions__scene {
@@ -351,7 +359,12 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(3, 4, 7, 0.88) 0%, rgba(3, 4, 7, 0.54) 42%, rgba(3, 4, 7, 0.16) 100%),
+    linear-gradient(
+      90deg,
+      rgba(3, 4, 7, 0.88) 0%,
+      rgba(3, 4, 7, 0.54) 42%,
+      rgba(3, 4, 7, 0.16) 100%
+    ),
     linear-gradient(180deg, rgba(3, 4, 7, 0.22), transparent 45%, rgba(3, 4, 7, 0.7));
 }
 
@@ -485,14 +498,11 @@
 
 .ix-companions.is-haku .ix-companions__scene-stage {
   background:
-    radial-gradient(circle at 72% 22%, rgba(197, 164, 190, 0.18), transparent 38%),
-    #030407;
+    radial-gradient(circle at 72% 22%, rgba(197, 164, 190, 0.18), transparent 38%), #030407;
 }
 
 .ix-companions.is-mochi .ix-companions__scene-stage {
-  background:
-    radial-gradient(circle at 72% 30%, rgba(118, 23, 43, 0.28), transparent 42%),
-    #030407;
+  background: radial-gradient(circle at 72% 30%, rgba(118, 23, 43, 0.28), transparent 42%), #030407;
 }
 
 .ix-companions__mobile {
@@ -523,8 +533,19 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, #020305 0%, rgba(2, 3, 5, 0.16) 25%, rgba(2, 3, 5, 0.26) 64%, #020305 100%),
-    linear-gradient(90deg, rgba(2, 3, 5, 0.78) 0%, rgba(2, 3, 5, 0.12) 52%, rgba(2, 3, 5, 0.45) 100%);
+    linear-gradient(
+      180deg,
+      #020305 0%,
+      rgba(2, 3, 5, 0.16) 25%,
+      rgba(2, 3, 5, 0.26) 64%,
+      #020305 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(2, 3, 5, 0.78) 0%,
+      rgba(2, 3, 5, 0.12) 52%,
+      rgba(2, 3, 5, 0.45) 100%
+    );
 }
 
 .ix-companions__closing-copy {

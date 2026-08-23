@@ -26,10 +26,12 @@
 ### Task 1: Content and component skeleton
 
 **Files:**
+
 - Create: `src/content/companions.ts`
 - Create: `src/components/experience/companions-chapter.tsx`
 
 **Interfaces:**
+
 - Produces `companionsCopy[locale]`, `CompanionId = "haku" | "mochi"`, and `CompanionsChapter({ locale })`.
 
 - [x] Define PT/EN copy, Japanese source labels, tags and canonical asset paths.
@@ -40,10 +42,12 @@
 ### Task 2: Interactive desktop hub
 
 **Files:**
+
 - Modify: `src/components/experience/companions-chapter.tsx`
 - Create: `src/app/companions-chapter.css`
 
 **Interfaces:**
+
 - Haku/Mochi targets are real `<button>` elements.
 - Hover previews a companion; pointer leave returns to the click-selected state.
 - Focus and click select the same state.
@@ -56,11 +60,13 @@
 ### Task 3: Section-scoped cursor atmosphere
 
 **Files:**
+
 - Create: `src/components/experience/companions-atmosphere.tsx`
 - Modify: `src/components/experience/companions-chapter.tsx`
 - Modify: `src/app/companions-chapter.css`
 
 **Interfaces:**
+
 - `CompanionsAtmosphere({ mode })`, where mode is `base | haku | mochi`.
 
 - [x] Add an absolutely positioned canvas behind content.
@@ -72,10 +78,12 @@
 ### Task 4: Mobile/touch and closing composition
 
 **Files:**
+
 - Modify: `src/components/experience/companions-chapter.tsx`
 - Modify: `src/app/companions-chapter.css`
 
 **Interfaces:**
+
 - Mobile uses explicit Haku/Mochi segmented controls; no hover dependency and no cursor canvas.
 
 - [x] Build intro group composition.
@@ -86,10 +94,12 @@
 ### Task 5: Integrate and verify
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 - Modify: `src/app/layout.tsx`
 
 **Interfaces:**
+
 - `GameplayChapter` is immediately followed by `CompanionsChapter`.
 
 - [x] Import and render `CompanionsChapter` after Gameplay.
