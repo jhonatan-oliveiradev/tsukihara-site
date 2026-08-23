@@ -44,10 +44,17 @@ jobs:
 
             const section = page.locator('#gameplay');
             await section.scrollIntoViewIfNeeded();
-            await page.waitForTimeout(400);
+            await page.waitForTimeout(120);
 
             const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
             if (overflow) throw new Error(`${testCase.name}: horizontal overflow`);
+
+            const fontFamily = await page.locator('.ix-gameplay__intro h2').evaluate((element) =>
+              getComputedStyle(element).fontFamily,
+            );
+            if (!/Bodoni|Didot|Iowan Old Style|Times New Roman|Yu Mincho/i.test(fontFamily)) {
+              throw new Error(`${testCase.name}: gameplay display font diverged: ${fontFamily}`);
+            }
 
             if (testCase.name === 'mobile') {
               await page.screenshot({ path: `artifacts/gameplay/${testCase.name}-flow.png`, fullPage: false });
@@ -56,6 +63,46 @@ jobs:
             } else {
               const box = await section.boundingBox();
               if (!box) throw new Error(`${testCase.name}: gameplay section missing`);
+
+              if (testCase.name === 'desktop') {
+                const revealTarget = box.y + box.height * 0.45;
+                await page.evaluate((y) => window.scrollTo(0, y), revealTarget);
+                await page.waitForTimeout(70);
+
+                const activeReveal = await page.evaluate(() => {
+                  const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
+                  const active = copies.find((node) => {
+                    const style = getComputedStyle(node);
+                    return style.visibility !== 'hidden' && Number(style.opacity) > 0.15;
+                  });
+                  const reveal = active?.querySelector('[data-jp-reveal-deferred]');
+                  return reveal
+                    ? {
+                        beat: active.getAttribute('data-gameplay-copy'),
+                        early: reveal.textContent?.trim() ?? '',
+                        final: reveal.getAttribute('aria-label') ?? '',
+                      }
+                    : null;
+                });
+
+                if (!activeReveal) throw new Error('desktop: no active deferred gameplay reveal found');
+                if (!activeReveal.early || activeReveal.early === activeReveal.final) {
+                  throw new Error(
+                    `desktop: kanji reveal did not expose an intermediate state for ${activeReveal.beat}: ${activeReveal.early}`,
+                  );
+                }
+
+                await page.waitForTimeout(1150);
+                const resolved = await page
+                  .locator(`[data-gameplay-copy="${activeReveal.beat}"] [data-jp-reveal-deferred]`)
+                  .textContent();
+                if ((resolved ?? '').trim() !== activeReveal.final) {
+                  throw new Error(
+                    `desktop: kanji reveal did not resolve for ${activeReveal.beat}: ${(resolved ?? '').trim()}`,
+                  );
+                }
+              }
+
               for (const point of testCase.points) {
                 const target = box.y + box.height * point;
                 await page.evaluate((y) => window.scrollTo(0, y), target);
