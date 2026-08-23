@@ -66,13 +66,23 @@ jobs:
               const blocks = await page.locator('.ix-gameplay-mobile').count();
               if (blocks !== 6) throw new Error(`mobile: expected 6 gameplay beats, got ${blocks}`);
             } else {
-              const box = await section.boundingBox();
-              if (!box) throw new Error(`${testCase.name}: gameplay section missing`);
+              const metrics = await section.evaluate((element) => {
+                const rect = element.getBoundingClientRect();
+                return {
+                  top: rect.top + window.scrollY,
+                  height: rect.height,
+                  viewportHeight: window.innerHeight,
+                };
+              });
+              const scrollRange = Math.max(1, metrics.height - metrics.viewportHeight);
+              const scrollToProgress = async (progress) => {
+                const target = metrics.top + scrollRange * progress;
+                await page.evaluate((y) => window.scrollTo(0, y), target);
+              };
 
               if (testCase.name === 'desktop') {
-                const revealTarget = box.y + box.height * 0.45;
-                await page.evaluate((y) => window.scrollTo(0, y), revealTarget);
-                await page.waitForTimeout(70);
+                await scrollToProgress(0.45);
+                await page.waitForTimeout(110);
 
                 const activeReveal = await page.evaluate(() => {
                   const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
@@ -109,8 +119,7 @@ jobs:
               }
 
               for (const point of testCase.points) {
-                const target = box.y + box.height * point;
-                await page.evaluate((y) => window.scrollTo(0, y), target);
+                await scrollToProgress(point);
                 await page.waitForTimeout(450);
                 await page.screenshot({
                   path: `artifacts/gameplay/${testCase.name}-${String(point).replace('.', '-')}.png`,
