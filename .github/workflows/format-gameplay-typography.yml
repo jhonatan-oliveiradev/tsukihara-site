@@ -29,3 +29,5 @@ jobs:
           git add src/app/gameplay-chapter.css src/content/gameplay-chapter.ts src/components/experience/gameplay-chapter.tsx src/components/experience/gameplay/use-gameplay-chapter-timeline.ts src/components/experience/jp-reveal-text.tsx src/app/gameplay-typography-fix.css src/app/layout.tsx .github/workflows/gameplay-chapter-visual.yml
           git commit -m "style: format gameplay typography fix"
           git push origin HEAD:fix/gameplay-typography-kanji
+
+# Temporary formatter; removed after the formatting commit lands.
