@@ -1,0 +1,32 @@
+.ix-gameplay__intro h2,
+.ix-gameplay__copy h3,
+.ix-gameplay-mobile h3,
+.ix-gameplay__closing-copy h3,
+.ix-gameplay [data-jp-reveal] {
+  font-family: var(--display);
+}
+
+.ix-gameplay [data-jp-reveal] {
+  display: block;
+  font-weight: 400;
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+}
+
+.ix-gameplay__intro h2,
+.ix-gameplay__copy h3,
+.ix-gameplay-mobile h3,
+.ix-gameplay__closing-copy h3 {
+  letter-spacing: -0.035em;
+}
+
+.ix-gameplay__index,
+.ix-gameplay__copy > small,
+.ix-gameplay__combat-meta span,
+.ix-gameplay__progress b,
+.ix-gameplay__progress small,
+.ix-gameplay-mobile > span,
+.ix-gameplay-mobile small,
+.ix-gameplay__closing-copy strong {
+  font-family: var(--sans);
+}

@@ -18,6 +18,7 @@ import "./akari-mosaic-copy-balance.css";
 import "./kintsugi-lunar-chapter.css";
 import "./kintsugi-lunar-refinement.css";
 import "./gameplay-chapter.css";
+import "./gameplay-typography-fix.css";
 import "./nine-realms-world.css";
 import "./nine-realms-world-calibration.css";
 import "./nine-realms-world-stability.css";

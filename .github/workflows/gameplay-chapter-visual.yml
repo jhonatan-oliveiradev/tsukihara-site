@@ -40,27 +40,105 @@ jobs:
             await page.goto('http://127.0.0.1:3000', { waitUntil: 'networkidle' });
             const silent = page.getByRole('button', { name: /sem som|without sound/i });
             if (await silent.count()) await silent.click();
-            await page.waitForTimeout(1500);
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
+            await page.waitForTimeout(300);
 
             const section = page.locator('#gameplay');
             await section.scrollIntoViewIfNeeded();
-            await page.waitForTimeout(400);
+            await page.waitForTimeout(120);
 
-            const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
+            const overflow = await page.evaluate(
+              () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+            );
             if (overflow) throw new Error(`${testCase.name}: horizontal overflow`);
 
+            const fontFamily = await page.locator('.ix-gameplay__intro h2').evaluate((element) =>
+              getComputedStyle(element).fontFamily,
+            );
+            if (!/Bodoni|Didot|Iowan Old Style|Times New Roman|Yu Mincho/i.test(fontFamily)) {
+              throw new Error(`${testCase.name}: gameplay display font diverged: ${fontFamily}`);
+            }
+
             if (testCase.name === 'mobile') {
-              await page.screenshot({ path: `artifacts/gameplay/${testCase.name}-flow.png`, fullPage: false });
+              await page.screenshot({
+                path: `artifacts/gameplay/${testCase.name}-flow.png`,
+                fullPage: false,
+              });
               const blocks = await page.locator('.ix-gameplay-mobile').count();
               if (blocks !== 6) throw new Error(`mobile: expected 6 gameplay beats, got ${blocks}`);
             } else {
-              const box = await section.boundingBox();
-              if (!box) throw new Error(`${testCase.name}: gameplay section missing`);
-              for (const point of testCase.points) {
-                const target = box.y + box.height * point;
+              const metrics = await section.evaluate((element) => {
+                const rect = element.getBoundingClientRect();
+                return {
+                  top: rect.top + window.scrollY,
+                  height: rect.height,
+                  viewportHeight: window.innerHeight,
+                };
+              });
+              const scrollRange = Math.max(1, metrics.height - metrics.viewportHeight);
+              const scrollToProgress = async (progress) => {
+                const target = metrics.top + scrollRange * progress;
                 await page.evaluate((y) => window.scrollTo(0, y), target);
+              };
+
+              if (testCase.name === 'desktop') {
+                await scrollToProgress(0.45);
+
+                await page.waitForFunction(() => {
+                  const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
+                  return copies.some((node) => {
+                    const style = getComputedStyle(node);
+                    return (
+                      style.visibility !== 'hidden' &&
+                      Number(style.opacity) > 0.15 &&
+                      Boolean(node.querySelector('[data-jp-reveal-deferred]'))
+                    );
+                  });
+                }, null, { timeout: 1400 });
+
+                const activeReveal = await page.evaluate(() => {
+                  const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
+                  const active = copies.find((node) => {
+                    const style = getComputedStyle(node);
+                    return style.visibility !== 'hidden' && Number(style.opacity) > 0.15;
+                  });
+                  const reveal = active?.querySelector('[data-jp-reveal-deferred]');
+                  return reveal
+                    ? {
+                        beat: active.getAttribute('data-gameplay-copy'),
+                        early: reveal.textContent?.trim() ?? '',
+                        final: reveal.getAttribute('aria-label') ?? '',
+                      }
+                    : null;
+                });
+
+                if (!activeReveal) throw new Error('desktop: no active deferred gameplay reveal found');
+                if (!activeReveal.early || activeReveal.early === activeReveal.final) {
+                  throw new Error(
+                    `desktop: kanji reveal did not expose an intermediate state for ${activeReveal.beat}: ${activeReveal.early}`,
+                  );
+                }
+
+                await page.waitForFunction(
+                  ({ beat, final }) => {
+                    const node = document.querySelector(
+                      `[data-gameplay-copy="${beat}"] [data-jp-reveal-deferred]`,
+                    );
+                    return (node?.textContent ?? '').trim() === final;
+                  },
+                  { beat: activeReveal.beat, final: activeReveal.final },
+                  { timeout: 1800 },
+                );
+              }
+
+              for (const point of testCase.points) {
+                await scrollToProgress(point);
                 await page.waitForTimeout(450);
-                await page.screenshot({ path: `artifacts/gameplay/${testCase.name}-${String(point).replace('.', '-')}.png` });
+                await page.screenshot({
+                  path: `artifacts/gameplay/${testCase.name}-${String(point).replace('.', '-')}.png`,
+                });
               }
             }
 

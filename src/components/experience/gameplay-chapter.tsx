@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { useRef } from "react";
+import { JpRevealText } from "@/components/experience/jp-reveal-text";
+import { useGameplayChapterTimeline } from "@/components/experience/gameplay/use-gameplay-chapter-timeline";
 import {
   gameplayAssets,
   gameplayChapterCopy,
   type GameplayLocale,
 } from "@/content/gameplay-chapter";
-import { useGameplayChapterTimeline } from "@/components/experience/gameplay/use-gameplay-chapter-timeline";
 
 type GameplayChapterProps = {
   locale: GameplayLocale;
@@ -35,7 +36,15 @@ export function GameplayChapter({ locale }: GameplayChapterProps) {
           <span>遊戯</span>
         </div>
         <div className="ix-gameplay__intro-grid">
-          <h2>{copy.title}</h2>
+          <h2>
+            <JpRevealText
+              jp={copy.titleJp}
+              text={copy.title}
+              locale={locale}
+              duration={1180}
+              delay={90}
+            />
+          </h2>
           <p>{copy.intro}</p>
         </div>
       </div>
@@ -161,7 +170,16 @@ export function GameplayChapter({ locale }: GameplayChapterProps) {
                 data-gameplay-copy={beat.id}
               >
                 <span className="ix-gameplay__index">{beat.index} / 06</span>
-                <h3>{beat.title}</h3>
+                <h3>
+                  <JpRevealText
+                    jp={beat.titleJp}
+                    text={beat.title}
+                    locale={locale}
+                    duration={920}
+                    delay={40}
+                    deferred
+                  />
+                </h3>
                 <p>{beat.copy}</p>
                 <small>{beat.microcopy}</small>
                 {index === 4 && (
@@ -209,7 +227,15 @@ export function GameplayChapter({ locale }: GameplayChapterProps) {
                 <Image src={source} alt="" fill sizes="100vw" className="ix-gameplay__image" />
               </div>
               <span>{beat.index} / 06</span>
-              <h3>{beat.title}</h3>
+              <h3>
+                <JpRevealText
+                  jp={beat.titleJp}
+                  text={beat.title}
+                  locale={locale}
+                  duration={820}
+                  delay={40}
+                />
+              </h3>
               <p>{beat.copy}</p>
               <small>{beat.microcopy}</small>
             </article>
@@ -229,7 +255,15 @@ export function GameplayChapter({ locale }: GameplayChapterProps) {
           <div />
         </div>
         <div className="ix-gameplay__closing-copy">
-          <h3>{copy.closing.title}</h3>
+          <h3>
+            <JpRevealText
+              jp={copy.closing.titleJp}
+              text={copy.closing.title}
+              locale={locale}
+              duration={1040}
+              delay={70}
+            />
+          </h3>
           <p>{copy.closing.body}</p>
           <strong>{copy.closing.signature}</strong>
         </div>
