@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { BestiaryBossesChapter } from "@/components/experience/bestiary-bosses-chapter";
 import { CharacterSpotlight } from "@/components/experience/character-spotlight";
 import { CinematicEpilogue } from "@/components/experience/cinematic-epilogue";
 import { CinematicHero } from "@/components/experience/cinematic-hero";
@@ -369,6 +370,7 @@ export function ImmersiveExperience() {
           <KintsugiLunarChapter locale={locale} />
           <GameplayChapter locale={locale} />
           <CompanionsChapter locale={locale} />
+          <BestiaryBossesChapter locale={locale} />
           <ExperiencePillars copy={copy} locale={locale} />
           <CinematicEpilogue copy={copy} locale={locale} />
         </main>
