@@ -40,7 +40,10 @@ jobs:
             await page.goto('http://127.0.0.1:3000', { waitUntil: 'networkidle' });
             const silent = page.getByRole('button', { name: /sem som|without sound/i });
             if (await silent.count()) await silent.click();
-            await page.waitForTimeout(1500);
+            await page.waitForFunction(() => !document.querySelector('.ix-entry-gateway'), null, {
+              timeout: 12000,
+            });
+            await page.waitForTimeout(300);
 
             const section = page.locator('#gameplay');
             await section.scrollIntoViewIfNeeded();
@@ -93,7 +96,7 @@ jobs:
                       Boolean(node.querySelector('[data-jp-reveal-deferred]'))
                     );
                   });
-                }, null, { timeout: 1200 });
+                }, null, { timeout: 1400 });
 
                 const activeReveal = await page.evaluate(() => {
                   const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
