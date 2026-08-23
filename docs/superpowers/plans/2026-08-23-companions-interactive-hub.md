@@ -32,11 +32,10 @@
 **Interfaces:**
 - Produces `companionsCopy[locale]`, `CompanionId = "haku" | "mochi"`, and `CompanionsChapter({ locale })`.
 
-- [ ] Define PT/EN copy, Japanese source labels, tags and canonical asset paths.
-- [ ] Build semantic section markup with intro, desktop hub, mobile flow and closing hero.
-- [ ] Reuse `JpRevealText` for intro, Haku, Mochi and closing headlines.
-- [ ] Keep active desktop state local as `base | haku | mochi`.
-- [ ] Commit the slice.
+- [x] Define PT/EN copy, Japanese source labels, tags and canonical asset paths.
+- [x] Build semantic section markup with intro, desktop hub, mobile flow and closing hero.
+- [x] Reuse `JpRevealText` for intro, Haku, Mochi and closing headlines.
+- [x] Keep active desktop state local as `base | haku | mochi`.
 
 ### Task 2: Interactive desktop hub
 
@@ -49,11 +48,10 @@
 - Hover previews a companion; pointer leave returns to the click-selected state.
 - Focus and click select the same state.
 
-- [ ] Create the central group composition and orbital focus targets.
-- [ ] Add Haku/Mochi isolated character layers and key visuals.
-- [ ] Add dynamic contextual copy, tags and microcopy without card styling.
-- [ ] Implement restrained dissolve, drift, halo and illumination state transitions in CSS.
-- [ ] Commit the slice.
+- [x] Create the central group composition and orbital focus targets.
+- [x] Add Haku/Mochi isolated character layers and key visuals.
+- [x] Add dynamic contextual copy, tags and microcopy without card styling.
+- [x] Implement restrained dissolve, drift, halo and illumination state transitions in CSS.
 
 ### Task 3: Section-scoped cursor atmosphere
 
@@ -65,12 +63,11 @@
 **Interfaces:**
 - `CompanionsAtmosphere({ mode })`, where mode is `base | haku | mochi`.
 
-- [ ] Add an absolutely positioned canvas behind content.
-- [ ] Observe section visibility and only animate while visible.
-- [ ] Spawn a capped number of soft particles/rings from pointer movement velocity.
-- [ ] Shift palette by state: lunar/ivory for Haku, wine/crimson for Mochi, balanced palette for base.
-- [ ] Disable on coarse pointers, touch devices and reduced motion.
-- [ ] Commit the slice.
+- [x] Add an absolutely positioned canvas behind content.
+- [x] Observe section visibility and only animate while visible.
+- [x] Spawn a capped number of soft particles/rings from pointer movement velocity.
+- [x] Shift palette by state: lunar/ivory for Haku, wine/crimson for Mochi, balanced palette for base.
+- [x] Disable on coarse pointers, touch devices and reduced motion.
 
 ### Task 4: Mobile/touch and closing composition
 
@@ -81,23 +78,22 @@
 **Interfaces:**
 - Mobile uses explicit Haku/Mochi segmented controls; no hover dependency and no cursor canvas.
 
-- [ ] Build intro group composition.
-- [ ] Add two-state touch controls and vertical companion details.
-- [ ] Add closing hero with `/06-companions/scenes/c06-akari-haku-hero-flight.png`.
-- [ ] Ensure reduced motion retains all readable content with stable transitions.
-- [ ] Commit the slice.
+- [x] Build intro group composition.
+- [x] Add two-state touch controls and vertical companion details.
+- [x] Add closing hero with `/06-companions/scenes/c06-akari-haku-hero-flight.png`.
+- [x] Ensure reduced motion retains all readable content with stable transitions.
 
 ### Task 5: Integrate and verify
 
 **Files:**
 - Modify: `src/components/experience/immersive-experience.tsx`
-- Modify: global stylesheet import location used by the project if required.
+- Modify: `src/app/layout.tsx`
 
 **Interfaces:**
 - `GameplayChapter` is immediately followed by `CompanionsChapter`.
 
-- [ ] Import and render `CompanionsChapter` after Gameplay.
-- [ ] Import the section stylesheet using the project's existing CSS pattern.
+- [x] Import and render `CompanionsChapter` after Gameplay.
+- [x] Import the section stylesheet using the project's existing CSS pattern.
 - [ ] Open a draft PR to `main`.
 - [ ] Run existing Quality workflow and confirm formatting, lint, TypeScript and production build.
 - [ ] Leave the PR unmerged for user visual validation.
