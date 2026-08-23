@@ -13,6 +13,7 @@ import {
   CinematicPreloader,
   type EntryGatewayPhase,
 } from "@/components/experience/cinematic-preloader";
+import { CompanionsChapter } from "@/components/experience/companions-chapter";
 import { ExperiencePillars } from "@/components/experience/experience-pillars";
 import { FallingSakura } from "@/components/experience/falling-sakura";
 import { GameplayChapter } from "@/components/experience/gameplay-chapter";
@@ -367,6 +368,7 @@ export function ImmersiveExperience() {
           <CharacterSpotlight copy={copy} locale={locale} />
           <KintsugiLunarChapter locale={locale} />
           <GameplayChapter locale={locale} />
+          <CompanionsChapter locale={locale} />
           <ExperiencePillars copy={copy} locale={locale} />
           <CinematicEpilogue copy={copy} locale={locale} />
         </main>
