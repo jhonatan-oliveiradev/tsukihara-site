@@ -1,12 +1,6 @@
 export type GameplayLocale = "pt" | "en";
 
-export type GameplayBeatId =
-  | "explore"
-  | "reveal"
-  | "restore"
-  | "traverse"
-  | "combat"
-  | "boss";
+export type GameplayBeatId = "explore" | "reveal" | "restore" | "traverse" | "combat" | "boss";
 
 type GameplayBeat = {
   id: GameplayBeatId;
