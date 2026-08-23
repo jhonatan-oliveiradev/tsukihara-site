@@ -4,6 +4,8 @@ import { useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+const JP_REVEAL_EVENT = "tsukihara:jp-reveal";
+
 export function useGameplayChapterTimeline(rootRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const root = rootRef.current;
@@ -18,6 +20,16 @@ export function useGameplayChapterTimeline(rootRef: RefObject<HTMLElement | null
     const scenes = gsap.utils.toArray<HTMLElement>("[data-gameplay-scene]", root);
     const copies = gsap.utils.toArray<HTMLElement>("[data-gameplay-copy]", root);
     const progressItems = gsap.utils.toArray<HTMLElement>("[data-gameplay-progress]", root);
+    const phaseStarts = [0.08, 0.22, 0.38, 0.54, 0.7, 0.86];
+    let revealedBeat = -1;
+
+    const revealBeatTitle = (index: number) => {
+      if (index === revealedBeat) return;
+      revealedBeat = index;
+      copies[index]
+        ?.querySelector<HTMLElement>("[data-jp-reveal-deferred]")
+        ?.dispatchEvent(new CustomEvent(JP_REVEAL_EVENT));
+    };
 
     const ctx = gsap.context(() => {
       gsap.set(scenes, { autoAlpha: 0 });
@@ -33,10 +45,17 @@ export function useGameplayChapterTimeline(rootRef: RefObject<HTMLElement | null
           start: "top top",
           end: "bottom bottom",
           scrub: 1,
+          onEnter: () => revealBeatTitle(0),
+          onEnterBack: () => revealBeatTitle(5),
+          onUpdate: (self) => {
+            let activeIndex = 0;
+            phaseStarts.forEach((start, index) => {
+              if (self.progress >= start) activeIndex = index;
+            });
+            revealBeatTitle(activeIndex);
+          },
         },
       });
-
-      const phaseStarts = [0.08, 0.22, 0.38, 0.54, 0.7, 0.86];
 
       scenes.forEach((scene, index) => {
         const start = phaseStarts[index];
