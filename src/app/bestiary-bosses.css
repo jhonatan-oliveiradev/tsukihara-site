@@ -18,8 +18,12 @@
   z-index: 1;
 }
 
-.ix-forbidden-records::before { top: 2.5rem; }
-.ix-forbidden-records::after { bottom: 2.5rem; }
+.ix-forbidden-records::before {
+  top: 2.5rem;
+}
+.ix-forbidden-records::after {
+  bottom: 2.5rem;
+}
 
 .ix-forbidden-records__noise,
 .ix-forbidden-records__silhouettes,
@@ -48,7 +52,9 @@
 }
 
 .ix-forbidden-records__silhouettes img,
-.ix-forbidden-records__fx img { object-fit: cover; }
+.ix-forbidden-records__fx img {
+  object-fit: cover;
+}
 
 .ix-forbidden-records__fx {
   opacity: 0.07;
@@ -142,10 +148,18 @@
 }
 
 .ix-bestiary-act__label span,
-.ix-bosses-act__label span { color: #9b4a58; }
+.ix-bosses-act__label span {
+  color: #9b4a58;
+}
 .ix-bestiary-act__label strong,
-.ix-bosses-act__label strong { color: var(--bone); font-weight: 500; }
-.ix-bestiary-act__label small { margin-left: auto; color: rgb(230 224 215 / 0.33); }
+.ix-bosses-act__label strong {
+  color: var(--bone);
+  font-weight: 500;
+}
+.ix-bestiary-act__label small {
+  margin-left: auto;
+  color: rgb(230 224 215 / 0.33);
+}
 
 .ix-bestiary-grid {
   display: grid;
@@ -166,15 +180,35 @@
   text-align: left;
   cursor: crosshair;
   isolation: isolate;
-  transition: border-color 260ms ease, transform 420ms var(--ease);
+  transition:
+    border-color 260ms ease,
+    transform 420ms var(--ease);
 }
 
-.ix-archive-specimen--1 { grid-column: 1 / span 5; grid-row: 1 / span 5; }
-.ix-archive-specimen--2 { grid-column: 6 / span 3; grid-row: 1 / span 4; }
-.ix-archive-specimen--3 { grid-column: 9 / span 4; grid-row: 1 / span 6; }
-.ix-archive-specimen--4 { grid-column: 1 / span 3; grid-row: 6 / span 4; }
-.ix-archive-specimen--5 { grid-column: 4 / span 5; grid-row: 5 / span 5; }
-.ix-archive-specimen--6 { grid-column: 9 / span 4; grid-row: 7 / span 3; }
+.ix-archive-specimen--1 {
+  grid-column: 1 / span 5;
+  grid-row: 1 / span 5;
+}
+.ix-archive-specimen--2 {
+  grid-column: 6 / span 3;
+  grid-row: 1 / span 4;
+}
+.ix-archive-specimen--3 {
+  grid-column: 9 / span 4;
+  grid-row: 1 / span 6;
+}
+.ix-archive-specimen--4 {
+  grid-column: 1 / span 3;
+  grid-row: 6 / span 4;
+}
+.ix-archive-specimen--5 {
+  grid-column: 4 / span 5;
+  grid-row: 5 / span 5;
+}
+.ix-archive-specimen--6 {
+  grid-column: 9 / span 4;
+  grid-row: 7 / span 3;
+}
 
 .ix-archive-specimen:hover,
 .ix-archive-specimen:focus-visible,
@@ -192,13 +226,12 @@
 
 .ix-archive-specimen__image img {
   object-fit: cover;
-  filter:
-    grayscale(calc(1 - var(--proximity) * 0.72))
-    blur(calc((1 - var(--proximity)) * 4px))
-    brightness(calc(0.34 + var(--proximity) * 0.35))
-    contrast(calc(1.28 + var(--proximity) * 0.18));
+  filter: grayscale(calc(1 - var(--proximity) * 0.72)) blur(calc((1 - var(--proximity)) * 4px))
+    brightness(calc(0.34 + var(--proximity) * 0.35)) contrast(calc(1.28 + var(--proximity) * 0.18));
   transform: scale(calc(1.065 - var(--proximity) * 0.025));
-  transition: filter 120ms linear, transform 220ms ease;
+  transition:
+    filter 120ms linear,
+    transform 220ms ease;
 }
 
 .ix-archive-specimen.is-active .ix-archive-specimen__image img {
@@ -209,7 +242,11 @@
 .ix-archive-specimen__veil {
   z-index: 1;
   background:
-    radial-gradient(circle 10rem at var(--pointer-x, 50%) var(--pointer-y, 50%), transparent calc(var(--proximity) * 48%), rgb(3 4 6 / 0.2) calc(var(--proximity) * 58%)),
+    radial-gradient(
+      circle 10rem at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      transparent calc(var(--proximity) * 48%),
+      rgb(3 4 6 / 0.2) calc(var(--proximity) * 58%)
+    ),
     linear-gradient(180deg, rgb(2 2 4 / 0.12), rgb(2 2 4 / 0.86));
 }
 
@@ -220,8 +257,12 @@
 .ix-archive-specimen__scan {
   z-index: 2;
   opacity: calc(0.35 + var(--proximity) * 0.45);
-  background:
-    linear-gradient(180deg, transparent 46%, color-mix(in srgb, var(--entity-accent) 30%, transparent) 50%, transparent 54%);
+  background: linear-gradient(
+    180deg,
+    transparent 46%,
+    color-mix(in srgb, var(--entity-accent) 30%, transparent) 50%,
+    transparent 54%
+  );
   background-size: 100% 190%;
   animation: ixArchiveScan 4.8s linear infinite;
   mix-blend-mode: screen;
@@ -280,7 +321,9 @@
   letter-spacing: 0.18em;
 }
 
-.ix-bestiary-entry__head strong { color: var(--entity-accent); }
+.ix-bestiary-entry__head strong {
+  color: var(--entity-accent);
+}
 .ix-bestiary-entry h3 {
   margin: 0;
   font-family: var(--display);
@@ -296,22 +339,56 @@
   margin: 0;
 }
 
-.ix-bestiary-entry dl div { display: grid; gap: 0.35rem; }
-.ix-bestiary-entry dt { font-size: 0.55rem; letter-spacing: 0.16em; color: rgb(230 224 215 / 0.4); }
-.ix-bestiary-entry dd { margin: 0; font-size: 0.72rem; text-transform: uppercase; }
-.ix-bestiary-entry > p { margin: 0; max-width: 44rem; color: rgb(230 224 215 / 0.58); line-height: 1.6; }
+.ix-bestiary-entry dl div {
+  display: grid;
+  gap: 0.35rem;
+}
+.ix-bestiary-entry dt {
+  font-size: 0.55rem;
+  letter-spacing: 0.16em;
+  color: rgb(230 224 215 / 0.4);
+}
+.ix-bestiary-entry dd {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.ix-bestiary-entry > p {
+  margin: 0;
+  max-width: 44rem;
+  color: rgb(230 224 215 / 0.58);
+  line-height: 1.6;
+}
 
 .ix-bestiary-entry__signal {
   align-self: end;
   display: flex;
   gap: 0.3rem;
 }
-.ix-bestiary-entry__signal i { width: 2px; background: var(--entity-accent); animation: ixArchiveSignal 1.8s ease-in-out infinite; }
-.ix-bestiary-entry__signal i:nth-child(1) { height: 1rem; }
-.ix-bestiary-entry__signal i:nth-child(2) { height: 2rem; animation-delay: -0.4s; }
-.ix-bestiary-entry__signal i:nth-child(3) { height: 1.3rem; animation-delay: -0.9s; }
-.ix-bestiary-entry__signal i:nth-child(4) { height: 2.4rem; animation-delay: -0.2s; }
-.ix-bestiary-entry__signal i:nth-child(5) { height: 0.8rem; animation-delay: -1.1s; }
+.ix-bestiary-entry__signal i {
+  width: 2px;
+  background: var(--entity-accent);
+  animation: ixArchiveSignal 1.8s ease-in-out infinite;
+}
+.ix-bestiary-entry__signal i:nth-child(1) {
+  height: 1rem;
+}
+.ix-bestiary-entry__signal i:nth-child(2) {
+  height: 2rem;
+  animation-delay: -0.4s;
+}
+.ix-bestiary-entry__signal i:nth-child(3) {
+  height: 1.3rem;
+  animation-delay: -0.9s;
+}
+.ix-bestiary-entry__signal i:nth-child(4) {
+  height: 2.4rem;
+  animation-delay: -0.2s;
+}
+.ix-bestiary-entry__signal i:nth-child(5) {
+  height: 0.8rem;
+  animation-delay: -1.1s;
+}
 
 .ix-archive-break {
   position: relative;
@@ -328,11 +405,35 @@
   background: rgb(230 224 215 / 0.16);
   animation: ixArchiveBreak 3.4s steps(2, end) infinite;
 }
-.ix-archive-break i:nth-child(1) { top: 15%; left: 0; width: 61%; }
-.ix-archive-break i:nth-child(2) { top: 31%; right: 0; width: 42%; animation-delay: -0.8s; }
-.ix-archive-break i:nth-child(3) { top: 55%; left: 16%; width: 76%; animation-delay: -1.7s; }
-.ix-archive-break i:nth-child(4) { top: 74%; left: 2%; width: 25%; animation-delay: -2.2s; }
-.ix-archive-break i:nth-child(5) { top: 88%; right: 12%; width: 53%; animation-delay: -1.1s; }
+.ix-archive-break i:nth-child(1) {
+  top: 15%;
+  left: 0;
+  width: 61%;
+}
+.ix-archive-break i:nth-child(2) {
+  top: 31%;
+  right: 0;
+  width: 42%;
+  animation-delay: -0.8s;
+}
+.ix-archive-break i:nth-child(3) {
+  top: 55%;
+  left: 16%;
+  width: 76%;
+  animation-delay: -1.7s;
+}
+.ix-archive-break i:nth-child(4) {
+  top: 74%;
+  left: 2%;
+  width: 25%;
+  animation-delay: -2.2s;
+}
+.ix-archive-break i:nth-child(5) {
+  top: 88%;
+  right: 12%;
+  width: 53%;
+  animation-delay: -1.1s;
+}
 
 .ix-forbidden-transition {
   padding: clamp(4rem, 7vw, 7rem) 0 clamp(8rem, 13vw, 13rem);
@@ -344,7 +445,9 @@
   font-size: clamp(4rem, 8vw, 9rem);
 }
 
-.ix-bosses-act { padding-bottom: clamp(7rem, 12vw, 12rem); }
+.ix-bosses-act {
+  padding-bottom: clamp(7rem, 12vw, 12rem);
+}
 .ix-bosses-layout {
   display: grid;
   grid-template-columns: minmax(12rem, 0.26fr) minmax(0, 1fr);
@@ -375,7 +478,9 @@
   text-align: left;
   cursor: pointer;
   color: rgb(230 224 215 / 0.38);
-  transition: color 260ms ease, padding-left 260ms var(--ease);
+  transition:
+    color 260ms ease,
+    padding-left 260ms var(--ease);
 }
 
 .ix-boss-index button::before {
@@ -397,10 +502,23 @@
 }
 .ix-boss-index button:hover::before,
 .ix-boss-index button:focus-visible::before,
-.ix-boss-index button.is-active::before { width: 1rem; }
-.ix-boss-index button span { font-size: 0.58rem; letter-spacing: 0.14em; }
-.ix-boss-index button strong { font-size: 0.78rem; letter-spacing: 0.12em; font-weight: 450; }
-.ix-boss-index button small { color: #9b4a58; font-size: 0.52rem; letter-spacing: 0.12em; }
+.ix-boss-index button.is-active::before {
+  width: 1rem;
+}
+.ix-boss-index button span {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+}
+.ix-boss-index button strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  font-weight: 450;
+}
+.ix-boss-index button small {
+  color: #9b4a58;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+}
 
 .ix-boss-stage {
   --entity-accent: #a8753c;
@@ -436,7 +554,11 @@
 
 .ix-boss-stage__light {
   z-index: 2;
-  background: radial-gradient(circle at 72% 38%, color-mix(in srgb, var(--entity-accent) 23%, transparent), transparent 28%);
+  background: radial-gradient(
+    circle at 72% 38%,
+    color-mix(in srgb, var(--entity-accent) 23%, transparent),
+    transparent 28%
+  );
   mix-blend-mode: screen;
   animation: ixBossLight 1.3s ease both;
 }
@@ -473,9 +595,20 @@
   text-transform: uppercase;
   color: rgb(230 224 215 / 0.54);
 }
-.ix-boss-stage__meta i { width: 2.8rem; height: 1px; background: var(--entity-accent); }
-.ix-boss-stage__body { margin-top: 1.3rem; max-width: 35rem; }
-.ix-boss-stage__body p { margin: 0 0 0.65rem; color: rgb(230 224 215 / 0.66); line-height: 1.56; }
+.ix-boss-stage__meta i {
+  width: 2.8rem;
+  height: 1px;
+  background: var(--entity-accent);
+}
+.ix-boss-stage__body {
+  margin-top: 1.3rem;
+  max-width: 35rem;
+}
+.ix-boss-stage__body p {
+  margin: 0 0 0.65rem;
+  color: rgb(230 224 215 / 0.66);
+  line-height: 1.56;
+}
 .ix-boss-stage blockquote {
   margin: 1.4rem 0 0;
   padding-left: 1rem;
@@ -494,7 +627,14 @@
 .ix-boss-stage__classified-bars {
   z-index: 3;
   background:
-    linear-gradient(90deg, transparent 0 12%, rgb(0 0 0 / 0.96) 12% 31%, transparent 31% 51%, rgb(0 0 0 / 0.94) 51% 75%, transparent 75%),
+    linear-gradient(
+      90deg,
+      transparent 0 12%,
+      rgb(0 0 0 / 0.96) 12% 31%,
+      transparent 31% 51%,
+      rgb(0 0 0 / 0.94) 51% 75%,
+      transparent 75%
+    ),
     linear-gradient(180deg, transparent 0 58%, rgb(0 0 0 / 0.88) 58% 68%, transparent 68%);
 }
 
@@ -524,52 +664,109 @@
   margin: 0 auto 2rem;
   border-radius: 50%;
   border: 1px solid rgb(230 224 215 / 0.16);
-  box-shadow: 0 0 70px rgb(230 224 215 / 0.08), inset -1rem 0 2rem rgb(0 0 0 / 0.5);
+  box-shadow:
+    0 0 70px rgb(230 224 215 / 0.08),
+    inset -1rem 0 2rem rgb(0 0 0 / 0.5);
 }
 
-.ix-forbidden-outro h2 { font-size: clamp(4rem, 9vw, 9rem); }
+.ix-forbidden-outro h2 {
+  font-size: clamp(4rem, 9vw, 9rem);
+}
 .ix-forbidden-outro p {
   margin: 1.5rem auto 0;
   max-width: 32rem;
   color: rgb(230 224 215 / 0.62);
   font-size: clamp(1rem, 1.5vw, 1.25rem);
 }
-.ix-forbidden-outro__reference { margin-top: 4rem; color: rgb(230 224 215 / 0.22); }
+.ix-forbidden-outro__reference {
+  margin-top: 4rem;
+  color: rgb(230 224 215 / 0.22);
+}
 
 @keyframes ixArchiveScan {
-  from { background-position: 0 -90%; }
-  to { background-position: 0 190%; }
+  from {
+    background-position: 0 -90%;
+  }
+  to {
+    background-position: 0 190%;
+  }
 }
 @keyframes ixArchiveSignal {
-  0%, 100% { opacity: 0.28; transform: scaleY(0.6); }
-  50% { opacity: 1; transform: scaleY(1); }
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scaleY(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 @keyframes ixArchiveBreak {
-  0%, 82%, 100% { transform: translateX(0); opacity: 0.45; }
-  84% { transform: translateX(12px); opacity: 0.9; }
-  88% { transform: translateX(-5px); opacity: 0.3; }
+  0%,
+  82%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.45;
+  }
+  84% {
+    transform: translateX(12px);
+    opacity: 0.9;
+  }
+  88% {
+    transform: translateX(-5px);
+    opacity: 0.3;
+  }
 }
 @keyframes ixBossReveal {
-  from { opacity: 0; transform: scale(1.045); filter: blur(9px) saturate(0.4) brightness(0.45); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(1.045);
+    filter: blur(9px) saturate(0.4) brightness(0.45);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 @keyframes ixBossLight {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @media (max-width: 1100px) {
-  .ix-bestiary-grid { grid-auto-rows: 4.4rem; }
-  .ix-bosses-layout { grid-template-columns: 11rem minmax(0, 1fr); }
-  .ix-boss-stage__copy h3 { font-size: clamp(3rem, 6vw, 6rem); }
+  .ix-bestiary-grid {
+    grid-auto-rows: 4.4rem;
+  }
+  .ix-bosses-layout {
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+  .ix-boss-stage__copy h3 {
+    font-size: clamp(3rem, 6vw, 6rem);
+  }
 }
 
 @media (max-width: 900px) {
-  .ix-forbidden-records { padding-inline: 1rem; }
+  .ix-forbidden-records {
+    padding-inline: 1rem;
+  }
   .ix-forbidden-records__silhouettes,
-  .ix-forbidden-records__fx { display: none; }
-  .ix-forbidden-intro { grid-template-columns: 1fr; gap: 1.5rem; }
-  .ix-forbidden-intro__body { max-width: 34rem; }
+  .ix-forbidden-records__fx {
+    display: none;
+  }
+  .ix-forbidden-intro {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .ix-forbidden-intro__body {
+    max-width: 34rem;
+  }
   .ix-bestiary-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -588,11 +785,23 @@
     min-height: 22rem;
     --proximity: 0.65;
   }
-  .ix-archive-specimen__image img { filter: grayscale(0.3) brightness(0.62) contrast(1.08); }
-  .ix-bestiary-entry { grid-template-columns: 1fr; gap: 1rem; }
-  .ix-bestiary-entry dl { grid-template-columns: 1fr 1fr; }
-  .ix-bestiary-entry__signal { display: none; }
-  .ix-bosses-layout { grid-template-columns: 1fr; min-height: auto; }
+  .ix-archive-specimen__image img {
+    filter: grayscale(0.3) brightness(0.62) contrast(1.08);
+  }
+  .ix-bestiary-entry {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .ix-bestiary-entry dl {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ix-bestiary-entry__signal {
+    display: none;
+  }
+  .ix-bosses-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
   .ix-boss-index {
     flex-direction: row;
     overflow-x: auto;
@@ -604,22 +813,47 @@
     grid-template-columns: auto 1fr;
     padding: 1rem;
   }
-  .ix-boss-index button small { display: none; }
-  .ix-boss-stage { min-height: 70vh; }
-  .ix-boss-stage__copy { left: 1.2rem; right: 1.2rem; bottom: 1.4rem; }
-  .ix-boss-stage__copy h3 { font-size: clamp(3rem, 11vw, 5.5rem); }
+  .ix-boss-index button small {
+    display: none;
+  }
+  .ix-boss-stage {
+    min-height: 70vh;
+  }
+  .ix-boss-stage__copy {
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 1.4rem;
+  }
+  .ix-boss-stage__copy h3 {
+    font-size: clamp(3rem, 11vw, 5.5rem);
+  }
 }
 
 @media (max-width: 560px) {
-  .ix-forbidden-records { padding-top: 6rem; }
+  .ix-forbidden-records {
+    padding-top: 6rem;
+  }
   .ix-forbidden-intro h2,
   .ix-forbidden-transition h2,
-  .ix-forbidden-outro h2 { font-size: clamp(3.4rem, 15vw, 5.5rem); }
-  .ix-archive-specimen { min-height: 19rem; }
-  .ix-bestiary-entry dl { grid-template-columns: 1fr; gap: 0.8rem; }
-  .ix-boss-stage { min-height: 78vh; }
-  .ix-boss-stage__body p { font-size: 0.92rem; }
-  .ix-boss-stage blockquote { font-size: 1.25rem; }
+  .ix-forbidden-outro h2 {
+    font-size: clamp(3.4rem, 15vw, 5.5rem);
+  }
+  .ix-archive-specimen {
+    min-height: 19rem;
+  }
+  .ix-bestiary-entry dl {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  .ix-boss-stage {
+    min-height: 78vh;
+  }
+  .ix-boss-stage__body p {
+    font-size: 0.92rem;
+  }
+  .ix-boss-stage blockquote {
+    font-size: 1.25rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -627,7 +861,14 @@
   .ix-bestiary-entry__signal i,
   .ix-archive-break i,
   .ix-boss-stage__image,
-  .ix-boss-stage__light { animation: none !important; }
-  .ix-archive-specimen { --proximity: 0.7; }
-  .ix-archive-specimen__image img { filter: grayscale(0.25) brightness(0.65) contrast(1.08); transform: none; }
+  .ix-boss-stage__light {
+    animation: none !important;
+  }
+  .ix-archive-specimen {
+    --proximity: 0.7;
+  }
+  .ix-archive-specimen__image img {
+    filter: grayscale(0.25) brightness(0.65) contrast(1.08);
+    transform: none;
+  }
 }

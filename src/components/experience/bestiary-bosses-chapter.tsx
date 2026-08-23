@@ -25,7 +25,7 @@ function SpecimenButton({
   return (
     <button
       type="button"
-      className={`ix-archive-specimen ix-archive-specimen--${index + 1}${active ? " is-active" : ""}`}
+      className={`ix-archive-specimen ix-archive-specimen--${index + 1}${active ? "is-active" : ""}`}
       data-specimen
       data-specimen-id={specimen.id}
       onMouseEnter={onActivate}
@@ -52,18 +52,10 @@ function SpecimenButton({
   );
 }
 
-function BossStage({
-  boss,
-  index,
-  locale,
-}: {
-  boss: BossRecord;
-  index: number;
-  locale: Locale;
-}) {
+function BossStage({ boss, index, locale }: { boss: BossRecord; index: number; locale: Locale }) {
   return (
     <div
-      className={`ix-boss-stage${boss.classified ? " is-classified" : ""}`}
+      className={`ix-boss-stage${boss.classified ? "is-classified" : ""}`}
       style={{ "--entity-accent": boss.accent } as React.CSSProperties}
       data-boss-stage
     >
@@ -94,7 +86,9 @@ function BossStage({
         <div className="ix-boss-stage__meta">
           <span>{boss.realm}</span>
           <i />
-          <span>{locale === "pt" ? "ASPECTO" : "ASPECT"}: {boss.aspect}</span>
+          <span>
+            {locale === "pt" ? "ASPECTO" : "ASPECT"}: {boss.aspect}
+          </span>
         </div>
         <div className="ix-boss-stage__body">
           {boss.body.map((paragraph) => (
@@ -184,7 +178,9 @@ export function BestiaryBossesChapter({ locale }: { locale: Locale }) {
           <JpRevealText jp={copy.introJp} text={copy.introTitle} locale={locale} />
         </h2>
         <div className="ix-forbidden-intro__body">
-          {copy.introBody.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          {copy.introBody.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </div>
       </header>
 
@@ -214,23 +210,46 @@ export function BestiaryBossesChapter({ locale }: { locale: Locale }) {
         >
           <div className="ix-bestiary-entry__head">
             <span>
-              ENTRY {String(copy.specimens.findIndex((item) => item.id === activeSpecimen.id) + 1).padStart(2, "0")} / 06
+              ENTRY{" "}
+              {String(
+                copy.specimens.findIndex((item) => item.id === activeSpecimen.id) + 1,
+              ).padStart(2, "0")}{" "}
+              / 06
             </span>
             <strong>UNSTABLE</strong>
           </div>
           <h3>{activeSpecimen.name}</h3>
           <dl>
-            <div><dt>REALM</dt><dd>{activeSpecimen.realm}</dd></div>
-            <div><dt>TYPE</dt><dd>{activeSpecimen.type}</dd></div>
-            <div><dt>THREAT</dt><dd>{activeSpecimen.threat}</dd></div>
+            <div>
+              <dt>REALM</dt>
+              <dd>{activeSpecimen.realm}</dd>
+            </div>
+            <div>
+              <dt>TYPE</dt>
+              <dd>{activeSpecimen.type}</dd>
+            </div>
+            <div>
+              <dt>THREAT</dt>
+              <dd>{activeSpecimen.threat}</dd>
+            </div>
           </dl>
           <p>{activeSpecimen.description}</p>
-          <div className="ix-bestiary-entry__signal"><i /><i /><i /><i /><i /></div>
+          <div className="ix-bestiary-entry__signal">
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </div>
         </aside>
       </div>
 
       <div className="ix-archive-break" aria-hidden="true">
-        <i /><i /><i /><i /><i />
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
       </div>
 
       <div className="ix-forbidden-transition">

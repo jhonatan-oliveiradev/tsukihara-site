@@ -28,6 +28,7 @@
 ### Task 1: Stable content manifest
 
 **Files:**
+
 - Create: `src/content/bestiary.ts`
 
 - [ ] Define `BestiaryAssetCode` B01–B12 and centralized mock source mapping.
@@ -37,6 +38,7 @@
 ### Task 2: Bestiary act
 
 **Files:**
+
 - Create: `src/components/experience/bestiary-bosses-chapter.tsx`
 - Create: `src/components/experience/bestiary-specimen.tsx`
 - Create: `src/app/bestiary-bosses.css`
@@ -50,6 +52,7 @@
 ### Task 3: Boss act
 
 **Files:**
+
 - Create: `src/components/experience/boss-record.tsx`
 - Modify: `src/components/experience/bestiary-bosses-chapter.tsx`
 - Modify: `src/app/bestiary-bosses.css`
@@ -62,6 +65,7 @@
 ### Task 4: Responsive and reduced motion
 
 **Files:**
+
 - Modify: `src/components/experience/bestiary-bosses-chapter.tsx`
 - Modify: `src/app/bestiary-bosses.css`
 
@@ -72,6 +76,7 @@
 ### Task 5: Integration and verification
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 - Modify: `src/app/layout.tsx`
 

@@ -65,6 +65,7 @@ Support copy establishes that some memories remain, refuse to die, or learn to f
 Desktop uses an irregular 6-item matrix rather than repeated cards. Each specimen is a semantic button.
 
 Inactive specimen:
+
 - dark silhouette
 - grayscale
 - blur/noise
@@ -73,6 +74,7 @@ Inactive specimen:
 - metadata mostly withheld
 
 Proximity reveal:
+
 - pointer distance maps to a 0–1 reveal strength
 - strength controls grayscale, blur, contrast, overlay opacity and mask size
 - nearest specimen gains texture and depth
@@ -80,6 +82,7 @@ Proximity reveal:
 - proximity is enhancement only, never the sole access path
 
 Active metadata rail:
+
 - `ENTRY NN / 06`
 - name
 - realm
@@ -91,6 +94,7 @@ Active metadata rail:
 ### Bestiary transition
 
 After the sixth record, archive organization visibly degrades:
+
 - grid lines break
 - offsets appear
 - micro-jitter increases slightly
@@ -154,6 +158,7 @@ The archive progressively empties. A subtle Mother Moon reference remains to bri
 ## Motion
 
 ### Bestiary
+
 - scan lines
 - mask reveal
 - grayscale to color
@@ -163,6 +168,7 @@ The archive progressively empties. A subtle Mother Moon reference remains to bri
 - tiny jitter only in archive corruption moments
 
 ### Bosses
+
 - slow image fades
 - very small scale drift
 - gradual light emergence
@@ -178,12 +184,15 @@ Use existing `var(--display)` and `var(--sans)` tokens. Use `JpRevealText` only 
 ## Responsive behavior
 
 ### Desktop
+
 Full cursor proximity and boss focus behavior.
 
 ### Tablet
+
 Reduce pointer proximity intensity. Click/tap becomes primary activation.
 
 ### Mobile
+
 Bestiary becomes a vertical list/gallery with image, name, realm and short description. Bosses become full-width image with metadata below. No heavy canvas effect or proximity dependency.
 
 ## Accessibility
