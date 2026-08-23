@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { CompanionsAtmosphere, type CompanionAtmosphereMode } from "@/components/experience/companions-atmosphere";
+import {
+  CompanionsAtmosphere,
+  type CompanionAtmosphereMode,
+} from "@/components/experience/companions-atmosphere";
 import { JpRevealText } from "@/components/experience/jp-reveal-text";
 import {
   companionAssets,
@@ -50,10 +53,7 @@ export function CompanionsChapter({ locale }: { locale: Locale }) {
   const mobileCompanion = copy.companions[mobileSelected];
   const atmosphereMode: CompanionAtmosphereMode = active;
 
-  const sectionClassName = useMemo(
-    () => `ix-companions is-${active}`,
-    [active],
-  );
+  const sectionClassName = useMemo(() => `ix-companions is-${active}`, [active]);
 
   const selectCompanion = (id: CompanionId) => {
     setSelected(id);
@@ -99,7 +99,10 @@ export function CompanionsChapter({ locale }: { locale: Locale }) {
           {(["haku", "mochi"] as const).map((id) => {
             const companion = copy.companions[id];
             return (
-              <div key={id} className={`ix-companions__focus-figure ix-companions__focus-figure--${id}`}>
+              <div
+                key={id}
+                className={`ix-companions__focus-figure ix-companions__focus-figure--${id}`}
+              >
                 <Image
                   src={companion.character}
                   alt={companion.label}
@@ -242,7 +245,12 @@ export function CompanionsChapter({ locale }: { locale: Locale }) {
         <div className="ix-companions__closing-copy" data-reveal>
           <span>{copy.eyebrow}</span>
           <h3>
-            <JpRevealText jp={copy.closingJp} text={copy.closingTitle} locale={locale} duration={1100} />
+            <JpRevealText
+              jp={copy.closingJp}
+              text={copy.closingTitle}
+              locale={locale}
+              duration={1100}
+            />
           </h3>
           {copy.closingBody.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>

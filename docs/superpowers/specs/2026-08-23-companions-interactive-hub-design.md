@@ -9,12 +9,14 @@ Create a new premium section immediately after Gameplay focused on Haku and Moch
 The desktop section behaves as a living interactive hub. Akari, Haku and Mochi remain the visual center of gravity while Haku and Mochi act as focusable interactive states. Hover, keyboard focus and explicit click selection all produce the same state change.
 
 Base state:
+
 - group composition centered using `/06-companions/group/c03-akari-haku-mochi-group.png`
 - restrained lunar orbital lines, halos and atmospheric particles
 - no companion panel dominates
 - supporting intro copy establishes the trio
 
 Haku state:
+
 - right/lateral emphasis
 - isolated Haku asset `/06-companions/characters/c01-haku-character.png`
 - traversal key visual `/06-companions/scenes/c04-haku-traversal-key-visual.png`
@@ -23,6 +25,7 @@ Haku state:
 - labels/tags: Traversal, flight, mobility, reach, altitude
 
 Mochi state:
+
 - left/intimate emphasis
 - isolated Mochi asset `/06-companions/characters/c02-mochi-character.png`
 - memory key visual `/06-companions/scenes/c05-mochi-memory-key-visual.png`
@@ -31,6 +34,7 @@ Mochi state:
 - labels/tags describe perception, hidden paths, memory and discovery
 
 Closing state:
+
 - emotional full-width composition using `/06-companions/scenes/c06-akari-haku-hero-flight.png`
 - headline: `Travessia, memória e coragem compartilham o mesmo caminho.`
 - supporting copy closes on the three forces: moving forward, seeing deeper and remembering what matters
@@ -38,6 +42,7 @@ Closing state:
 ## Interaction model
 
 Desktop:
+
 - no master pin timeline
 - section remains normal document flow
 - hub occupies a large but finite viewport-oriented composition
@@ -49,6 +54,7 @@ Desktop:
 - keyboard focus must expose the same information as hover
 
 Mobile/touch:
+
 - no cursor effect
 - no hover dependency
 - intro group composition first
@@ -62,6 +68,7 @@ Mobile/touch:
 Do not import a heavy global Splash Cursor implementation. Reproduce only the desired local interaction language with a lightweight section-scoped effect.
 
 Preferred implementation:
+
 - local `<canvas>` layer using 2D drawing
 - pointer velocity drives a small number of dissipating soft particles/rings
 - canvas is clipped to the companions section
@@ -71,6 +78,7 @@ Preferred implementation:
 - base state stays between both palettes
 
 Performance rules:
+
 - cap active particles aggressively
 - use requestAnimationFrame only while the section is intersecting and motion is allowed
 - disable on coarse pointers/touch
@@ -81,6 +89,7 @@ Performance rules:
 ## Motion language
 
 Use:
+
 - fade + 8–20px drift
 - slow halo breathing
 - very subtle orbital rotation
@@ -89,6 +98,7 @@ Use:
 - gentle character breathing/parallax limited to a few pixels
 
 Avoid:
+
 - bounce or elastic easing
 - aggressive zoom
 - large distortion
@@ -105,6 +115,7 @@ Use the existing `JpRevealText` treatment for the main intro headline, Haku titl
 ## Components
 
 Recommended boundaries:
+
 - `CompanionsChapter` — semantic section and state ownership
 - `CompanionHub` — desktop interactive composition and focus targets
 - `CompanionPanel` — shared Haku/Mochi copy/key-visual presentation
@@ -131,6 +142,7 @@ Insert the new section immediately after `GameplayChapter` in the immersive expe
 ## Assets
 
 Canonical paths:
+
 - `/06-companions/characters/c01-haku-character.png`
 - `/06-companions/characters/c02-mochi-character.png`
 - `/06-companions/group/c03-akari-haku-mochi-group.png`
@@ -145,6 +157,7 @@ Ignore the duplicate root-level `c03-akari-haku-mochi-group.png`; do not delete 
 The user will perform primary visual validation locally. TDD is explicitly out of scope for this task.
 
 Before marking implementation ready, still run the repository's lightweight non-TDD safety gates available through CI/build tooling where practical:
+
 - formatting
 - lint
 - TypeScript / production build
@@ -154,6 +167,7 @@ Do not spend time creating a new dedicated visual regression workflow for this s
 ## Success criteria
 
 The section succeeds when:
+
 - it feels materially different from previous scroll-led chapters
 - Haku and Mochi each communicate a gameplay-relevant role without becoming cards
 - cursor response feels atmospheric, not playful or noisy
