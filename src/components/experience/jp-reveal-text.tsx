@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/content/immersive-copy";
 
 const glyphs = "月影刃華神霧鉄夢朱守蝕道火水花夜魂祈";
+const DEFERRED_REVEAL_EVENT = "tsukihara:jp-reveal";
 
 type JpRevealTextProps = {
   jp: string;
@@ -12,6 +13,7 @@ type JpRevealTextProps = {
   className?: string;
   duration?: number;
   delay?: number;
+  deferred?: boolean;
 };
 
 export function JpRevealText({
@@ -21,6 +23,7 @@ export function JpRevealText({
   className,
   duration = 980,
   delay = 80,
+  deferred = false,
 }: JpRevealTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const frameRef = useRef<number | null>(null);
@@ -87,17 +90,23 @@ export function JpRevealText({
       }, delay);
     };
 
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          animate();
-          observer?.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.15 },
-    );
+    const onDeferredReveal = () => animate();
 
-    observer.observe(node);
+    if (deferred) {
+      node.addEventListener(DEFERRED_REVEAL_EVENT, onDeferredReveal);
+    } else {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            animate();
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: "0px 0px -12% 0px", threshold: 0.15 },
+      );
+
+      observer.observe(node);
+    }
 
     const onReducedMotionChange = () => {
       if (reduced.matches) resolveImmediately();
@@ -106,14 +115,21 @@ export function JpRevealText({
 
     return () => {
       observer?.disconnect();
+      node.removeEventListener(DEFERRED_REVEAL_EVENT, onDeferredReveal);
       window.clearTimeout(timeout);
       stopFrame();
       reduced.removeEventListener("change", onReducedMotionChange);
     };
-  }, [delay, duration, jp, locale, text]);
+  }, [deferred, delay, duration, jp, locale, text]);
 
   return (
-    <span ref={ref} className={className} aria-label={text} data-jp-reveal>
+    <span
+      ref={ref}
+      className={className}
+      aria-label={text}
+      data-jp-reveal
+      data-jp-reveal-deferred={deferred || undefined}
+    >
       <span aria-hidden="true">{display}</span>
     </span>
   );
