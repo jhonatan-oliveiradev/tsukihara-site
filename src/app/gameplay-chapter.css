@@ -1,0 +1,412 @@
+.ix-gameplay {
+  position: relative;
+  background: #020305;
+  color: #f3efe8;
+  overflow: clip;
+}
+
+.ix-gameplay__intro {
+  width: min(92vw, 1500px);
+  margin: 0 auto;
+  padding: clamp(7rem, 11vw, 11rem) 0 clamp(4rem, 7vw, 7rem);
+}
+
+.ix-gameplay__intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: clamp(2rem, 7vw, 8rem);
+  align-items: end;
+  margin-top: clamp(2rem, 4vw, 4rem);
+}
+
+.ix-gameplay__intro h2 {
+  margin: 0;
+  max-width: 12ch;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(3.4rem, 7vw, 8.7rem);
+  line-height: 0.91;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.ix-gameplay__intro p {
+  margin: 0 0 0.5rem;
+  max-width: 48ch;
+  color: rgba(236, 232, 226, 0.68);
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  line-height: 1.75;
+}
+
+.ix-gameplay__desktop-stage {
+  position: relative;
+  height: 520svh;
+}
+
+.ix-gameplay__sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  background: #020305;
+}
+
+.ix-gameplay__visuals,
+.ix-gameplay__scene,
+.ix-gameplay__layer,
+.ix-gameplay__combat-shift {
+  position: absolute;
+  inset: 0;
+}
+
+.ix-gameplay__visuals {
+  z-index: 1;
+}
+
+.ix-gameplay__scene {
+  opacity: 0;
+  visibility: hidden;
+  transform-origin: center center;
+}
+
+.ix-gameplay__image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.ix-gameplay__scene.is-explore .ix-gameplay__image,
+.ix-gameplay__scene.is-traverse .ix-gameplay__image {
+  object-position: 56% center;
+}
+
+.ix-gameplay__scene.is-combat .ix-gameplay__image,
+.ix-gameplay__scene.is-boss .ix-gameplay__image {
+  object-position: center 45%;
+}
+
+.ix-gameplay__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(2, 3, 5, 0.96) 0%, rgba(2, 3, 5, 0.68) 24%, rgba(2, 3, 5, 0.08) 60%, rgba(2, 3, 5, 0.32) 100%),
+    linear-gradient(180deg, rgba(2, 3, 5, 0.18), transparent 45%, rgba(2, 3, 5, 0.62));
+  z-index: 20;
+  pointer-events: none;
+}
+
+.ix-gameplay__environment-fx {
+  z-index: 15;
+  object-fit: cover;
+  opacity: 0.18;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.ix-gameplay__seam {
+  position: absolute;
+  z-index: 9;
+  top: 5%;
+  bottom: 5%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(246, 205, 214, 0.9), rgba(215, 151, 111, 0.8), transparent);
+  box-shadow: 0 0 18px rgba(202, 94, 123, 0.55);
+}
+
+.ix-gameplay__crack-light {
+  position: absolute;
+  z-index: 10;
+  left: 14%;
+  right: 14%;
+  bottom: 15%;
+  height: 1px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, transparent, rgba(255, 222, 219, 0.9), rgba(201, 122, 120, 0.72), transparent);
+  box-shadow: 0 0 22px rgba(226, 151, 167, 0.42);
+}
+
+.ix-gameplay__combat-shift {
+  z-index: 6;
+  opacity: 0;
+}
+
+.ix-gameplay__combat-fx {
+  z-index: 11;
+  object-fit: cover;
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ix-gameplay__copy-stack {
+  position: absolute;
+  z-index: 30;
+  inset: 0 auto 0 clamp(4vw, 6vw, 7rem);
+  width: min(38vw, 600px);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.ix-gameplay__copy {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.ix-gameplay__index {
+  display: inline-block;
+  margin-bottom: 1.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: rgba(231, 195, 185, 0.65);
+}
+
+.ix-gameplay__copy h3 {
+  margin: 0;
+  max-width: 11ch;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(3.3rem, 5.6vw, 7rem);
+  line-height: 0.93;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.ix-gameplay__copy p {
+  max-width: 43ch;
+  margin: clamp(1.4rem, 2.6vw, 2.5rem) 0 0;
+  color: rgba(238, 234, 229, 0.72);
+  font-size: clamp(0.96rem, 1.1vw, 1.12rem);
+  line-height: 1.75;
+}
+
+.ix-gameplay__copy > small {
+  display: block;
+  margin-top: 1.6rem;
+  max-width: 46ch;
+  color: rgba(238, 205, 197, 0.7);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  line-height: 1.6;
+}
+
+.ix-gameplay__combat-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  margin-top: 1.8rem;
+}
+
+.ix-gameplay__combat-meta span {
+  padding-left: 0.75rem;
+  border-left: 1px solid rgba(174, 45, 66, 0.75);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.ix-gameplay__progress {
+  position: absolute;
+  z-index: 35;
+  top: 50%;
+  right: clamp(1.5rem, 3vw, 3.5rem);
+  display: grid;
+  gap: 0.85rem;
+  transform: translateY(-50%);
+}
+
+.ix-gameplay__progress span {
+  display: grid;
+  grid-template-columns: 2.2rem 2.2rem auto;
+  gap: 0.55rem;
+  align-items: center;
+  opacity: 0.34;
+}
+
+.ix-gameplay__progress b,
+.ix-gameplay__progress small {
+  font-size: 0.57rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+.ix-gameplay__progress small {
+  min-width: 5rem;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.ix-gameplay__progress i {
+  display: block;
+  height: 1px;
+  background: rgba(207, 73, 91, 0.7);
+}
+
+.ix-gameplay__mobile-flow {
+  display: none;
+}
+
+.ix-gameplay__closing {
+  position: relative;
+  min-height: 118svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.ix-gameplay__closing-visual {
+  position: absolute;
+  inset: 0;
+}
+
+.ix-gameplay__closing-visual > div {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #020305 0%, rgba(2, 3, 5, 0.16) 30%, rgba(2, 3, 5, 0.4) 65%, #020305 100%),
+    radial-gradient(circle at center, transparent 10%, rgba(2, 3, 5, 0.45) 78%);
+}
+
+.ix-gameplay__closing-copy {
+  position: relative;
+  z-index: 3;
+  width: min(90vw, 980px);
+  text-align: center;
+}
+
+.ix-gameplay__closing-copy h3 {
+  margin: 0 auto;
+  max-width: 10ch;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(4rem, 8vw, 9rem);
+  line-height: 0.9;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+}
+
+.ix-gameplay__closing-copy p {
+  width: min(90%, 56ch);
+  margin: 2rem auto 0;
+  color: rgba(242, 238, 232, 0.7);
+  line-height: 1.75;
+}
+
+.ix-gameplay__closing-copy strong {
+  display: block;
+  margin-top: 2.2rem;
+  color: rgba(234, 193, 185, 0.82);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+@media (max-width: 900px) {
+  .ix-gameplay {
+    overflow: visible;
+  }
+
+  .ix-gameplay__intro {
+    width: auto;
+    padding: 7rem 24px 4.5rem;
+  }
+
+  .ix-gameplay__intro-grid {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+
+  .ix-gameplay__intro h2 {
+    font-size: clamp(3.1rem, 13vw, 5.5rem);
+  }
+
+  .ix-gameplay__desktop-stage {
+    display: none;
+  }
+
+  .ix-gameplay__mobile-flow {
+    display: grid;
+    gap: 7rem;
+    padding: 0 18px 7rem;
+  }
+
+  .ix-gameplay-mobile {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .ix-gameplay-mobile__visual {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #08090c;
+  }
+
+  .ix-gameplay-mobile__visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(2, 3, 5, 0.4));
+  }
+
+  .ix-gameplay-mobile > span {
+    margin-top: 0.35rem;
+    color: rgba(224, 179, 176, 0.7);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+  }
+
+  .ix-gameplay-mobile h3 {
+    margin: 0;
+    max-width: 12ch;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2.8rem, 11vw, 4.7rem);
+    line-height: 0.94;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+  }
+
+  .ix-gameplay-mobile p {
+    margin: 0;
+    color: rgba(242, 238, 232, 0.7);
+    line-height: 1.7;
+  }
+
+  .ix-gameplay-mobile small {
+    color: rgba(234, 193, 185, 0.74);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    line-height: 1.6;
+  }
+
+  .ix-gameplay__closing {
+    min-height: 92svh;
+  }
+
+  .ix-gameplay__closing-copy {
+    padding: 0 22px;
+  }
+
+  .ix-gameplay__closing-copy h3 {
+    font-size: clamp(3.5rem, 14vw, 6rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-gameplay__desktop-stage {
+    display: none;
+  }
+
+  .ix-gameplay__mobile-flow {
+    display: grid;
+    gap: 6rem;
+    padding: 0 clamp(18px, 4vw, 54px) 7rem;
+  }
+
+  .ix-gameplay-mobile__visual {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+}

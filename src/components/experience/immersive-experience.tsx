@@ -15,6 +15,7 @@ import {
 } from "@/components/experience/cinematic-preloader";
 import { ExperiencePillars } from "@/components/experience/experience-pillars";
 import { FallingSakura } from "@/components/experience/falling-sakura";
+import { GameplayChapter } from "@/components/experience/gameplay-chapter";
 import { KintsugiChapter } from "@/components/experience/kintsugi-chapter";
 import { KintsugiLunarChapter } from "@/components/experience/kintsugi-lunar-chapter";
 import { NavLabelSwap } from "@/components/experience/nav-label-swap";
@@ -365,6 +366,7 @@ export function ImmersiveExperience() {
           <TrailerChapter copy={copy} locale={locale} />
           <CharacterSpotlight copy={copy} locale={locale} />
           <KintsugiLunarChapter locale={locale} />
+          <GameplayChapter locale={locale} />
           <ExperiencePillars copy={copy} locale={locale} />
           <CinematicEpilogue copy={copy} locale={locale} />
         </main>
