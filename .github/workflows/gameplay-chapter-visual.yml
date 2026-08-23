@@ -1,0 +1,77 @@
+name: Gameplay chapter visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run build
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: npm start -- --hostname 0.0.0.0 > /tmp/gameplay-next.log 2>&1 &
+      - name: Capture gameplay chapter
+        run: |
+          cat > gameplay-visual.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+
+          const browser = await chromium.launch({ headless: true });
+          const cases = [
+            { name: 'desktop', width: 1440, height: 900, points: [0.1, 0.28, 0.45, 0.74, 0.91] },
+            { name: 'ultrawide', width: 2560, height: 1080, points: [0.1, 0.45, 0.91] },
+            { name: 'mobile', width: 390, height: 844, points: [] },
+          ];
+
+          await fs.mkdir('artifacts/gameplay', { recursive: true });
+
+          for (const testCase of cases) {
+            const page = await browser.newPage({ viewport: { width: testCase.width, height: testCase.height } });
+            await page.goto('http://127.0.0.1:3000', { waitUntil: 'networkidle' });
+            const silent = page.getByRole('button', { name: /sem som|without sound/i });
+            if (await silent.count()) await silent.click();
+            await page.waitForTimeout(1500);
+
+            const section = page.locator('#gameplay');
+            await section.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(400);
+
+            const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
+            if (overflow) throw new Error(`${testCase.name}: horizontal overflow`);
+
+            if (testCase.name === 'mobile') {
+              await page.screenshot({ path: `artifacts/gameplay/${testCase.name}-flow.png`, fullPage: false });
+              const blocks = await page.locator('.ix-gameplay-mobile').count();
+              if (blocks !== 6) throw new Error(`mobile: expected 6 gameplay beats, got ${blocks}`);
+            } else {
+              const box = await section.boundingBox();
+              if (!box) throw new Error(`${testCase.name}: gameplay section missing`);
+              for (const point of testCase.points) {
+                const target = box.y + box.height * point;
+                await page.evaluate((y) => window.scrollTo(0, y), target);
+                await page.waitForTimeout(450);
+                await page.screenshot({ path: `artifacts/gameplay/${testCase.name}-${String(point).replace('.', '-')}.png` });
+              }
+            }
+
+            await page.close();
+          }
+
+          await browser.close();
+          EOF
+          node gameplay-visual.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gameplay-chapter-visual
+          path: artifacts/gameplay
