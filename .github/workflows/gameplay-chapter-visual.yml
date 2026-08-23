@@ -82,7 +82,18 @@ jobs:
 
               if (testCase.name === 'desktop') {
                 await scrollToProgress(0.45);
-                await page.waitForTimeout(110);
+
+                await page.waitForFunction(() => {
+                  const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
+                  return copies.some((node) => {
+                    const style = getComputedStyle(node);
+                    return (
+                      style.visibility !== 'hidden' &&
+                      Number(style.opacity) > 0.15 &&
+                      Boolean(node.querySelector('[data-jp-reveal-deferred]'))
+                    );
+                  });
+                }, null, { timeout: 1200 });
 
                 const activeReveal = await page.evaluate(() => {
                   const copies = [...document.querySelectorAll('[data-gameplay-copy]')];
@@ -107,15 +118,16 @@ jobs:
                   );
                 }
 
-                await page.waitForTimeout(1150);
-                const resolved = await page
-                  .locator(`[data-gameplay-copy="${activeReveal.beat}"] [data-jp-reveal-deferred]`)
-                  .textContent();
-                if ((resolved ?? '').trim() !== activeReveal.final) {
-                  throw new Error(
-                    `desktop: kanji reveal did not resolve for ${activeReveal.beat}: ${(resolved ?? '').trim()}`,
-                  );
-                }
+                await page.waitForFunction(
+                  ({ beat, final }) => {
+                    const node = document.querySelector(
+                      `[data-gameplay-copy="${beat}"] [data-jp-reveal-deferred]`,
+                    );
+                    return (node?.textContent ?? '').trim() === final;
+                  },
+                  { beat: activeReveal.beat, final: activeReveal.final },
+                  { timeout: 1800 },
+                );
               }
 
               for (const point of testCase.points) {
