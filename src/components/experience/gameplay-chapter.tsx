@@ -177,6 +177,7 @@ export function GameplayChapter({ locale }: GameplayChapterProps) {
                     locale={locale}
                     duration={920}
                     delay={40}
+                    deferred
                   />
                 </h3>
                 <p>{beat.copy}</p>
