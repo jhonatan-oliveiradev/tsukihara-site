@@ -1,6 +1,11 @@
 /* Keep archive chapter headlines compact vertically by giving long editorial lines more horizontal room. */
 
 @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  /* Preserve the vertical gain from wider headlines, but keep their first line clear of the fixed header. */
+  .ix-archive-group {
+    padding-top: max(4.25rem, 6.5svh);
+  }
+
   .ix-archive-group__header {
     max-width: min(72rem, calc(100% - 2rem));
     margin-bottom: clamp(0.55rem, 1.05svh, 0.9rem);
@@ -34,6 +39,10 @@
 }
 
 @media (min-width: 901px) and (max-height: 820px) and (prefers-reduced-motion: no-preference) {
+  .ix-archive-group {
+    padding-top: 4rem;
+  }
+
   .ix-archive-group__header {
     margin-bottom: 0.45rem;
   }
