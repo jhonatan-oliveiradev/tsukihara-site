@@ -136,7 +136,9 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
               record={record}
               onOpen={onOpen}
               className={`ix-archive-relic ix-archive-relic--${index + 1}`}
-              style={{ "--archive-tilt": `${[-1.5, 1.1, -0.4, 1.3, -1][index]}deg` } as CSSProperties}
+              style={
+                { "--archive-tilt": `${[-1.5, 1.1, -0.4, 1.3, -1][index]}deg` } as CSSProperties
+              }
             />
           ))}
         </div>
