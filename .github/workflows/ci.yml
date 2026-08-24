@@ -21,7 +21,29 @@ jobs:
       - name: Hero timeline regression
         run: npm run test:hero
       - name: Check formatting
+        id: formatting
+        continue-on-error: true
         run: npm run format:check
+      - name: Capture formatting fixes
+        if: steps.formatting.outcome == 'failure'
+        run: |
+          npm run format
+          mkdir -p /tmp/prettier-fixes
+          git diff --name-only -z | while IFS= read -r -d '' file; do
+            mkdir -p "/tmp/prettier-fixes/$(dirname "$file")"
+            cp "$file" "/tmp/prettier-fixes/$file"
+          done
+      - name: Upload formatting fixes
+        if: steps.formatting.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prettier-fixes
+          path: /tmp/prettier-fixes
+          if-no-files-found: error
+          retention-days: 1
+      - name: Fail formatting gate
+        if: steps.formatting.outcome == 'failure'
+        run: exit 1
       - name: Lint
         run: npm run lint
       - name: Build
