@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { JpRevealText } from "@/components/experience/jp-reveal-text";
 import { NineRealmsMap } from "@/components/experience/nine-realms-map";
 import { RippleDistortionImage } from "@/components/experience/ripple-distortion-image";
@@ -16,10 +16,15 @@ type RealmAtlasProps = {
 
 export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
   const [activeRealm, setActiveRealm] = useState<RealmId>(realmWorld[0].id);
+  const activeButtonRef = useRef<HTMLButtonElement | null>(null);
   const localWorldCopy = realmWorldCopy[locale];
   const activeIndex = realmWorld.findIndex((realm) => realm.id === activeRealm);
   const active = realmWorld[activeIndex] ?? realmWorld[0];
   const activeCopy = localWorldCopy.realms[active.id];
+
+  useEffect(() => {
+    activeButtonRef.current?.scrollIntoView({ block: "nearest" });
+  }, [activeRealm]);
 
   const exploreRealm = (id: RealmId) => {
     setActiveRealm(id);
@@ -78,6 +83,7 @@ export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
               return (
                 <button
                   key={realm.id}
+                  ref={selected ? activeButtonRef : undefined}
                   type="button"
                   role="tab"
                   data-realm-id={realm.id}
