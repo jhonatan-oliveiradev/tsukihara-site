@@ -178,6 +178,13 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
         </div>
 
         <div className="ix-mm-quote ix-mm-quote--akari" data-mm-quote="akari">
+          <div className="ix-mm-quote__tsukino-echo" data-mm-tsukino-echo aria-hidden="true">
+            <MotherMoonAsset
+              code="M07"
+              className="ix-mm-image ix-mm-image--tsukino-echo"
+              sizes="(min-width: 901px) 56vw, 0px"
+            />
+          </div>
           <blockquote>
             <MotionWords text={`“${copy.presence.counterpoint}”`} />
           </blockquote>
