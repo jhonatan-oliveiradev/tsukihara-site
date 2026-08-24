@@ -45,7 +45,9 @@ export function useLostMemoriesHorizontal(rootRef: RefObject<HTMLElement | null>
           event.preventDefault();
           const distance = getDistance();
           if (distance <= 0) return;
-          const panelProgress = Math.min(1, Math.max(0, panel.offsetLeft / distance));
+
+          const panelOffset = panel.getBoundingClientRect().left - track.getBoundingClientRect().left;
+          const panelProgress = Math.min(1, Math.max(0, panelOffset / distance));
           const targetScroll = trigger.start + (trigger.end - trigger.start) * panelProgress;
           window.scrollTo({ top: targetScroll, behavior: "smooth" });
         };
