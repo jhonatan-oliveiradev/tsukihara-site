@@ -438,7 +438,9 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <article
                   key={detail.label}
-                  className={`akari-detail${index === 0 ? " is-active" : ""}`}
+                  className={["akari-detail", index === 0 ? "is-active" : ""]
+                    .filter(Boolean)
+                    .join(" ")}
                   data-akari-detail-item
                   hidden={index !== 0}
                 >
