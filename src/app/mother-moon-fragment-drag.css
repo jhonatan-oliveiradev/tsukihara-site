@@ -28,7 +28,7 @@
 
 .ix-mm-quote--akari blockquote {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .ix-mm-quote__tsukino-echo {
@@ -39,7 +39,7 @@
   width: min(58vw, 56rem);
   height: 118%;
   overflow: hidden;
-  opacity: 0.13;
+  opacity: 0.085;
   pointer-events: none;
   transform-origin: 42% 56%;
   mask-image: linear-gradient(90deg, black 0%, black 54%, rgb(0 0 0 / 0.76) 72%, transparent 96%);
@@ -58,6 +58,47 @@
   object-fit: cover;
   object-position: 54% 28%;
   filter: saturate(0.42) brightness(0.5) contrast(1.12);
+}
+
+.ix-mm-quote__branch {
+  position: absolute;
+  top: 54%;
+  left: -2.5%;
+  z-index: 2;
+  width: min(38vw, 35rem);
+  pointer-events: none;
+  transform: translateY(-50%);
+  transform-origin: left center;
+  opacity: 0.56;
+  mask-image: linear-gradient(90deg, black 0%, black 76%, transparent 100%);
+  filter: drop-shadow(0 0 1.8rem rgb(126 34 49 / 0.08));
+}
+
+.ix-mm-quote__branch svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ix-mm-quote__branch path {
+  stroke: rgb(132 74 80 / 0.66);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ix-mm-quote__branch path:not(:first-child) {
+  stroke: rgb(142 82 90 / 0.48);
+  stroke-width: 1.45;
+}
+
+.ix-mm-quote__branch circle {
+  fill: rgb(207 155 168 / 0.66);
+  transform-box: fill-box;
+  transform-origin: center;
+  filter: drop-shadow(0 0 0.45rem rgb(164 68 89 / 0.18));
 }
 
 @media (min-width: 901px) and (pointer: fine) {
@@ -89,12 +130,19 @@
   .ix-mm-quote__tsukino-echo {
     left: -9%;
     width: 62vw;
-    opacity: 0.105;
+    opacity: 0.065;
+  }
+
+  .ix-mm-quote__branch {
+    left: -5%;
+    width: min(42vw, 31rem);
+    opacity: 0.48;
   }
 }
 
 @media (max-width: 900px) {
-  .ix-mm-quote__tsukino-echo {
+  .ix-mm-quote__tsukino-echo,
+  .ix-mm-quote__branch {
     display: none;
   }
 }
@@ -105,7 +153,12 @@
   }
 
   .ix-mm-quote__tsukino-echo {
-    opacity: 0.08;
+    opacity: 0.055;
     transform: none !important;
+  }
+
+  .ix-mm-quote__branch {
+    opacity: 0.38;
+    transform: translateY(-50%) !important;
   }
 }
