@@ -15,21 +15,46 @@ type ArchiveRecordViewerProps = {
   closeLabel: string;
 };
 
+type ArchiveRecordViewerContentProps = {
+  record: ArchiveRecord;
+  onClose: () => void;
+  closeLabel: string;
+};
+
 type BlackPhase = "silent" | "revealed";
 
 const VIEWER_EXIT_MS = 300;
 
 export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveRecordViewerProps) {
+  if (!record) return null;
+
+  return (
+    <ArchiveRecordViewerContent
+      key={record.id}
+      record={record}
+      onClose={onClose}
+      closeLabel={closeLabel}
+    />
+  );
+}
+
+function ArchiveRecordViewerContent({
+  record,
+  onClose,
+  closeLabel,
+}: ArchiveRecordViewerContentProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const decayTimerRef = useRef<number | null>(null);
   const blackTimerRef = useRef<number | null>(null);
   const closeTimerRef = useRef<number | null>(null);
   const [decayActive, setDecayActive] = useState(false);
-  const [blackPhase, setBlackPhase] = useState<BlackPhase>("revealed");
+  const [blackPhase, setBlackPhase] = useState<BlackPhase>(() =>
+    record.kind === "black" ? "silent" : "revealed",
+  );
   const [closing, setClosing] = useState(false);
 
   const requestClose = useCallback(() => {
-    if (!record || closing) return;
+    if (closing) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
@@ -42,33 +67,31 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
       closeTimerRef.current = null;
       onClose();
     }, VIEWER_EXIT_MS);
-  }, [closing, onClose, record]);
+  }, [closing, onClose]);
 
   useEffect(() => {
-    if (!record) return;
-
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setClosing(false);
-    setDecayActive(false);
-    setBlackPhase(record.kind === "black" && !reduced ? "silent" : "revealed");
-
-    requestAnimationFrame(() => closeRef.current?.focus());
+    const focusFrame = window.requestAnimationFrame(() => closeRef.current?.focus());
 
     if (record.decay && !reduced) {
       decayTimerRef.current = window.setTimeout(() => setDecayActive(true), 3500);
     }
 
-    if (record.kind === "black" && !reduced) {
-      blackTimerRef.current = window.setTimeout(() => setBlackPhase("revealed"), 1200);
+    if (record.kind === "black") {
+      blackTimerRef.current = window.setTimeout(
+        () => setBlackPhase("revealed"),
+        reduced ? 0 : 1200,
+      );
     }
 
     return () => {
+      window.cancelAnimationFrame(focusFrame);
       if (decayTimerRef.current !== null) window.clearTimeout(decayTimerRef.current);
       if (blackTimerRef.current !== null) window.clearTimeout(blackTimerRef.current);
       decayTimerRef.current = null;
       blackTimerRef.current = null;
     };
-  }, [record]);
+  }, [record.decay, record.kind]);
 
   useEffect(() => {
     return () => {
@@ -78,8 +101,6 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
   }, []);
 
   useEffect(() => {
-    if (!record) return;
-
     const html = document.documentElement;
     const body = document.body;
     const previousHtmlOverflow = html.style.overflow;
@@ -91,11 +112,9 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
     };
-  }, [record]);
+  }, []);
 
   useEffect(() => {
-    if (!record) return;
-
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -111,9 +130,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [record, requestClose]);
-
-  if (!record) return null;
+  }, [requestClose]);
 
   const restoreDecay = () => setDecayActive(false);
   const isBlack = record.kind === "black";
