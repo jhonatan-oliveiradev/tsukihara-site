@@ -43,9 +43,7 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
 
       if (!dragMedia.matches) return;
 
-      const shells = Array.from(
-        gallery.querySelectorAll<HTMLElement>("[data-mm-presence-detail]"),
-      );
+      const shells = Array.from(gallery.querySelectorAll<HTMLElement>("[data-mm-presence-detail]"));
       let stackIndex = shells.length + 1;
       const cleanups: Array<() => void> = [];
       const keepInBounds: Array<() => void> = [];
