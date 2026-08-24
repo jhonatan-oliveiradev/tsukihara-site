@@ -171,6 +171,7 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
         </div>
 
         <div className="ix-mm-quote ix-mm-quote--tsukino" data-mm-quote="tsukino">
+          <div className="ix-mm-quote__branch" data-mm-tsukino-branch aria-hidden="true" />
           <blockquote>
             <MotionWords text={`“${copy.presence.quote}”`} />
           </blockquote>
@@ -185,8 +186,6 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
               sizes="(min-width: 901px) 56vw, 0px"
             />
           </div>
-
-          <div className="ix-mm-quote__branch" data-mm-akari-branch aria-hidden="true" />
 
           <blockquote>
             <MotionWords text={`“${copy.presence.counterpoint}”`} />
