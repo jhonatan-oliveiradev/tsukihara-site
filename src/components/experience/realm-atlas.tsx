@@ -16,6 +16,7 @@ type RealmAtlasProps = {
 
 export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
   const [activeRealm, setActiveRealm] = useState<RealmId>(realmWorld[0].id);
+  const indexRef = useRef<HTMLDivElement | null>(null);
   const activeButtonRef = useRef<HTMLButtonElement | null>(null);
   const localWorldCopy = realmWorldCopy[locale];
   const activeIndex = realmWorld.findIndex((realm) => realm.id === activeRealm);
@@ -23,7 +24,17 @@ export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
   const activeCopy = localWorldCopy.realms[active.id];
 
   useEffect(() => {
-    activeButtonRef.current?.scrollIntoView({ block: "nearest" });
+    const index = indexRef.current;
+    const button = activeButtonRef.current;
+    if (!index || !button) return;
+
+    const top = button.offsetTop;
+    const bottom = top + button.offsetHeight;
+    if (top < index.scrollTop) {
+      index.scrollTop = top;
+    } else if (bottom > index.scrollTop + index.clientHeight) {
+      index.scrollTop = bottom - index.clientHeight;
+    }
   }, [activeRealm]);
 
   const exploreRealm = (id: RealmId) => {
@@ -76,7 +87,7 @@ export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
             </div>
           </div>
 
-          <div className="ix-realm-index" role="tablist" aria-label={copy.nav.realms}>
+          <div ref={indexRef} className="ix-realm-index" role="tablist" aria-label={copy.nav.realms}>
             {realmWorld.map((realm, index) => {
               const local = localWorldCopy.realms[realm.id];
               const selected = realm.id === active.id;
