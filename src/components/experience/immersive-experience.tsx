@@ -20,6 +20,7 @@ import { FallingSakura } from "@/components/experience/falling-sakura";
 import { GameplayChapter } from "@/components/experience/gameplay-chapter";
 import { KintsugiChapter } from "@/components/experience/kintsugi-chapter";
 import { KintsugiLunarChapter } from "@/components/experience/kintsugi-lunar-chapter";
+import { MotherMoonChapter } from "@/components/experience/mother-moon-chapter";
 import { NavLabelSwap } from "@/components/experience/nav-label-swap";
 import { RealmAtlas } from "@/components/experience/realm-atlas";
 import { TrailerChapter } from "@/components/experience/trailer-chapter";
@@ -371,6 +372,7 @@ export function ImmersiveExperience() {
           <GameplayChapter locale={locale} />
           <CompanionsChapter locale={locale} />
           <BestiaryBossesChapter locale={locale} />
+          <MotherMoonChapter locale={locale} />
           <ExperiencePillars copy={copy} locale={locale} />
           <CinematicEpilogue copy={copy} locale={locale} />
         </main>
