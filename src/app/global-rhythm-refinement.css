@@ -70,6 +70,104 @@ html {
   padding-bottom: clamp(5rem, 9vh, 7.5rem);
 }
 
+/* Water displacement: the canvas replaces the old lens + CSS rings. */
+.ix-ripple-distortion__water {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ix-ripple-distortion__water canvas,
+.ix-ripple-distortion__canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ix-ripple-distortion__shader,
+.ix-ripple-distortion__waves {
+  display: none !important;
+}
+
+.ix-ripple-distortion__tint {
+  z-index: 3;
+  opacity: 0 !important;
+  background: radial-gradient(
+    circle 180px at var(--ripple-x) var(--ripple-y),
+    color-mix(in srgb, var(--ripple-tint) 12%, transparent),
+    transparent 72%
+  );
+}
+
+.ix-ripple-distortion.is-active .ix-ripple-distortion__tint {
+  opacity: 0.2 !important;
+}
+
+/* Nine Realms becomes one dominant stage + a bounded internal index. */
+@media (min-width: 901px) {
+  .ix-realm-atlas {
+    padding-bottom: clamp(4rem, 7vw, 6rem);
+  }
+
+  .ix-realm-atlas-grid {
+    min-height: 0;
+    align-items: start;
+  }
+
+  .ix-realm-stage {
+    min-height: clamp(430px, 58svh, 640px);
+  }
+
+  .ix-realm-index {
+    display: block;
+    max-height: min(58svh, 35rem);
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding-right: 0.4rem;
+    scrollbar-gutter: stable;
+  }
+
+  .ix-realm-index button {
+    min-height: 4.35rem;
+    padding-top: 0.72rem;
+    padding-bottom: 0.72rem;
+  }
+}
+
+.ix-world-map__inspector,
+.ix-world-map__inspector-content,
+.ix-world-map__sheet,
+.ix-world-map__sheet *,
+.ix-realm-stage-copy,
+.ix-realm-stage-copy * {
+  min-width: 0;
+}
+
+.ix-world-map__inspector {
+  width: min(22rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  overflow-x: clip;
+}
+
+.ix-world-map__inspector-content,
+.ix-world-map__sheet {
+  overflow-x: clip;
+}
+
+.ix-world-map__inspector h3,
+.ix-world-map__inspector p,
+.ix-world-map__inspector dd,
+.ix-world-map__sheet h3,
+.ix-world-map__sheet p,
+.ix-world-map__sheet dd {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .ix-realm-index,
 .ix-world-map__inspector,
 .ix-world-map__sheet,
@@ -95,10 +193,19 @@ html {
   .ix-archive-intro h2 {
     font-size: clamp(2.55rem, 11vw, 4.5rem);
   }
+
+  .ix-world-map__inspector {
+    width: min(92vw, 25rem);
+    max-width: calc(100vw - 1.5rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .ix-ripple-distortion__water {
+    display: none;
   }
 }
