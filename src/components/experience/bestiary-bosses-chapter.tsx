@@ -25,7 +25,7 @@ function SpecimenButton({
   return (
     <button
       type="button"
-      className={`ix-archive-specimen ix-archive-specimen--${index + 1}${active ? "is-active" : ""}`}
+      className={`ix-archive-specimen ix-archive-specimen--${index + 1}${active ? " is-active" : ""}`}
       data-specimen
       data-specimen-id={specimen.id}
       onMouseEnter={onActivate}
@@ -55,7 +55,7 @@ function SpecimenButton({
 function BossStage({ boss, index, locale }: { boss: BossRecord; index: number; locale: Locale }) {
   return (
     <div
-      className={`ix-boss-stage${boss.classified ? "is-classified" : ""}`}
+      className={`ix-boss-stage${boss.classified ? " is-classified" : ""}`}
       style={{ "--entity-accent": boss.accent } as React.CSSProperties}
       data-boss-stage
     >
