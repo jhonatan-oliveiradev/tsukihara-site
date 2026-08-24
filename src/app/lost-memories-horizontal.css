@@ -29,8 +29,12 @@
       linear-gradient(90deg, rgb(4 4 4 / 0.24), transparent 10%, transparent 90%, rgb(4 4 4 / 0.3)),
       var(--archive-table-image);
     background-repeat: no-repeat, repeat-x;
-    background-size: 100% 100%, auto 100%;
-    background-position: center, left center;
+    background-size:
+      100% 100%,
+      auto 100%;
+    background-position:
+      center,
+      left center;
     will-change: transform;
   }
 
@@ -42,7 +46,12 @@
     pointer-events: none;
     background:
       linear-gradient(180deg, #070707 0%, transparent 10%, transparent 88%, #070707 100%),
-      radial-gradient(circle at 50% 42%, transparent 0%, rgb(5 5 5 / 0.18) 62%, rgb(5 5 5 / 0.56) 100%);
+      radial-gradient(
+        circle at 50% 42%,
+        transparent 0%,
+        rgb(5 5 5 / 0.18) 62%,
+        rgb(5 5 5 / 0.56) 100%
+      );
   }
 
   .ix-archive-horizontal-track > *,
