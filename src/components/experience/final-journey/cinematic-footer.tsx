@@ -22,11 +22,6 @@ export function CinematicFooter({ copy }: CinematicFooterProps) {
           </div>
         </div>
 
-        <div className="ix-final-footer__signature" data-final-footer-content>
-          <span>{copy.signature}</span>
-          <i aria-hidden="true" />
-        </div>
-
         <div className="ix-final-footer__navigation" data-final-footer-content>
           <nav aria-label={copy.navigationLabel}>
             {copy.navigation.map((item) => (
@@ -60,6 +55,11 @@ export function CinematicFooter({ copy }: CinematicFooterProps) {
 
         <div className="ix-final-footer__easter" data-final-footer-content>
           <FinalMoonEasterEgg label={copy.easterEggLabel} message={copy.easterEggMessage} />
+        </div>
+
+        <div className="ix-final-footer__signature" data-final-footer-content>
+          <span>{copy.signature}</span>
+          <i aria-hidden="true" />
         </div>
 
         <div className="ix-final-footer__legal" data-final-footer-content>
