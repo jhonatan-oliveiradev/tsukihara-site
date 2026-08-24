@@ -1,0 +1,37 @@
+@media (min-width: 901px) and (prefers-reduced-motion: reduce) {
+  .ix-archive-horizontal,
+  .ix-archive-horizontal-track,
+  .ix-archive-table,
+  .ix-archive-group,
+  .ix-archive-horizontal .ix-archive-intro,
+  .ix-archive-horizontal .ix-archive-thesis,
+  .ix-archive-horizontal .ix-archive-akari {
+    height: auto;
+  }
+
+  .ix-archive-horizontal,
+  .ix-archive-horizontal-track,
+  .ix-archive-table,
+  .ix-archive-group {
+    min-height: 0;
+  }
+
+  .ix-archive-horizontal .ix-archive-intro {
+    min-height: 82svh;
+    padding: clamp(7rem, 12vw, 12rem) 0 clamp(5rem, 8vw, 8rem);
+  }
+
+  .ix-archive-group {
+    padding: clamp(4.5rem, 8vw, 8rem) 0;
+  }
+
+  .ix-archive-horizontal .ix-archive-thesis {
+    min-height: 76svh;
+    padding: 0;
+  }
+
+  .ix-archive-horizontal .ix-archive-akari {
+    min-height: 88svh;
+    padding: 0;
+  }
+}
