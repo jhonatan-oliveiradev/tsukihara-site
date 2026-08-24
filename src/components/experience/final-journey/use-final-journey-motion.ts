@@ -25,6 +25,10 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
     const characters = root.querySelector<HTMLElement>("[data-final-characters]");
     const foreground = root.querySelector<HTMLElement>(".ix-final-layer--foreground");
     const atmosphere = root.querySelector<HTMLElement>("[data-final-atmosphere]");
+    const footer = root.querySelector<HTMLElement>("[data-final-footer]");
+    const footerLayers = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-final-footer-layer]"),
+    );
 
     let pointerFrame = 0;
     let currentX = 0;
@@ -220,6 +224,34 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
           },
         },
       );
+
+      if (footer && footerLayers.length > 0) {
+        footerLayers.forEach((layer, index) => {
+          const depth = Number(layer.dataset.footerDepth ?? "0.5");
+          const direction = index % 2 === 0 ? -1 : 1;
+
+          gsap.fromTo(
+            layer,
+            {
+              yPercent: 10 * depth,
+              xPercent: direction * 2.8 * depth,
+              scale: 1 + 0.045 * depth,
+            },
+            {
+              yPercent: -7 * depth,
+              xPercent: direction * -1.8 * depth,
+              scale: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: footer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.9,
+              },
+            },
+          );
+        });
+      }
     }, root);
 
     const finePointer = window.matchMedia("(min-width: 901px) and (pointer: fine)").matches;
