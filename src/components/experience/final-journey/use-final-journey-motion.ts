@@ -38,6 +38,13 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
     let pointerActive = false;
     let pointerLayers: PointerLayer[] = [];
 
+    let footerPointerFrame = 0;
+    let footerCurrentX = 0;
+    let footerCurrentY = 0;
+    let footerTargetX = 0;
+    let footerTargetY = 0;
+    let footerPointerActive = false;
+
     const context = gsap.context(() => {
       gsap.fromTo(
         "[data-final-copy]",
@@ -209,17 +216,34 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
       );
 
       gsap.fromTo(
-        "[data-final-footer-content]",
-        { opacity: 0, y: 14 },
+        ".ix-final-footer__hud",
+        { opacity: 0, y: -8 },
         {
           opacity: 1,
           y: 0,
-          duration: 1.2,
-          stagger: 0.08,
+          duration: 1.05,
+          stagger: 0.16,
           ease: "power2.out",
           scrollTrigger: {
             trigger: "[data-final-footer]",
-            start: "top 78%",
+            start: "top 82%",
+            once: true,
+          },
+        },
+      );
+
+      gsap.fromTo(
+        "[data-final-footer-content]",
+        { opacity: 0, y: 18 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.25,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: "[data-final-footer]",
+            start: "top 74%",
             once: true,
           },
         },
@@ -233,20 +257,20 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
           gsap.fromTo(
             layer,
             {
-              yPercent: 10 * depth,
-              xPercent: direction * 2.8 * depth,
-              scale: 1 + 0.045 * depth,
+              yPercent: 12 * depth,
+              xPercent: direction * 3.2 * depth,
+              scale: 1 + 0.052 * depth,
             },
             {
-              yPercent: -7 * depth,
-              xPercent: direction * -1.8 * depth,
+              yPercent: -8 * depth,
+              xPercent: direction * -2.2 * depth,
               scale: 1,
               ease: "none",
               scrollTrigger: {
                 trigger: footer,
                 start: "top bottom",
                 end: "bottom top",
-                scrub: 1.9,
+                scrub: 1.85,
               },
             },
           );
@@ -300,6 +324,56 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
       ensurePointerFrame();
     };
 
+    const stopFooterPointerFrame = () => {
+      if (footerPointerFrame) cancelAnimationFrame(footerPointerFrame);
+      footerPointerFrame = 0;
+    };
+
+    const renderFooterPointer = () => {
+      const ease = footerPointerActive ? 0.085 : 0.065;
+      footerCurrentX += (footerTargetX - footerCurrentX) * ease;
+      footerCurrentY += (footerTargetY - footerCurrentY) * ease;
+
+      footerLayers.forEach((layer) => {
+        const depth = Number(layer.dataset.footerDepth ?? "0.5");
+        const xDepth = 3 + depth * 13;
+        const yDepth = 2 + depth * 7;
+        layer.style.translate = `${footerCurrentX * xDepth}px ${footerCurrentY * yDepth}px`;
+      });
+
+      const settled =
+        Math.abs(footerTargetX - footerCurrentX) < 0.002 &&
+        Math.abs(footerTargetY - footerCurrentY) < 0.002;
+
+      if (!settled || footerPointerActive) {
+        footerPointerFrame = requestAnimationFrame(renderFooterPointer);
+      } else {
+        footerPointerFrame = 0;
+      }
+    };
+
+    const ensureFooterPointerFrame = () => {
+      if (!footerPointerFrame) footerPointerFrame = requestAnimationFrame(renderFooterPointer);
+    };
+
+    const onFooterPointerMove = (event: PointerEvent) => {
+      if (!footer) return;
+      const rect = footer.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      footerTargetX = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
+      footerTargetY = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
+      footerPointerActive = true;
+      ensureFooterPointerFrame();
+    };
+
+    const onFooterPointerLeave = () => {
+      footerTargetX = 0;
+      footerTargetY = 0;
+      footerPointerActive = false;
+      ensureFooterPointerFrame();
+    };
+
     if (finePointer && epilogue && horizon && moon && characters && foreground && atmosphere) {
       pointerLayers = [
         { element: horizon, xDepth: 2.5, yDepth: 1.5 },
@@ -313,12 +387,23 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
       epilogue.addEventListener("pointerleave", onPointerLeave);
     }
 
+    if (finePointer && footer && footerLayers.length > 0) {
+      footer.addEventListener("pointermove", onFooterPointerMove, { passive: true });
+      footer.addEventListener("pointerleave", onFooterPointerLeave);
+    }
+
     return () => {
       context.revert();
       stopPointerFrame();
+      stopFooterPointerFrame();
       epilogue?.removeEventListener("pointermove", onPointerMove);
       epilogue?.removeEventListener("pointerleave", onPointerLeave);
+      footer?.removeEventListener("pointermove", onFooterPointerMove);
+      footer?.removeEventListener("pointerleave", onFooterPointerLeave);
       pointerLayers.forEach(({ element }) => {
+        element.style.translate = "";
+      });
+      footerLayers.forEach((element) => {
         element.style.translate = "";
       });
     };
