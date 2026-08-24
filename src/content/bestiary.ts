@@ -30,18 +30,18 @@ export type BossRecord = {
 };
 
 export const bestiaryAssets: Record<BestiaryAssetCode, string> = {
-  B01: "/assets_hq/templo-hanamori_2.png",
-  B02: "/assets_hq/templo-hanamori.png",
-  B03: "/assets_hq/kurogane-ruinas.png",
-  B04: "/assets_hq/mizukyo-cachoeiras.png",
-  B05: "/hero-elements/characters-after.png",
-  B06: "/assets_hq/Blood_Moon.png",
-  B07: "/akari-details/detail_03.png",
-  B08: "/akari-details/detail_02.png",
-  B09: "/assets_hq/mizukyo-cachoeiras.png",
-  B10: "/assets_hq/Blood_Moon.png",
-  B11: "/secret-pathways-assets/foreground/png/shrine-ruins.webp",
-  B12: "/hero-elements/mist-2-after.png",
+  B01: "/07-bestiary/mobs/b01-yokai-fractured.png",
+  B02: "/07-bestiary/mobs/b02-lunar-guardian-corrupted.png",
+  B03: "/07-bestiary/mobs/b03-kurogane-liturgical-machine.png",
+  B04: "/07-bestiary/mobs/b04-mizukyo-echo.png",
+  B05: "/07-bestiary/mobs/b05-yoru-predator.png",
+  B06: "/07-bestiary/mobs/b06-gekkai-aberration.png",
+  B07: "/07-bestiary/bosses/b07-emperor-faceless.png",
+  B08: "/07-bestiary/bosses/b08-kaien-aramasa.png",
+  B09: "/07-bestiary/bosses/b09-yume.png",
+  B10: "/07-bestiary/bosses/b10-lady-tsukino-teaser.png",
+  B11: "/07-bestiary/vfx/b11-bestiary-silhouettes.png",
+  B12: "/07-bestiary/vfx/b12-bestiary-fx-overlay.png",
 };
 
 export const bestiaryCopy: Record<
