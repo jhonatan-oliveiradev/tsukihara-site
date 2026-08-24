@@ -122,7 +122,7 @@ export function LostMemoriesChapter({ locale }: { locale: Locale }) {
           <strong className="ix-archive-signature">{copy.signature}</strong>
         </section>
 
-        <section className="ix-archive-transition" data-archive-transition aria-hidden="true">
+        <section className="ix-archive-transition" data-archive-transition>
           <Image
             src={copy.assets.transition}
             alt=""
@@ -133,7 +133,7 @@ export function LostMemoriesChapter({ locale }: { locale: Locale }) {
           <span className="ix-archive-transition__word ix-archive-transition__word--forget">
             {copy.polarity.forget}
           </span>
-          <i />
+          <i aria-hidden="true" />
           <span className="ix-archive-transition__word ix-archive-transition__word--remember">
             {copy.polarity.remember}
           </span>
