@@ -185,7 +185,10 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
         </header>
 
         <div className="ix-mm-philosophy__balance">
-          <div className="ix-mm-philosophy__side ix-mm-philosophy__side--forget" data-mm-side="forget">
+          <div
+            className="ix-mm-philosophy__side ix-mm-philosophy__side--forget"
+            data-mm-side="forget"
+          >
             <h3 data-mm-side-title>
               <MotionWords text={copy.philosophy.forget} />
             </h3>

@@ -220,7 +220,9 @@ export function useMotherMoonMotion(rootRef: RefObject<HTMLElement | null>) {
 
       gsap.utils.toArray<HTMLElement>("[data-mm-side]").forEach((side) => {
         const direction = side.dataset.mmSide === "forget" ? -1 : 1;
-        const titleWords = side.querySelectorAll<HTMLElement>("[data-mm-side-title] [data-mm-word]");
+        const titleWords = side.querySelectorAll<HTMLElement>(
+          "[data-mm-side-title] [data-mm-word]",
+        );
         const terms = side.querySelectorAll<HTMLElement>("[data-mm-term]");
         const timeline = gsap.timeline({
           scrollTrigger: { trigger: side, start: "top 82%", once: true },
