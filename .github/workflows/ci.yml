@@ -19,12 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check formatting
-        run: |
-          npm run format:check || {
-            npx prettier --write src/components/experience/mother-moon/use-mother-moon-fragment-drag.ts
-            git diff -- src/components/experience/mother-moon/use-mother-moon-fragment-drag.ts
-            exit 1
-          }
+        run: npm run format:check
       - name: Lint
         run: npm run lint
       - name: Build
