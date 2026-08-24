@@ -85,7 +85,7 @@ Keep `/assets_hq/video_battle.mp4`, but integrate it into Gameplay as a compact 
 - desktop height around 45–55svh maximum;
 - muted loop or controlled preview consistent with current behavior;
 - no separate large headline/body section;
-- optional expansion only if it remains lightweight and accessible.
+- no new modal, lightbox or expansion interaction.
 
 This preserves the useful asset while recovering substantial page length.
 
