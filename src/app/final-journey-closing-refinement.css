@@ -42,6 +42,49 @@
   grid-row: 4;
 }
 
+.ix-final-epilogue__desktop-scene {
+  inset: -2.5%;
+}
+
+.ix-final-layer {
+  will-change: transform, translate, opacity;
+}
+
+.ix-final-layer--horizon {
+  inset: -4%;
+}
+
+.ix-final-layer--foreground {
+  left: -7vw;
+  right: -7vw;
+  bottom: -8svh;
+  height: 54svh;
+}
+
+.ix-final-layer--atmosphere {
+  inset: -7%;
+}
+
+.ix-final-layer--moon {
+  animation: none;
+}
+
+.ix-final-layer--moon .ix-final-layer__image {
+  animation: ix-final-moon-depth-breathe 10.5s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+@keyframes ix-final-moon-depth-breathe {
+  from {
+    opacity: 0.9;
+    transform: scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.014);
+  }
+}
+
 @media (max-width: 900px) {
   .ix-final-footer__brand {
     order: 1;
@@ -78,5 +121,15 @@
 
   .ix-final-footer__legal {
     order: 6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-final-layer--moon .ix-final-layer__image {
+    animation: none;
+  }
+
+  .ix-final-layer {
+    translate: none !important;
   }
 }
