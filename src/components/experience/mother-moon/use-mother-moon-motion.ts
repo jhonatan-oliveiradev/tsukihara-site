@@ -218,6 +218,31 @@ export function useMotherMoonMotion(rootRef: RefObject<HTMLElement | null>) {
         );
       });
 
+      const tsukinoQuote = root.querySelector<HTMLElement>('[data-mm-quote="tsukino"]');
+      const tsukinoBranch = root.querySelector<HTMLElement>("[data-mm-tsukino-branch]");
+      if (tsukinoQuote && tsukinoBranch) {
+        gsap.fromTo(
+          tsukinoBranch,
+          {
+            opacity: 0,
+            x: -24,
+            clipPath: "inset(0 100% 0 0)",
+          },
+          {
+            opacity: 0.72,
+            x: 0,
+            clipPath: "inset(0 0% 0 0)",
+            duration: 1.4,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: tsukinoQuote,
+              start: "top 88%",
+              once: true,
+            },
+          },
+        );
+      }
+
       const akariQuote = root.querySelector<HTMLElement>('[data-mm-quote="akari"]');
       const tsukinoEcho = root.querySelector<HTMLElement>("[data-mm-tsukino-echo]");
       if (akariQuote && tsukinoEcho) {
@@ -236,41 +261,6 @@ export function useMotherMoonMotion(rootRef: RefObject<HTMLElement | null>) {
               scrub: 1.25,
             },
           },
-        );
-      }
-
-      const akariBranch = root.querySelector<HTMLElement>("[data-mm-akari-branch]");
-      if (akariQuote && akariBranch) {
-        const branchPaths = akariBranch.querySelectorAll<SVGPathElement>("[data-mm-branch-path]");
-        const branchBlooms = akariBranch.querySelectorAll<SVGCircleElement>(
-          "[data-mm-branch-bloom]",
-        );
-
-        gsap.set(branchPaths, { strokeDasharray: 1, strokeDashoffset: 1 });
-
-        const branchTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: akariQuote,
-            start: "top 88%",
-            once: true,
-          },
-        });
-
-        branchTimeline.fromTo(
-          akariBranch,
-          { opacity: 0, x: -18 },
-          { opacity: 0.56, x: 0, duration: 0.58, ease: "power2.out" },
-        );
-        branchTimeline.to(
-          branchPaths,
-          { strokeDashoffset: 0, duration: 1.18, stagger: 0.085, ease: "power2.out" },
-          "-=0.42",
-        );
-        branchTimeline.fromTo(
-          branchBlooms,
-          { opacity: 0, scale: 0.35 },
-          { opacity: 0.72, scale: 1, duration: 0.46, stagger: 0.08, ease: "back.out(1.6)" },
-          "-=0.38",
         );
       }
 
