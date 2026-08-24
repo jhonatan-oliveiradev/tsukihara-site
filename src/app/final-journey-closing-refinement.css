@@ -1,0 +1,82 @@
+.ix-final-footer__brand {
+  grid-row: 1;
+}
+
+.ix-final-footer__navigation {
+  grid-row: 2;
+}
+
+.ix-final-footer__socials {
+  grid-row: 2;
+}
+
+.ix-final-footer__easter {
+  grid-row: 2;
+  align-self: end;
+}
+
+.ix-final-footer__signature {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  align-self: end;
+  padding: 0 0 clamp(3rem, 6svh, 5rem);
+  text-align: center;
+}
+
+.ix-final-footer__signature span {
+  font-size: clamp(1.55rem, 2.3vw, 2.7rem);
+  letter-spacing: 0.055em;
+}
+
+.ix-final-footer__signature i {
+  width: min(15rem, 42vw);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(184 154 104 / 0.48) 50%,
+    transparent
+  );
+}
+
+.ix-final-footer__legal {
+  grid-row: 4;
+}
+
+@media (max-width: 900px) {
+  .ix-final-footer__brand {
+    order: 1;
+  }
+
+  .ix-final-footer__navigation {
+    order: 2;
+  }
+
+  .ix-final-footer__socials {
+    order: 3;
+  }
+
+  .ix-final-footer__easter {
+    order: 4;
+  }
+
+  .ix-final-footer__signature {
+    order: 5;
+    align-self: stretch;
+    margin-top: 4rem;
+    padding: 0 0 2.8rem;
+    text-align: left;
+  }
+
+  .ix-final-footer__signature span {
+    font-size: clamp(1.45rem, 7vw, 2.15rem);
+  }
+
+  .ix-final-footer__signature i {
+    width: 8rem;
+    background: linear-gradient(90deg, rgb(184 154 104 / 0.46), transparent);
+  }
+
+  .ix-final-footer__legal {
+    order: 6;
+  }
+}
