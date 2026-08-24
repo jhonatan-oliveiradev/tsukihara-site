@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:hero": "node --test src/components/experience/hero/hero-timeline-math.test.ts"
+    "test:hero": "node --experimental-strip-types --test src/components/experience/hero/hero-timeline-math.test.mjs"
   },
   "dependencies": {
     "@paper-design/shaders-react": "^0.0.80",
