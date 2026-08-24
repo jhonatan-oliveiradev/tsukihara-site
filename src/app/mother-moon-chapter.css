@@ -1,0 +1,960 @@
+.ix-mm {
+  position: relative;
+  z-index: 12;
+  isolation: isolate;
+  overflow: clip;
+  color: var(--bone);
+  background:
+    radial-gradient(circle at 50% 16%, rgb(215 208 201 / 0.055), transparent 32%),
+    linear-gradient(180deg, #050507 0%, #080609 44%, #040406 100%);
+}
+
+.ix-mm__atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 74% 36%, rgb(124 21 36 / 0.08), transparent 28%),
+    radial-gradient(circle at 22% 70%, rgb(216 174 185 / 0.045), transparent 24%);
+}
+
+.ix-mm-opening,
+.ix-mm-forgetting,
+.ix-mm-presence,
+.ix-mm-philosophy,
+.ix-mm-closing {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  padding-inline: var(--pad);
+}
+
+.ix-mm-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: rgb(230 224 215 / 0.5);
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.27em;
+  text-transform: uppercase;
+}
+
+.ix-mm-eyebrow::before {
+  content: "";
+  width: 2.5rem;
+  height: 1px;
+  background: rgb(178 45 43 / 0.7);
+}
+
+.ix-mm h2,
+.ix-mm h3,
+.ix-mm blockquote {
+  font-family: var(--display);
+  font-weight: 400;
+}
+
+.ix-mm-body {
+  color: rgb(230 224 215 / 0.62);
+  font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+  line-height: 1.76;
+}
+
+.ix-mm-body p {
+  margin: 0 0 0.9rem;
+}
+
+.ix-mm-image {
+  object-fit: cover;
+}
+
+.ix-mm-opening {
+  min-height: 118svh;
+  display: grid;
+  grid-template-columns: minmax(19rem, 0.68fr) minmax(32rem, 1.32fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 6rem);
+  padding-top: clamp(8rem, 12vh, 11rem);
+  padding-bottom: clamp(7rem, 12vh, 10rem);
+}
+
+.ix-mm-opening__copy {
+  position: relative;
+  z-index: 4;
+  max-width: 38rem;
+}
+
+.ix-mm-opening__copy h2 {
+  margin: 1.1rem 0 1.8rem;
+  max-width: 8ch;
+  font-size: clamp(4rem, 6.7vw, 7.8rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.ix-mm-opening__copy .ix-mm-body {
+  max-width: 31rem;
+}
+
+.ix-mm-opening__fragments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.3rem;
+  margin-top: 2rem;
+  color: rgb(230 224 215 / 0.34);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ix-mm-opening__cosmos {
+  position: relative;
+  min-height: min(78svh, 54rem);
+}
+
+.ix-mm-opening__halo {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(56vw, 49rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(230 224 215 / 0.1), rgb(230 224 215 / 0.025) 42%, transparent 68%);
+  filter: blur(1.4rem);
+  animation: ixMmHalo 8s ease-in-out infinite;
+}
+
+.ix-mm-opening__moon {
+  position: absolute;
+  inset: 3% -4% 9% 4%;
+  transform-origin: 52% 48%;
+  animation: ixMmBreathe 10s ease-in-out infinite;
+}
+
+.ix-mm-image--moon {
+  object-fit: contain;
+  filter: saturate(0.82) contrast(1.05) brightness(0.92);
+}
+
+.ix-mm-opening__fragments-overlay {
+  position: absolute;
+  inset: 1% -3% 5% 0;
+  opacity: 0.19;
+  mix-blend-mode: screen;
+  animation: ixMmOrbit 18s ease-in-out infinite alternate;
+}
+
+.ix-mm-image--fragments {
+  object-fit: contain;
+}
+
+.ix-mm-opening__reflection {
+  position: absolute;
+  left: 9%;
+  right: -2%;
+  bottom: -5%;
+  height: 32%;
+  opacity: 0.22;
+  filter: saturate(0.5) brightness(0.6);
+  mask-image: linear-gradient(to bottom, transparent, black 26%, transparent 92%);
+}
+
+.ix-mm-image--reflection {
+  object-fit: cover;
+  object-position: 50% 72%;
+}
+
+.ix-mm-opening__axioms {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 2.5rem;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  color: rgb(230 224 215 / 0.3);
+  font-size: 0.58rem;
+  line-height: 1.55;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ix-mm-opening__axioms p {
+  margin: 0;
+  max-width: 22rem;
+}
+
+.ix-mm-memory-field {
+  position: absolute;
+  inset: 8% 5% 10% 39%;
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.ix-mm-memory {
+  position: absolute;
+  max-width: 18rem;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.985);
+  filter: blur(5px);
+  color: rgb(240 234 228 / 0.78);
+  text-shadow: 0 0 24px rgb(240 234 228 / 0.16);
+  transition:
+    opacity 480ms ease,
+    filter 620ms ease,
+    transform 620ms var(--ease);
+}
+
+.ix-mm-memory.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  filter: blur(0);
+}
+
+.ix-mm-memory--whisper {
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+}
+
+.ix-mm-memory--phrase {
+  width: min(17rem, 28vw);
+  font-family: var(--display);
+  font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+  line-height: 1.25;
+}
+
+.ix-mm-memory-field.is-unstable .ix-mm-memory {
+  color: rgb(204 180 185 / 0.58);
+  text-decoration: line-through rgb(178 45 43 / 0.28);
+}
+
+.ix-mm-forgetting {
+  min-height: 124svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(19rem, 0.72fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 7rem);
+  padding-top: clamp(6rem, 10vh, 9rem);
+  padding-bottom: clamp(6rem, 10vh, 9rem);
+}
+
+.ix-mm-forgetting__stage {
+  position: relative;
+  min-height: min(78svh, 52rem);
+}
+
+.ix-mm-forgetting__moon {
+  position: absolute;
+  inset: 0;
+}
+
+.ix-mm-forgetting__moon--remembered {
+  opacity: 0.52;
+  filter: grayscale(0.35);
+}
+
+.ix-mm-forgetting__moon--lost {
+  z-index: 2;
+}
+
+.ix-mm-forgetting__fragments {
+  position: absolute;
+  inset: 4% -2%;
+  z-index: 3;
+  opacity: 0.27;
+  transform: rotate(2deg);
+}
+
+.ix-mm-forgetting__shadow {
+  position: absolute;
+  inset: -2%;
+  z-index: 4;
+  background: linear-gradient(112deg, transparent 22%, rgb(0 0 0 / 0.72) 48%, transparent 72%);
+  mix-blend-mode: multiply;
+  animation: ixMmShadow 11s ease-in-out infinite alternate;
+}
+
+.ix-mm-forgetting__copy {
+  position: relative;
+  z-index: 6;
+  max-width: 35rem;
+}
+
+.ix-mm-forgetting__copy h2 {
+  margin: 1rem 0 1.2rem;
+  font-size: clamp(3.5rem, 5.4vw, 6.3rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+}
+
+.ix-mm-forgetting__copy > strong {
+  display: block;
+  margin-bottom: 2rem;
+  max-width: 14ch;
+  color: rgb(230 224 215 / 0.92);
+  font-family: var(--display);
+  font-size: clamp(2rem, 3.2vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.ix-mm-forgetting .ix-mm-memory-field {
+  inset: 10% 42% 14% 2%;
+}
+
+.ix-mm-presence {
+  padding-top: clamp(10rem, 15vh, 14rem);
+  padding-bottom: clamp(10rem, 16vh, 16rem);
+}
+
+.ix-mm-presence__intro {
+  position: relative;
+  z-index: 4;
+  max-width: 66rem;
+  margin: 0 auto clamp(7rem, 12vh, 12rem);
+  text-align: center;
+}
+
+.ix-mm-presence__intro h2 {
+  margin: 1.2rem auto 2rem;
+  max-width: 12ch;
+  font-size: clamp(4rem, 7.3vw, 8.6rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+.ix-mm-presence__intro .ix-mm-body {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.ix-mm-presence__gallery {
+  position: relative;
+  min-height: 150svh;
+  max-width: 1500px;
+  margin-inline: auto;
+}
+
+.ix-mm-presence__gallery figure {
+  position: absolute;
+  margin: 0;
+  overflow: hidden;
+  background: #060608;
+  box-shadow: 0 2rem 6rem rgb(0 0 0 / 0.42);
+}
+
+.ix-mm-presence__silhouette {
+  left: 2%;
+  top: 4%;
+  width: 46%;
+  height: 62svh;
+}
+
+.ix-mm-presence__hand {
+  right: 4%;
+  top: 28%;
+  width: 31%;
+  height: 44svh;
+}
+
+.ix-mm-presence__eye {
+  left: 13%;
+  top: 58%;
+  width: 35%;
+  height: 38svh;
+}
+
+.ix-mm-presence__profile {
+  right: 8%;
+  bottom: 2%;
+  width: 48%;
+  height: 68svh;
+}
+
+.ix-mm-image--presence {
+  object-fit: cover;
+  filter: saturate(0.72) brightness(0.7) contrast(1.08);
+}
+
+.ix-mm-presence__silhouette .ix-mm-image--presence {
+  object-position: 50% 35%;
+}
+
+.ix-mm-presence__hand .ix-mm-image--presence {
+  object-position: 50% 52%;
+}
+
+.ix-mm-presence__eye .ix-mm-image--presence {
+  object-position: 50% 42%;
+}
+
+.ix-mm-presence__profile .ix-mm-image--presence {
+  object-position: 54% 30%;
+}
+
+.ix-mm-presence__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: clamp(4rem, 8vh, 8rem);
+  text-align: center;
+}
+
+.ix-mm-presence__identity span {
+  font-family: var(--display);
+  font-size: clamp(3rem, 6vw, 7rem);
+  letter-spacing: -0.035em;
+}
+
+.ix-mm-presence__identity small {
+  color: rgb(230 224 215 / 0.38);
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+}
+
+.ix-mm-quote {
+  position: relative;
+  min-height: 92svh;
+  display: grid;
+  place-items: center;
+  max-width: 1480px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.ix-mm-quote blockquote {
+  margin: 0;
+  max-width: 13ch;
+  font-size: clamp(4.2rem, 8.2vw, 9.5rem);
+  line-height: 0.91;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.ix-mm-quote--tsukino span {
+  position: absolute;
+  right: 5%;
+  top: 14%;
+  writing-mode: vertical-rl;
+  color: rgb(178 45 43 / 0.12);
+  font-family: var(--display);
+  font-size: clamp(5rem, 10vw, 12rem);
+}
+
+.ix-mm-quote--akari {
+  min-height: 65svh;
+  justify-items: end;
+  text-align: right;
+}
+
+.ix-mm-quote--akari blockquote {
+  max-width: 12ch;
+  color: rgb(230 224 215 / 0.72);
+  font-size: clamp(2.8rem, 5.4vw, 6.2rem);
+}
+
+.ix-mm-philosophy {
+  min-height: 118svh;
+  padding-top: clamp(8rem, 12vh, 12rem);
+  padding-bottom: clamp(8rem, 12vh, 12rem);
+}
+
+.ix-mm-philosophy__intro {
+  max-width: 72rem;
+  margin: 0 auto clamp(5rem, 8vh, 8rem);
+  text-align: center;
+}
+
+.ix-mm-philosophy__intro h2 {
+  margin: 1.2rem auto 0;
+  max-width: 11ch;
+  font-size: clamp(4rem, 7.2vw, 8.3rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+.ix-mm-philosophy__balance {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(6rem, 0.16fr) minmax(0, 1fr);
+  align-items: center;
+  max-width: 1420px;
+  min-height: 66svh;
+  margin-inline: auto;
+}
+
+.ix-mm-philosophy__side {
+  min-height: 31rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ix-mm-philosophy__side--forget {
+  align-items: flex-end;
+  padding-right: clamp(2rem, 5vw, 6rem);
+  text-align: right;
+}
+
+.ix-mm-philosophy__side--remember {
+  align-items: flex-start;
+  padding-left: clamp(2rem, 5vw, 6rem);
+}
+
+.ix-mm-philosophy__side h3 {
+  margin: 0 0 2rem;
+  font-size: clamp(4rem, 7.5vw, 9rem);
+  letter-spacing: -0.05em;
+}
+
+.ix-mm-philosophy__side ul {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: rgb(230 224 215 / 0.48);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ix-mm-philosophy__divider {
+  position: relative;
+  height: 66svh;
+  min-height: 34rem;
+  opacity: 0.7;
+}
+
+.ix-mm-image--divider {
+  object-fit: contain;
+  opacity: 0.55;
+  filter: saturate(0.65) brightness(0.85);
+}
+
+.ix-mm-philosophy__divider i {
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  bottom: 6%;
+  width: 1px;
+  background: linear-gradient(transparent, rgb(179 149 98 / 0.55), rgb(179 149 98 / 0.18), transparent);
+  box-shadow: 0 0 26px rgb(179 149 98 / 0.15);
+}
+
+.ix-mm-philosophy__body {
+  max-width: 43rem;
+  margin: 4rem auto 0;
+  text-align: center;
+}
+
+.ix-mm-closing {
+  min-height: 118svh;
+  display: grid;
+  place-items: center;
+  padding-top: clamp(6rem, 10vh, 9rem);
+  padding-bottom: clamp(10rem, 15vh, 14rem);
+}
+
+.ix-mm-closing__visual {
+  position: absolute;
+  inset: 0;
+}
+
+.ix-mm-image--closing {
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.78) brightness(0.58) contrast(1.08);
+}
+
+.ix-mm-closing__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 42%, transparent 10%, rgb(4 4 6 / 0.28) 48%, rgb(4 4 6 / 0.88) 100%),
+    linear-gradient(to top, #040406 0%, transparent 35%, rgb(4 4 6 / 0.35) 100%);
+}
+
+.ix-mm-closing__copy {
+  position: relative;
+  z-index: 3;
+  max-width: 78rem;
+  text-align: center;
+}
+
+.ix-mm-closing__copy p {
+  margin: 0.35rem 0;
+  color: rgb(230 224 215 / 0.68);
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 4.6vw, 5rem);
+  line-height: 1;
+}
+
+.ix-mm-closing__copy h2 {
+  margin: clamp(4rem, 8vh, 7rem) 0 0;
+  font-size: clamp(4rem, 8vw, 9rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.ix-mm-closing__archive-seed {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 2rem;
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgb(230 224 215 / 0.18);
+  font-size: 0.52rem;
+  letter-spacing: 0.2em;
+}
+
+.ix-mm-closing__archive-seed span {
+  transform: translateY(calc((var(--seed-index) % 2) * 0.7rem));
+}
+
+@keyframes ixMmBreathe {
+  0%,
+  100% {
+    transform: scale(0.995);
+  }
+  50% {
+    transform: scale(1.012);
+  }
+}
+
+@keyframes ixMmHalo {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  50% {
+    opacity: 0.92;
+    transform: translate(-50%, -50%) scale(1.03);
+  }
+}
+
+@keyframes ixMmOrbit {
+  from {
+    transform: translate3d(-0.5%, 0.5%, 0) rotate(-0.6deg);
+  }
+  to {
+    transform: translate3d(0.7%, -0.4%, 0) rotate(0.8deg);
+  }
+}
+
+@keyframes ixMmShadow {
+  from {
+    transform: translateX(-10%);
+    opacity: 0.45;
+  }
+  to {
+    transform: translateX(8%);
+    opacity: 0.72;
+  }
+}
+
+@media (max-width: 1100px) {
+  .ix-mm-opening {
+    grid-template-columns: minmax(18rem, 0.78fr) minmax(27rem, 1.22fr);
+  }
+
+  .ix-mm-opening__moon {
+    inset-inline: -5%;
+  }
+
+  .ix-mm-memory-field {
+    inset-left: 37%;
+  }
+
+  .ix-mm-presence__gallery {
+    min-height: 130svh;
+  }
+
+  .ix-mm-presence__profile {
+    width: 52%;
+  }
+}
+
+@media (max-width: 900px) {
+  .ix-mm-opening,
+  .ix-mm-forgetting {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .ix-mm-opening {
+    padding-top: 8rem;
+  }
+
+  .ix-mm-opening__copy {
+    max-width: 42rem;
+  }
+
+  .ix-mm-opening__copy h2,
+  .ix-mm-forgetting__copy h2,
+  .ix-mm-presence__intro h2,
+  .ix-mm-philosophy__intro h2 {
+    font-size: clamp(3.5rem, 10vw, 6rem);
+  }
+
+  .ix-mm-opening__cosmos,
+  .ix-mm-forgetting__stage {
+    min-height: 64svh;
+  }
+
+  .ix-mm-opening__axioms {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    grid-template-columns: 1fr;
+    margin-top: 2rem;
+  }
+
+  .ix-mm-memory-field {
+    inset: auto 1rem 7% 1rem;
+    height: 58svh;
+    pointer-events: none;
+  }
+
+  .ix-mm-forgetting .ix-mm-memory-field {
+    inset: auto 1rem 6% 1rem;
+  }
+
+  .ix-mm-presence__gallery {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .ix-mm-presence__gallery figure,
+  .ix-mm-presence__silhouette,
+  .ix-mm-presence__hand,
+  .ix-mm-presence__eye,
+  .ix-mm-presence__profile {
+    position: relative;
+    inset: auto;
+    width: auto;
+    height: auto;
+    min-height: 42svh;
+  }
+
+  .ix-mm-presence__profile {
+    grid-column: 1 / -1;
+    min-height: 62svh;
+  }
+
+  .ix-mm-quote {
+    min-height: 76svh;
+  }
+
+  .ix-mm-quote blockquote {
+    font-size: clamp(3.5rem, 9vw, 6.5rem);
+  }
+
+  .ix-mm-philosophy__balance {
+    grid-template-columns: 1fr 4rem 1fr;
+  }
+
+  .ix-mm-philosophy__side h3 {
+    font-size: clamp(3.2rem, 8vw, 6rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .ix-mm-opening,
+  .ix-mm-forgetting,
+  .ix-mm-presence,
+  .ix-mm-philosophy,
+  .ix-mm-closing {
+    min-height: auto;
+    padding-inline: 1rem;
+  }
+
+  .ix-mm-opening {
+    padding-top: 7rem;
+    padding-bottom: 6rem;
+  }
+
+  .ix-mm-opening__copy h2,
+  .ix-mm-forgetting__copy h2,
+  .ix-mm-presence__intro h2,
+  .ix-mm-philosophy__intro h2,
+  .ix-mm-closing__copy h2 {
+    font-size: clamp(3.25rem, 14vw, 5.4rem);
+  }
+
+  .ix-mm-opening__cosmos,
+  .ix-mm-forgetting__stage {
+    min-height: 56svh;
+    margin-inline: -1rem;
+  }
+
+  .ix-mm-opening__reflection {
+    opacity: 0.14;
+  }
+
+  .ix-mm-opening__fragments {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ix-mm-memory-field {
+    display: none;
+  }
+
+  .ix-mm-presence {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+
+  .ix-mm-presence__intro {
+    margin-bottom: 4rem;
+    text-align: left;
+  }
+
+  .ix-mm-presence__intro .ix-mm-body {
+    margin-inline: 0;
+  }
+
+  .ix-mm-presence__gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .ix-mm-presence__gallery figure,
+  .ix-mm-presence__profile {
+    grid-column: auto;
+    min-height: 58svh;
+  }
+
+  .ix-mm-presence__hand,
+  .ix-mm-presence__eye {
+    min-height: 42svh;
+  }
+
+  .ix-mm-presence__identity {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .ix-mm-presence__identity span {
+    font-size: clamp(3.2rem, 13vw, 5.8rem);
+  }
+
+  .ix-mm-quote {
+    min-height: 82svh;
+    text-align: left;
+  }
+
+  .ix-mm-quote--akari {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .ix-mm-quote blockquote,
+  .ix-mm-quote--akari blockquote {
+    font-size: clamp(3rem, 12vw, 5rem);
+  }
+
+  .ix-mm-philosophy {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+
+  .ix-mm-philosophy__intro {
+    text-align: left;
+  }
+
+  .ix-mm-philosophy__balance {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 2rem;
+  }
+
+  .ix-mm-philosophy__side,
+  .ix-mm-philosophy__side--forget,
+  .ix-mm-philosophy__side--remember {
+    min-height: auto;
+    align-items: flex-start;
+    padding: 2rem 0;
+    text-align: left;
+  }
+
+  .ix-mm-philosophy__divider {
+    height: 9rem;
+    min-height: 0;
+  }
+
+  .ix-mm-philosophy__divider i {
+    top: 50%;
+    bottom: auto;
+    left: 5%;
+    right: 5%;
+    width: auto;
+    height: 1px;
+  }
+
+  .ix-mm-image--divider {
+    opacity: 0.36;
+  }
+
+  .ix-mm-philosophy__body {
+    margin-top: 2rem;
+    text-align: left;
+  }
+
+  .ix-mm-closing {
+    min-height: 100svh;
+  }
+
+  .ix-mm-closing__copy {
+    text-align: left;
+  }
+
+  .ix-mm-closing__copy p {
+    font-size: clamp(2rem, 9vw, 3.8rem);
+  }
+
+  .ix-mm-closing__archive-seed {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-mm-opening__halo,
+  .ix-mm-opening__moon,
+  .ix-mm-opening__fragments-overlay,
+  .ix-mm-forgetting__shadow {
+    animation: none;
+  }
+
+  .ix-mm-memory {
+    transition: none;
+  }
+
+  [data-mm-reveal],
+  [data-mm-presence-detail],
+  [data-mm-forgetting-layer],
+  [data-mm-divider],
+  [data-mm-closing-visual] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+
+  .ix-mm-memory-field {
+    display: none;
+  }
+}
