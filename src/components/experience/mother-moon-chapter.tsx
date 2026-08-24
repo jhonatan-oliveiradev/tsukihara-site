@@ -186,39 +186,7 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
             />
           </div>
 
-          <div className="ix-mm-quote__branch" data-mm-akari-branch aria-hidden="true">
-            <svg viewBox="0 0 620 230" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                data-mm-branch-path
-                pathLength="1"
-                d="M-18 153C68 145 125 153 190 136C260 118 295 86 360 92C420 98 459 126 532 113C559 108 584 96 620 75"
-              />
-              <path
-                data-mm-branch-path
-                pathLength="1"
-                d="M188 136C218 115 225 84 247 56C261 39 277 29 300 18"
-              />
-              <path
-                data-mm-branch-path
-                pathLength="1"
-                d="M354 92C380 71 390 48 405 28"
-              />
-              <path
-                data-mm-branch-path
-                pathLength="1"
-                d="M443 118C472 132 494 151 516 174"
-              />
-              <path
-                data-mm-branch-path
-                pathLength="1"
-                d="M524 114C551 103 565 80 574 55"
-              />
-              <circle data-mm-branch-bloom cx="300" cy="18" r="4" />
-              <circle data-mm-branch-bloom cx="405" cy="28" r="3.5" />
-              <circle data-mm-branch-bloom cx="516" cy="174" r="4.5" />
-              <circle data-mm-branch-bloom cx="574" cy="55" r="3.5" />
-            </svg>
-          </div>
+          <div className="ix-mm-quote__branch" data-mm-akari-branch aria-hidden="true" />
 
           <blockquote>
             <MotionWords text={`“${copy.presence.counterpoint}”`} />
