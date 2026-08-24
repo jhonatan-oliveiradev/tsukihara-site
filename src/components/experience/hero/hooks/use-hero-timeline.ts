@@ -109,7 +109,11 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
         .to(q("[data-moon-after]"), { opacity: 0.12, duration: 0.14 }, 0.3)
         .to(q("[data-temple-after], [data-mist-after]"), { opacity: 0.12, duration: 0.16 }, 0.3)
         .to(q("[data-copy-intro]"), { y: -28, opacity: 0, duration: 0.12 }, contactAt)
-        .to(q("[data-copy-omen]"), { y: 0, opacity: 1, duration: 0.14, ease: "power2.out" }, contactAt)
+        .to(
+          q("[data-copy-omen]"),
+          { y: 0, opacity: 1, duration: 0.14, ease: "power2.out" },
+          contactAt,
+        )
         .to(q("[data-phase-serene]"), { opacity: 0, duration: 0.12 }, contactAt)
         .to(q("[data-phase-omen]"), { opacity: 1, duration: 0.12 }, contactAt)
         .to(
@@ -164,7 +168,11 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           0.58,
         )
         .to(q("[data-copy-omen]"), { y: -20, opacity: 0, duration: 0.12 }, crimsonAt - 0.04)
-        .to(q("[data-copy-eclipse]"), { y: 0, opacity: 1, duration: 0.14, ease: "power2.out" }, crimsonAt)
+        .to(
+          q("[data-copy-eclipse]"),
+          { y: 0, opacity: 1, duration: 0.14, ease: "power2.out" },
+          crimsonAt,
+        )
         .to(q("[data-phase-omen]"), { opacity: 0, duration: 0.12 }, crimsonAt - 0.04)
         .to(q("[data-phase-eclipse]"), { opacity: 1, duration: 0.12 }, crimsonAt)
         .to(q("[data-sky-crimson]"), { opacity: 0.94, duration: 0.18 }, 0.68)
