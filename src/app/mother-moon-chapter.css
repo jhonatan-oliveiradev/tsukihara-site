@@ -825,7 +825,14 @@
   }
 
   .ix-mm-memory-field {
-    display: none;
+    display: block;
+    height: 50svh;
+    inset-inline: 0.75rem;
+  }
+
+  .ix-mm-memory--phrase {
+    width: min(15rem, 68vw);
+    font-size: 0.88rem;
   }
 
   .ix-mm-presence {
