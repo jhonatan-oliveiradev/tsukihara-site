@@ -181,6 +181,63 @@ html {
   overflow-wrap: anywhere;
 }
 
+/* Bestiary cards need explicit stacking because their editorial grid overlaps. */
+.ix-bestiary-grid {
+  overflow: visible;
+}
+
+.ix-bestiary-grid .ix-archive-specimen {
+  z-index: 1;
+}
+
+.ix-bestiary-grid .ix-archive-specimen:hover,
+.ix-bestiary-grid .ix-archive-specimen:focus-visible {
+  z-index: 20;
+}
+
+.ix-bestiary-grid .ix-archive-specimen.is-active {
+  z-index: 24;
+}
+
+.ix-archive-break {
+  height: 2rem;
+  margin-bottom: clamp(2rem, 4vw, 4rem);
+}
+
+.ix-boss-index-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ix-boss-index-editorial {
+  margin-bottom: clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+.ix-boss-index-editorial > span {
+  display: block;
+  color: rgb(230 224 215 / 0.44);
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ix-boss-index-editorial h2 {
+  max-width: 9ch;
+  margin: 0.85rem 0 0;
+  color: var(--bone);
+  font-family: var(--display);
+  font-size: clamp(1.65rem, 2.45vw, 3.05rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.ix-boss-index {
+  margin-top: auto;
+}
+
 .ix-realm-index,
 .ix-world-map__inspector,
 .ix-world-map__sheet,
@@ -218,6 +275,15 @@ html {
 
   .akari-closing {
     margin-top: 0;
+  }
+
+  .ix-boss-index-editorial {
+    padding: 1.5rem 0 1rem;
+  }
+
+  .ix-boss-index-editorial h2 {
+    max-width: 12ch;
+    font-size: clamp(1.65rem, 7vw, 2.8rem);
   }
 }
 
