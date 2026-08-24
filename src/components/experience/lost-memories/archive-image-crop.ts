@@ -25,23 +25,15 @@ export function getArchiveImageSource(record: ArchiveRecord) {
 
 export function getArchiveImageStyle(
   record: ArchiveRecord,
-  _context: ArchiveCropContext,
+  context: ArchiveCropContext,
 ): CSSProperties {
-  if (record.kind === "photograph") {
-    return {
-      objectFit: "cover",
-      objectPosition: "center",
-      transform: "none",
-      transformOrigin: "center",
-    };
-  }
-
-  if (record.kind === "relic") {
+  if (record.kind === "photograph" || record.kind === "relic") {
     return {
       objectFit: "contain",
       objectPosition: "center",
       transform: "none",
       transformOrigin: "center",
+      padding: context === "viewer" ? "1.25rem" : context === "surface" ? "0.45rem" : "0.3rem",
     };
   }
 
