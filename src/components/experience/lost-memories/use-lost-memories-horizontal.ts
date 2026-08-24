@@ -33,10 +33,32 @@ export function useLostMemoriesHorizontal(rootRef: RefObject<HTMLElement | null>
         },
       });
 
+      const trigger = tween.scrollTrigger;
+      const anchorListeners: Array<() => void> = [];
+      root.querySelectorAll<HTMLAnchorElement>('.ix-archive-index a[href^="#archive-"]').forEach((anchor) => {
+        const onClick = (event: MouseEvent) => {
+          if (!trigger) return;
+          const href = anchor.getAttribute("href");
+          const panel = href ? root.querySelector<HTMLElement>(href) : null;
+          if (!panel) return;
+
+          event.preventDefault();
+          const distance = getDistance();
+          if (distance <= 0) return;
+          const panelProgress = Math.min(1, Math.max(0, panel.offsetLeft / distance));
+          const targetScroll = trigger.start + (trigger.end - trigger.start) * panelProgress;
+          window.scrollTo({ top: targetScroll, behavior: "smooth" });
+        };
+
+        anchor.addEventListener("click", onClick);
+        anchorListeners.push(() => anchor.removeEventListener("click", onClick));
+      });
+
       const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
       return () => {
         window.cancelAnimationFrame(refreshFrame);
-        tween.scrollTrigger?.kill();
+        anchorListeners.forEach((remove) => remove());
+        trigger?.kill();
         tween.kill();
         gsap.set(track, { clearProps: "transform" });
       };
