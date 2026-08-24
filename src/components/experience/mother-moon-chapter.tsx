@@ -8,6 +8,20 @@ import { useMotherMoonMotion } from "@/components/experience/mother-moon/use-mot
 import { motherMoonCopy } from "@/content/mother-moon";
 import type { Locale } from "@/content/immersive-copy";
 
+function MotionWords({ text }: { text: string }) {
+  return (
+    <span className="ix-mm-motion-words" aria-label={text}>
+      {text.split(/\s+/).map((word, index) => (
+        <span key={`${word}-${index}`} className="ix-mm-motion-word-wrap" aria-hidden="true">
+          <span className="ix-mm-motion-word" data-mm-word>
+            {word}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function MotherMoonChapter({ locale }: { locale: Locale }) {
   const rootRef = useRef<HTMLElement>(null);
   const copy = motherMoonCopy[locale];
@@ -24,9 +38,11 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
       <div className="ix-mm__atmosphere" aria-hidden="true" />
 
       <section className="ix-mm-opening" data-mm-act="01">
-        <div className="ix-mm-opening__copy" data-mm-reveal>
-          <span className="ix-mm-eyebrow">{copy.opening.eyebrow}</span>
-          <h2 id="mother-moon-title">
+        <div className="ix-mm-opening__copy">
+          <span className="ix-mm-eyebrow" data-mm-eyebrow>
+            {copy.opening.eyebrow}
+          </span>
+          <h2 id="mother-moon-title" data-mm-title-block>
             <JpRevealText
               jp={copy.opening.jp}
               text={copy.opening.title}
@@ -34,14 +50,16 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
               duration={1300}
             />
           </h2>
-          <div className="ix-mm-body">
+          <div className="ix-mm-body" data-mm-body>
             {copy.opening.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
           <div className="ix-mm-opening__fragments" aria-label="Memory fragments">
             {copy.opening.fragments.map((fragment) => (
-              <span key={fragment}>{fragment}</span>
+              <span key={fragment} data-mm-token>
+                {fragment}
+              </span>
             ))}
           </div>
         </div>
@@ -61,11 +79,13 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
 
         <MotherMoonMemoryField memories={copy.opening.memories} />
 
-        <div className="ix-mm-opening__axioms" data-mm-reveal>
+        <div className="ix-mm-opening__axioms">
           {copy.opening.memories
             .filter((memory) => memory.weight === "phrase")
             .map((memory) => (
-              <p key={memory.id}>{memory.text}</p>
+              <p key={memory.id} data-mm-axiom>
+                {memory.text}
+              </p>
             ))}
         </div>
       </section>
@@ -87,11 +107,15 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
           <div className="ix-mm-forgetting__shadow" />
         </div>
 
-        <div className="ix-mm-forgetting__copy" data-mm-reveal>
-          <span className="ix-mm-eyebrow">{copy.forgetting.eyebrow}</span>
-          <h2>{copy.forgetting.title}</h2>
-          <strong>{copy.forgetting.titleSecond}</strong>
-          <div className="ix-mm-body">
+        <div className="ix-mm-forgetting__copy">
+          <span className="ix-mm-eyebrow" data-mm-eyebrow>
+            {copy.forgetting.eyebrow}
+          </span>
+          <h2 data-mm-title>
+            <MotionWords text={copy.forgetting.title} />
+          </h2>
+          <strong data-mm-subtitle>{copy.forgetting.titleSecond}</strong>
+          <div className="ix-mm-body" data-mm-body>
             {copy.forgetting.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -102,10 +126,14 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
       </section>
 
       <section className="ix-mm-presence" data-mm-act="03">
-        <div className="ix-mm-presence__intro" data-mm-reveal>
-          <span className="ix-mm-eyebrow">{copy.presence.eyebrow}</span>
-          <h2>{copy.presence.title}</h2>
-          <div className="ix-mm-body">
+        <div className="ix-mm-presence__intro">
+          <span className="ix-mm-eyebrow" data-mm-eyebrow>
+            {copy.presence.eyebrow}
+          </span>
+          <h2 data-mm-title>
+            <MotionWords text={copy.presence.title} />
+          </h2>
+          <div className="ix-mm-body" data-mm-body>
             {copy.presence.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -127,33 +155,45 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
           </figure>
         </div>
 
-        <div className="ix-mm-presence__identity" data-mm-reveal>
+        <div className="ix-mm-presence__identity" data-mm-identity>
           <span>{copy.presence.name}</span>
           <small>{copy.presence.signature}</small>
         </div>
 
-        <div className="ix-mm-quote ix-mm-quote--tsukino" data-mm-reveal>
-          <blockquote>“{copy.presence.quote}”</blockquote>
+        <div className="ix-mm-quote ix-mm-quote--tsukino" data-mm-quote="tsukino">
+          <blockquote>
+            <MotionWords text={`“${copy.presence.quote}”`} />
+          </blockquote>
           <span aria-hidden="true">月蝕</span>
         </div>
 
-        <div className="ix-mm-quote ix-mm-quote--akari" data-mm-reveal>
-          <blockquote>“{copy.presence.counterpoint}”</blockquote>
+        <div className="ix-mm-quote ix-mm-quote--akari" data-mm-quote="akari">
+          <blockquote>
+            <MotionWords text={`“${copy.presence.counterpoint}”`} />
+          </blockquote>
         </div>
       </section>
 
       <section className="ix-mm-philosophy" data-mm-act="04" data-mm-philosophy>
-        <header className="ix-mm-philosophy__intro" data-mm-reveal>
-          <span className="ix-mm-eyebrow">{copy.philosophy.eyebrow}</span>
-          <h2>{copy.philosophy.title}</h2>
+        <header className="ix-mm-philosophy__intro">
+          <span className="ix-mm-eyebrow" data-mm-eyebrow>
+            {copy.philosophy.eyebrow}
+          </span>
+          <h2 data-mm-title>
+            <MotionWords text={copy.philosophy.title} />
+          </h2>
         </header>
 
         <div className="ix-mm-philosophy__balance">
-          <div className="ix-mm-philosophy__side ix-mm-philosophy__side--forget" data-mm-reveal>
-            <h3>{copy.philosophy.forget}</h3>
+          <div className="ix-mm-philosophy__side ix-mm-philosophy__side--forget" data-mm-side="forget">
+            <h3 data-mm-side-title>
+              <MotionWords text={copy.philosophy.forget} />
+            </h3>
             <ul>
               {copy.philosophy.forgetTerms.map((term) => (
-                <li key={term}>{term}</li>
+                <li key={term} data-mm-term>
+                  {term}
+                </li>
               ))}
             </ul>
           </div>
@@ -163,17 +203,24 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
             <i />
           </div>
 
-          <div className="ix-mm-philosophy__side ix-mm-philosophy__side--remember" data-mm-reveal>
-            <h3>{copy.philosophy.remember}</h3>
+          <div
+            className="ix-mm-philosophy__side ix-mm-philosophy__side--remember"
+            data-mm-side="remember"
+          >
+            <h3 data-mm-side-title>
+              <MotionWords text={copy.philosophy.remember} />
+            </h3>
             <ul>
               {copy.philosophy.rememberTerms.map((term) => (
-                <li key={term}>{term}</li>
+                <li key={term} data-mm-term>
+                  {term}
+                </li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="ix-mm-philosophy__body ix-mm-body" data-mm-reveal>
+        <div className="ix-mm-philosophy__body ix-mm-body" data-mm-body>
           {copy.philosophy.body.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
@@ -186,11 +233,13 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
           <div className="ix-mm-closing__veil" />
         </div>
 
-        <div className="ix-mm-closing__copy" data-mm-reveal>
+        <div className="ix-mm-closing__copy">
           {copy.closing.lines.map((line) => (
-            <p key={line}>{line}</p>
+            <p key={line} data-mm-closing-line>
+              {line}
+            </p>
           ))}
-          <h2>
+          <h2 data-mm-closing-signature>
             <JpRevealText
               jp={copy.closing.jp}
               text={copy.closing.signature}
