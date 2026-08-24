@@ -1,0 +1,40 @@
+name: Format bestiary preserve state
+
+on:
+  push:
+    branches:
+      - feat/mother-moon-eclipse-heir
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/mother-moon-eclipse-heir
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Format bestiary file
+        run: npx prettier --write src/components/experience/bestiary-bosses-chapter.tsx
+      - name: Assert state classes are preserved
+        run: |
+          grep -F 'active ? " is-active" : ""' src/components/experience/bestiary-bosses-chapter.tsx
+          grep -F 'boss.classified ? " is-classified" : ""' src/components/experience/bestiary-bosses-chapter.tsx
+      - name: Remove temporary workflow
+        run: rm .github/workflows/format-bestiary-preserve-state.yml
+      - name: Commit formatted file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/experience/bestiary-bosses-chapter.tsx .github/workflows/format-bestiary-preserve-state.yml
+          git commit -m "chore: format bestiary state fix"
+          git push origin HEAD:feat/mother-moon-eclipse-heir
