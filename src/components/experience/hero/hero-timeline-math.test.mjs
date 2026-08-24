@@ -1,8 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { clamp01, phaseWeights, rangeProgress, smoothRange } from "./hero-timeline-math";
+import {
+  clamp01,
+  HERO_ECLIPSE_BEATS,
+  heroCopyPhase,
+  phaseWeights,
+  rangeProgress,
+  smoothRange,
+} from "./hero-timeline-math.ts";
 
-const approximately = (actual: number, expected: number, epsilon = 1e-9) => {
+const approximately = (actual, expected, epsilon = 1e-9) => {
   assert.ok(Math.abs(actual - expected) < epsilon, `${actual} ≈ ${expected}`);
 };
 
@@ -38,4 +45,14 @@ test("phaseWeights follows the six approved narrative intervals", () => {
   approximately(phaseWeights(0.77).crimson, 0.5);
   approximately(phaseWeights(0.93).resolve, 0.5);
   assert.equal(phaseWeights(1).resolve, 1);
+});
+
+test("hero copy follows visible eclipse contact, transit and crimson beats", () => {
+  const { contact, crimson } = HERO_ECLIPSE_BEATS;
+
+  assert.equal(heroCopyPhase(contact - 0.001), "intro");
+  assert.equal(heroCopyPhase(contact), "transit");
+  assert.equal(heroCopyPhase((contact + crimson) / 2), "transit");
+  assert.equal(heroCopyPhase(crimson - 0.001), "transit");
+  assert.equal(heroCopyPhase(crimson), "crimson");
 });

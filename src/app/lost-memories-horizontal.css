@@ -1,0 +1,206 @@
+.ix-archive-viewer {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  .ix-archive__background,
+  .ix-archive__fragments {
+    display: none;
+  }
+
+  .ix-archive-horizontal {
+    position: relative;
+    height: 100svh;
+    overflow: clip;
+    background: #070707;
+  }
+
+  .ix-archive-horizontal-track {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    width: max-content;
+    min-width: 100vw;
+    height: 100svh;
+    min-height: 100svh;
+    overflow: visible;
+    background-image:
+      linear-gradient(90deg, rgb(4 4 4 / 0.24), transparent 10%, transparent 90%, rgb(4 4 4 / 0.3)),
+      var(--archive-table-image);
+    background-repeat: no-repeat, repeat-x;
+    background-size:
+      100% 100%,
+      auto 100%;
+    background-position:
+      center,
+      left center;
+    will-change: transform;
+  }
+
+  .ix-archive-horizontal-track::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, #070707 0%, transparent 10%, transparent 88%, #070707 100%),
+      radial-gradient(
+        circle at 50% 42%,
+        transparent 0%,
+        rgb(5 5 5 / 0.18) 62%,
+        rgb(5 5 5 / 0.56) 100%
+      );
+  }
+
+  .ix-archive-horizontal-track > *,
+  .ix-archive-table > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ix-archive-horizontal .ix-archive-intro {
+    flex: 0 0 clamp(58rem, 72vw, 78rem);
+    width: clamp(58rem, 72vw, 78rem);
+    min-height: 100svh;
+    height: 100svh;
+    margin: 0;
+    padding: clamp(6rem, 9vh, 8rem) clamp(3.5rem, 5vw, 6rem) clamp(3rem, 5vh, 4.5rem);
+    box-sizing: border-box;
+    align-items: center;
+    gap: clamp(3rem, 6vw, 7rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-intro h2 {
+    font-size: clamp(3.2rem, 5.2vw, 6.4rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-intro__support {
+    margin-top: 2rem;
+    font-size: clamp(0.88rem, 1vw, 1.05rem);
+  }
+
+  .ix-archive-table {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: stretch;
+    width: auto;
+    height: 100svh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ix-archive-group {
+    flex: 0 0 auto;
+    width: auto;
+    height: 100svh;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: clamp(5.5rem, 8vh, 7rem) clamp(2.5rem, 3.4vw, 4rem) clamp(2rem, 4vh, 3.5rem);
+    scroll-margin: 0;
+  }
+
+  .ix-archive-group--letters {
+    flex-basis: clamp(76rem, 100vw, 106rem);
+  }
+
+  .ix-archive-group--photographs {
+    flex-basis: clamp(72rem, 94vw, 100rem);
+  }
+
+  .ix-archive-group--relics {
+    flex-basis: clamp(68rem, 88vw, 94rem);
+  }
+
+  .ix-archive-group--realms {
+    flex-basis: clamp(82rem, 108vw, 116rem);
+  }
+
+  .ix-archive-group--lunar {
+    flex-basis: clamp(72rem, 95vw, 102rem);
+  }
+
+  .ix-archive-group__header {
+    margin-bottom: clamp(1rem, 2vh, 1.7rem);
+  }
+
+  .ix-archive-group__header h3 {
+    font-size: clamp(1.8rem, 2.7vw, 3.25rem);
+  }
+
+  .ix-archive-letters__surface,
+  .ix-archive-photos__surface,
+  .ix-archive-relics__surface,
+  .ix-archive-realms__surface,
+  .ix-archive-lunar__surface {
+    height: min(70svh, 45rem);
+    min-height: 0 !important;
+  }
+
+  .ix-archive-letter {
+    max-height: 62svh;
+  }
+
+  .ix-archive-realms__surface {
+    height: min(72svh, 47rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-thesis {
+    flex: 0 0 clamp(55rem, 72vw, 76rem);
+    width: clamp(55rem, 72vw, 76rem);
+    min-height: 100svh;
+    height: 100svh;
+    margin: 0;
+    padding: clamp(5rem, 8vh, 7rem) clamp(4rem, 5vw, 6rem);
+    box-sizing: border-box;
+  }
+
+  .ix-archive-horizontal .ix-archive-thesis p {
+    font-size: clamp(2.6rem, 4.5vw, 5.5rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-akari {
+    flex: 0 0 clamp(60rem, 82vw, 88rem);
+    width: clamp(60rem, 82vw, 88rem);
+    min-height: 100svh;
+    height: 100svh;
+    margin: 0;
+    padding: clamp(4.5rem, 7vh, 6rem) clamp(4rem, 5vw, 6rem);
+    box-sizing: border-box;
+    gap: clamp(1.5rem, 3vh, 2.5rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-akari__record {
+    width: min(48vw, 42rem);
+    max-height: 66svh;
+  }
+
+  .ix-archive-transition {
+    min-height: 62svh;
+  }
+
+  .ix-archive[data-archive-open="true"] .ix-archive-horizontal-track {
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  .ix-archive-horizontal {
+    height: auto;
+    overflow: visible;
+  }
+
+  .ix-archive-horizontal-track {
+    display: block;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    background: none;
+    transform: none !important;
+  }
+
+  .ix-archive-table {
+    display: block;
+  }
+}

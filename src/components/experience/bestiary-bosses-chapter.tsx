@@ -248,13 +248,6 @@ export function BestiaryBossesChapter({ locale }: { locale: Locale }) {
         <i />
       </div>
 
-      <div className="ix-forbidden-transition">
-        <span>ARCHIVE LIMIT EXCEEDED</span>
-        <h2>
-          <JpRevealText jp={copy.transitionJp} text={copy.transitionTitle} locale={locale} />
-        </h2>
-      </div>
-
       <div className="ix-bosses-act">
         <div className="ix-bosses-act__label">
           <span>02</span>
@@ -262,23 +255,32 @@ export function BestiaryBossesChapter({ locale }: { locale: Locale }) {
         </div>
 
         <div className="ix-bosses-layout">
-          <nav className="ix-boss-index" aria-label={copy.bossesLabel}>
-            {copy.bosses.map((boss, index) => (
-              <button
-                type="button"
-                key={boss.id}
-                className={boss.id === activeBoss.id ? "is-active" : ""}
-                aria-pressed={boss.id === activeBoss.id}
-                onMouseEnter={() => setActiveBossId(boss.id)}
-                onFocus={() => setActiveBossId(boss.id)}
-                onClick={() => setActiveBossId(boss.id)}
-              >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{boss.nav}</strong>
-                {boss.classified && <small>LOCKED</small>}
-              </button>
-            ))}
-          </nav>
+          <div className="ix-boss-index-column">
+            <div className="ix-boss-index-editorial">
+              <span>ARCHIVE LIMIT EXCEEDED</span>
+              <h2>
+                <JpRevealText jp={copy.transitionJp} text={copy.transitionTitle} locale={locale} />
+              </h2>
+            </div>
+
+            <nav className="ix-boss-index" aria-label={copy.bossesLabel}>
+              {copy.bosses.map((boss, index) => (
+                <button
+                  type="button"
+                  key={boss.id}
+                  className={boss.id === activeBoss.id ? "is-active" : ""}
+                  aria-pressed={boss.id === activeBoss.id}
+                  onMouseEnter={() => setActiveBossId(boss.id)}
+                  onFocus={() => setActiveBossId(boss.id)}
+                  onClick={() => setActiveBossId(boss.id)}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{boss.nav}</strong>
+                  {boss.classified && <small>LOCKED</small>}
+                </button>
+              ))}
+            </nav>
+          </div>
 
           <BossStage boss={activeBoss} index={activeBossIndex} locale={locale} />
         </div>
