@@ -218,6 +218,27 @@ export function useMotherMoonMotion(rootRef: RefObject<HTMLElement | null>) {
         );
       });
 
+      const akariQuote = root.querySelector<HTMLElement>('[data-mm-quote="akari"]');
+      const tsukinoEcho = root.querySelector<HTMLElement>("[data-mm-tsukino-echo]");
+      if (akariQuote && tsukinoEcho) {
+        gsap.fromTo(
+          tsukinoEcho,
+          { opacity: 0.13, xPercent: -2, scale: 1.015 },
+          {
+            opacity: 0.012,
+            xPercent: -8,
+            scale: 1.065,
+            ease: "none",
+            scrollTrigger: {
+              trigger: akariQuote,
+              start: "top 94%",
+              end: "bottom 34%",
+              scrub: 1.25,
+            },
+          },
+        );
+      }
+
       gsap.utils.toArray<HTMLElement>("[data-mm-side]").forEach((side) => {
         const direction = side.dataset.mmSide === "forget" ? -1 : 1;
         const titleWords = side.querySelectorAll<HTMLElement>(
