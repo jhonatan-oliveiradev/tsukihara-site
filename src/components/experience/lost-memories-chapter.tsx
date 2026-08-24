@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { ArchiveRecordViewer } from "@/components/experience/lost-memories/archive-record-viewer";
 import { ArchiveTable } from "@/components/experience/lost-memories/archive-table";
 import type { ArchiveRecord } from "@/components/experience/lost-memories/lost-memories-types";
+import { useLostMemoriesHorizontal } from "@/components/experience/lost-memories/use-lost-memories-horizontal";
 import { useLostMemoriesMotion } from "@/components/experience/lost-memories/use-lost-memories-motion";
 import { lostMemoriesCopy } from "@/content/lost-memories";
 import type { Locale } from "@/content/immersive-copy";
@@ -16,6 +17,7 @@ export function LostMemoriesChapter({ locale }: { locale: Locale }) {
   const copy = lostMemoriesCopy[locale];
 
   useLostMemoriesMotion(rootRef);
+  useLostMemoriesHorizontal(rootRef);
 
   const allRecords = useMemo(
     () => [...copy.records, ...copy.realmRecords] as ArchiveRecord[],
@@ -62,65 +64,82 @@ export function LostMemoriesChapter({ locale }: { locale: Locale }) {
       </div>
 
       <div className="ix-archive__content" inert={openRecord ? true : undefined}>
-        <header className="ix-archive-intro" data-archive-intro>
-          <div className="ix-archive-intro__copy">
-            <p className="ix-archive-eyebrow" data-archive-intro-part>
-              {copy.eyebrow}
-            </p>
-            <h2 id="lost-memories-title" data-archive-intro-part>
-              {copy.headline}
-            </h2>
-            <div className="ix-archive-intro__support" data-archive-intro-part>
-              {copy.support.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-          </div>
-
-          <nav className="ix-archive-index" aria-label="Archive index" data-archive-intro-part>
-            {copy.index.map((item) => (
-              <a key={item.id} href={`#archive-${item.id}`}>
-                <span>{item.number}</span>
-                <b>{item.label}</b>
-              </a>
-            ))}
-          </nav>
-        </header>
-
-        <ArchiveTable copy={copy} onOpen={handleOpen} />
-
-        <section className="ix-archive-thesis" aria-label="Archive conclusion">
-          <p data-archive-thesis="first">{copy.transition.first}</p>
-          <p data-archive-thesis="second">{copy.transition.second}</p>
-        </section>
-
-        <section className="ix-archive-akari" data-archive-akari aria-label="Akari memory record">
-          <div className="ix-archive-akari__record">
-            <div className="ix-archive-akari__asset" aria-hidden="true">
-              <Image
-                src={copy.assets.akari}
-                alt=""
-                fill
-                sizes="(max-width: 900px) 88vw, 46vw"
-                className="ix-archive-akari__image"
-              />
-            </div>
-            <div className="ix-archive-akari__meta">
-              <span>{copy.akariRecord.code}</span>
-              <dl>
-                <div>
-                  <dt>{copy.akariRecord.ownerLabel}</dt>
-                  <dd>{copy.akariRecord.owner}</dd>
+        <div className="ix-archive-horizontal" data-archive-horizontal>
+          <div
+            className="ix-archive-horizontal-track"
+            data-archive-horizontal-track
+            style={{ "--archive-table-image": `url("${copy.assets.table}")` } as CSSProperties}
+          >
+            <header className="ix-archive-intro" data-archive-intro data-archive-panel>
+              <div className="ix-archive-intro__copy">
+                <p className="ix-archive-eyebrow" data-archive-intro-part>
+                  {copy.eyebrow}
+                </p>
+                <h2 id="lost-memories-title" data-archive-intro-part>
+                  {copy.headline}
+                </h2>
+                <div className="ix-archive-intro__support" data-archive-intro-part>
+                  {copy.support.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
                 </div>
-                <div>
-                  <dt>{copy.akariRecord.statusLabel}</dt>
-                  <dd>{copy.akariRecord.status}</dd>
+              </div>
+
+              <nav className="ix-archive-index" aria-label="Archive index" data-archive-intro-part>
+                {copy.index.map((item) => (
+                  <a key={item.id} href={`#archive-${item.id}`}>
+                    <span>{item.number}</span>
+                    <b>{item.label}</b>
+                  </a>
+                ))}
+              </nav>
+            </header>
+
+            <ArchiveTable copy={copy} onOpen={handleOpen} />
+
+            <section
+              className="ix-archive-thesis"
+              data-archive-panel
+              aria-label="Archive conclusion"
+            >
+              <p data-archive-thesis="first">{copy.transition.first}</p>
+              <p data-archive-thesis="second">{copy.transition.second}</p>
+            </section>
+
+            <section
+              className="ix-archive-akari"
+              data-archive-akari
+              data-archive-panel
+              aria-label="Akari memory record"
+            >
+              <div className="ix-archive-akari__record">
+                <div className="ix-archive-akari__asset" aria-hidden="true">
+                  <Image
+                    src={copy.assets.akari}
+                    alt=""
+                    fill
+                    sizes="(max-width: 900px) 88vw, 46vw"
+                    className="ix-archive-akari__image"
+                  />
                 </div>
-              </dl>
-            </div>
+                <div className="ix-archive-akari__meta">
+                  <span>{copy.akariRecord.code}</span>
+                  <dl>
+                    <div>
+                      <dt>{copy.akariRecord.ownerLabel}</dt>
+                      <dd>{copy.akariRecord.owner}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy.akariRecord.statusLabel}</dt>
+                      <dd>{copy.akariRecord.status}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+              <strong className="ix-archive-signature">{copy.signature}</strong>
+            </section>
           </div>
-          <strong className="ix-archive-signature">{copy.signature}</strong>
-        </section>
+        </div>
 
         <section className="ix-archive-transition" data-archive-transition>
           <Image
