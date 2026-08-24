@@ -27,9 +27,11 @@
 ### Task 1: Mother Moon content and asset contract
 
 **Files:**
+
 - Create: `src/content/mother-moon.ts`
 
 **Interfaces:**
+
 - Produces: `MotherMoonAssetCode`, `motherMoonAssets`, `MotherMoonMemory`, `motherMoonCopy`.
 - Consumes: `Locale` from `@/content/immersive-copy`.
 
@@ -42,10 +44,12 @@
 ### Task 2: Asset primitive and memory field
 
 **Files:**
+
 - Create: `src/components/experience/mother-moon/mother-moon-asset.tsx`
 - Create: `src/components/experience/mother-moon/mother-moon-memory-field.tsx`
 
 **Interfaces:**
+
 - `MotherMoonAsset({ code, className, sizes, priority })` renders a stable M01–M10 `next/image` slot.
 - `MotherMoonMemoryField({ memories, unstable? })` renders fine-pointer proximity memories and automatic coarse-pointer fallback.
 
@@ -58,10 +62,12 @@
 ### Task 3: Five-act chapter and scoped motion
 
 **Files:**
+
 - Create: `src/components/experience/mother-moon/use-mother-moon-motion.ts`
 - Create: `src/components/experience/mother-moon-chapter.tsx`
 
 **Interfaces:**
+
 - `useMotherMoonMotion(rootRef)` scopes local ScrollTrigger/IntersectionObserver behavior to the chapter.
 - `MotherMoonChapter({ locale })` is the only integration surface consumed by `immersive-experience.tsx`.
 
@@ -76,9 +82,11 @@
 ### Task 4: Visual system, responsive behavior and reduced motion
 
 **Files:**
+
 - Create: `src/app/mother-moon-chapter.css`
 
 **Interfaces:**
+
 - Styles only `.ix-mm-*` selectors and `[data-mm-*]` hooks from Task 3.
 
 - [ ] Establish monumental near-black/ivory/crimson art direction with large negative space.
@@ -92,10 +100,12 @@
 ### Task 5: Integration and verification
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 - Modify: `src/app/layout.tsx`
 
 **Interfaces:**
+
 - Import `MotherMoonChapter` and render immediately after `BestiaryBossesChapter`.
 - Import `./mother-moon-chapter.css` after Bestiary CSS and before later world styles.
 

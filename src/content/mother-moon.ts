@@ -1,16 +1,7 @@
 import type { Locale } from "@/content/immersive-copy";
 
 export type MotherMoonAssetCode =
-  | "M01"
-  | "M02"
-  | "M03"
-  | "M04"
-  | "M05"
-  | "M06"
-  | "M07"
-  | "M08"
-  | "M09"
-  | "M10";
+  "M01" | "M02" | "M03" | "M04" | "M05" | "M06" | "M07" | "M08" | "M09" | "M10";
 
 export type MotherMoonMemory = {
   id: string;
@@ -159,7 +150,10 @@ export const motherMoonCopy: Record<
       ],
       memories: ptMemories.map((memory, index) => ({
         ...memory,
-        text: index % 3 === 0 ? memory.text.slice(0, Math.max(3, Math.ceil(memory.text.length * 0.62))) : memory.text,
+        text:
+          index % 3 === 0
+            ? memory.text.slice(0, Math.max(3, Math.ceil(memory.text.length * 0.62)))
+            : memory.text,
       })),
     },
     presence: {
@@ -222,7 +216,10 @@ export const motherMoonCopy: Record<
       ],
       memories: enMemories.map((memory, index) => ({
         ...memory,
-        text: index % 3 === 0 ? memory.text.slice(0, Math.max(3, Math.ceil(memory.text.length * 0.62))) : memory.text,
+        text:
+          index % 3 === 0
+            ? memory.text.slice(0, Math.max(3, Math.ceil(memory.text.length * 0.62)))
+            : memory.text,
       })),
     },
     presence: {
@@ -253,10 +250,7 @@ export const motherMoonCopy: Record<
     },
     closing: {
       jp: "蝕は覚えている。",
-      lines: [
-        "Some want to restore the world.",
-        "Others believe it should never remember.",
-      ],
+      lines: ["Some want to restore the world.", "Others believe it should never remember."],
       signature: "THE ECLIPSE REMEMBERS.",
       archiveSeed: ["ARCHIVE / 00", "MEMORY TRACE", "DATE UNKNOWN", "RECORD RECOVERED"],
     },

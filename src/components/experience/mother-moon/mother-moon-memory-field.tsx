@@ -8,10 +8,7 @@ type MotherMoonMemoryFieldProps = {
   unstable?: boolean;
 };
 
-export function MotherMoonMemoryField({
-  memories,
-  unstable = false,
-}: MotherMoonMemoryFieldProps) {
+export function MotherMoonMemoryField({ memories, unstable = false }: MotherMoonMemoryFieldProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const timersRef = useRef<Map<string, number>>(new Map());
   const [activeIds, setActiveIds] = useState<Set<string>>(() => new Set());
@@ -70,11 +67,14 @@ export function MotherMoonMemoryField({
         setMode("coarse");
         let index = 0;
         activate(memories[index]?.id ?? "");
-        interval = window.setInterval(() => {
-          index = (index + 1) % memories.length;
-          const memory = memories[index];
-          if (memory) activate(memory.id);
-        }, unstable ? 2200 : 2900);
+        interval = window.setInterval(
+          () => {
+            index = (index + 1) % memories.length;
+            const memory = memories[index];
+            if (memory) activate(memory.id);
+          },
+          unstable ? 2200 : 2900,
+        );
         return;
       }
 
@@ -93,7 +93,8 @@ export function MotherMoonMemoryField({
         const dx = (pointerX - memory.x) * (rect.width / 100);
         const dy = (pointerY - memory.y) * (rect.height / 100);
         const distance = Math.hypot(dx, dy);
-        const radius = Math.min(rect.width, rect.height) * (memory.weight === "phrase" ? 0.22 : 0.17);
+        const radius =
+          Math.min(rect.width, rect.height) * (memory.weight === "phrase" ? 0.22 : 0.17);
         if (distance <= radius) activate(memory.id);
       });
     };
@@ -115,14 +116,14 @@ export function MotherMoonMemoryField({
   return (
     <div
       ref={rootRef}
-      className={`ix-mm-memory-field is-${mode}${unstable ? " is-unstable" : ""}`}
+      className={`ix-mm-memory-field is-${mode}${unstable ? "is-unstable" : ""}`}
       aria-hidden="true"
       data-mm-memory-field
     >
       {memories.map((memory) => (
         <span
           key={memory.id}
-          className={`ix-mm-memory ix-mm-memory--${memory.weight}${activeIds.has(memory.id) ? " is-visible" : ""}`}
+          className={`ix-mm-memory ix-mm-memory--${memory.weight}${activeIds.has(memory.id) ? "is-visible" : ""}`}
           style={{ left: `${memory.x}%`, top: `${memory.y}%` }}
           data-memory-id={memory.id}
         >

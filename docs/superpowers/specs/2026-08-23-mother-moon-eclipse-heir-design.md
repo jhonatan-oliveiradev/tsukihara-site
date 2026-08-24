@@ -1,12 +1,15 @@
 # Mother Moon / A Herdeira do Eclipse — Design Spec
 
 ## Status
+
 Approved in chat on 2026-08-23. This document formalizes the approved architecture before implementation.
 
 ## Placement
+
 Insert the new chapter immediately after **Bestiário & Bosses** and before the sections that currently follow it. The chapter is a narrative deceleration: less combat and information density, more presence, mystery, silence and philosophical weight.
 
 ## Narrative Goal
+
 The visitor must leave understanding that:
 
 1. the Mother Moon is the spiritual memory-core of Tsukihara;
@@ -18,9 +21,11 @@ The visitor must leave understanding that:
 The section must not identify Tsukino as the final boss or reveal her final form, moveset, ultimate weapon, arena, confrontation with Akari, boss UI, or full plan.
 
 ## Visual Principle
+
 This chapter must be significantly emptier than Bestiary & Bosses. The visual language is monumental, contemplative and unsettling rather than informational.
 
 Palette:
+
 - near-black;
 - moon ivory;
 - pale rose;
@@ -28,6 +33,7 @@ Palette:
 - extremely restrained glow.
 
 Typography:
+
 - `var(--display)` for monumental headings and quotes;
 - `var(--sans)` for eyebrow and microcopy;
 - `JpRevealText` only for selected anchor moments such as opening and closing, not every title.
@@ -35,6 +41,7 @@ Typography:
 Motion rule: **smaller movement, longer duration**.
 
 Avoid:
+
 - glitch;
 - scan language from Bestiary;
 - Splash Cursor;
@@ -44,6 +51,7 @@ Avoid:
 - heavy WebGL.
 
 ## Assets
+
 Use the real package already present under `public/08-mother-moon`:
 
 - M01 `/08-mother-moon/m01-mother-moon-hero.png`
@@ -60,6 +68,7 @@ Use the real package already present under `public/08-mother-moon`:
 The asset map must be centralized in `src/content/mother-moon.ts` so art direction can be tuned without rewriting components.
 
 ## Architecture
+
 Create a dedicated chapter subsystem:
 
 - `src/content/mother-moon.ts`
@@ -104,6 +113,7 @@ Headline:
 Narrative copy establishes that before the Nine Realms were borders, there was memory, and the Moon preserves names, paths, promises, places and people.
 
 ### Composition
+
 - M01 is the visual protagonist and occupies roughly 65–75% of the perceived viewport height on desktop.
 - The Moon is slightly offset rather than centered as a conventional poster.
 - Large negative space is preserved around it.
@@ -111,6 +121,7 @@ Narrative copy establishes that before the Nine Realms were borders, there was m
 - M08 may appear subtly at the lower edge as a black-water reflection.
 
 ### Passive motion
+
 - 1–2% breathing scale;
 - slow halo modulation;
 - very small orbital drift of M03;
@@ -118,6 +129,7 @@ Narrative copy establishes that before the Nine Realms were borders, there was m
 - no continuous camera movement.
 
 ### Memory proximity interaction — approved Option A
+
 Desktop with fine pointer only:
 
 - invisible memory zones exist around/over the Moon;
@@ -128,6 +140,7 @@ Desktop with fine pointer only:
 - no cursor replacement, no particle trail, no click requirement.
 
 Possible memories include:
+
 - `HANAMORI`
 - `PROMISE`
 - `HOME`
@@ -150,12 +163,15 @@ then:
 `Começa quando ela deixa de lembrar.`
 
 ### Visual transition
+
 M01 transitions toward M02 using region-based masks/shadow wipes rather than a simple full-frame crossfade. Some parts of the Moon lose information before others.
 
 M03 changes meaning from orbiting memories to lost fragments. M08 may show a reflection that appears more complete than the sky above, suggesting that water remembers what the Moon has forgotten.
 
 ### Interaction evolution
+
 Memory proximity still works, but memories become unstable:
+
 - incomplete words;
 - reduced dwell time;
 - earlier erosion;
@@ -168,6 +184,7 @@ Narrative copy explains that what leaves the Moon's memory leaves the world: fir
 Tsukino is revealed progressively rather than introduced as a character card.
 
 Preferred reveal order:
+
 1. M04 — silhouette;
 2. M06 — hand / ornament detail;
 3. M05 — eye detail;
@@ -190,6 +207,7 @@ Controlled identity reveal:
 Do not use boss-card grammar, stats, threat metadata, realm fields, classified-record UI, or gameplay terminology.
 
 ### Main quote
+
 The quote is one of the largest typographic moments of the entire site:
 
 `“Se ninguém lembrar da dor, ninguém precisará carregá-la.”`
@@ -197,6 +215,7 @@ The quote is one of the largest typographic moments of the entire site:
 Most imagery should recede around the quote to maximize negative space.
 
 ### Akari counterpoint
+
 After a deliberate pause:
 
 `“Então também esqueceríamos por que ainda vale a pena lutar.”`
@@ -215,6 +234,7 @@ Create an almost symmetrical composition without turning it into a poll or UI ch
 Left:
 
 `ESQUECER`
+
 - silêncio
 - paz
 - ausência
@@ -223,6 +243,7 @@ Left:
 Right:
 
 `LEMBRAR`
+
 - cicatriz
 - identidade
 - história
@@ -231,6 +252,7 @@ Right:
 A restrained Kintsugi fracture runs through the center. The composition must allow Tsukino's philosophy to feel genuinely tempting; it must not visually label one side as obviously correct.
 
 Narrative thesis:
+
 - Tsukino wants to erase the rupture;
 - Akari chooses to restore it;
 - Tsukihara exists between these two responses.
@@ -252,7 +274,9 @@ Signature:
 `THE ECLIPSE REMEMBERS.`
 
 ### Transition seed for the next chapter
+
 The monumental image gradually loses scale and small documentary forms begin appearing near the edges:
+
 - document frames;
 - text fragments;
 - dates;
@@ -261,6 +285,7 @@ The monumental image gradually loses scale and small documentary forms begin app
 This prepares **Memórias Perdidas / Arquivos de Tsukihara** without implementing that chapter yet.
 
 ## Scroll and Layout Strategy
+
 Do not create another long 400–500svh pinned cinematic timeline.
 
 Use natural scroll with high-height acts and local sticky compositions where useful:
@@ -274,19 +299,24 @@ Use natural scroll with high-height acts and local sticky compositions where use
 Long fades/dissolves can be driven by IntersectionObserver, GSAP ScrollTrigger with short local ranges, or CSS where sufficient. Avoid a single timeline controlling the whole chapter.
 
 ## Responsiveness
+
 ### Desktop
+
 - monumental Moon scale;
 - generous negative space;
 - Tsukino appears laterally and partially;
 - proximity memory field enabled for fine pointer.
 
 ### Tablet
+
 - reduce Moon and Tsukino scale;
 - preserve main compositions;
 - prefer tap/automatic memory moments rather than requiring precise hover.
 
 ### Mobile
+
 Explicit vertical order:
+
 1. Mother Moon;
 2. forgetting;
 3. Lady Tsukino;
@@ -297,6 +327,7 @@ Explicit vertical order:
 Do not miniaturize the desktop composition. No required hover. Memory fragments appear automatically and conservatively.
 
 ## Accessibility
+
 - all narrative text exists in the DOM;
 - decorative images use appropriate empty alt semantics where copy already supplies meaning;
 - no lore depends exclusively on hover or motion;
@@ -306,6 +337,7 @@ Do not miniaturize the desktop composition. No required hover. Memory fragments 
 - reduced-motion mode presents stable readable states for all five acts.
 
 ## Performance
+
 - `next/image` for M01–M10;
 - no heavy WebGL dependency;
 - no full-screen continuously running canvas;
@@ -315,14 +347,17 @@ Do not miniaturize the desktop composition. No required hover. Memory fragments 
 - use transforms, opacity and masks/clip-path conservatively.
 
 ## Localization
+
 Provide complete PT and EN content in `src/content/mother-moon.ts`.
 
 Japanese reveal strings may be used for opening/closing anchor titles only. Do not overuse `JpRevealText` throughout the section.
 
 ## Integration Boundary
+
 The chapter must be imported and placed after `BestiaryBossesChapter` in the immersive experience flow. Existing Bestiary/Bosses, Companions, Gameplay, Kintsugi and Akari code must not be redesigned as part of this task.
 
 ## Validation
+
 Primary acceptance criteria:
 
 - section clearly feels quieter and more monumental than Bestiary;
@@ -338,6 +373,7 @@ Primary acceptance criteria:
 - Prettier, ESLint, TypeScript and production build pass before completion is claimed.
 
 ## Out of Scope
+
 - final boss reveal;
 - Tsukino final form;
 - combat or moveset;

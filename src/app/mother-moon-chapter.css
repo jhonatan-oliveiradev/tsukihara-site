@@ -122,7 +122,12 @@
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(230 224 215 / 0.1), rgb(230 224 215 / 0.025) 42%, transparent 68%);
+  background: radial-gradient(
+    circle,
+    rgb(230 224 215 / 0.1),
+    rgb(230 224 215 / 0.025) 42%,
+    transparent 68%
+  );
   filter: blur(1.4rem);
   animation: ixMmHalo 8s ease-in-out infinite;
 }
@@ -543,7 +548,12 @@
   top: 6%;
   bottom: 6%;
   width: 1px;
-  background: linear-gradient(transparent, rgb(179 149 98 / 0.55), rgb(179 149 98 / 0.18), transparent);
+  background: linear-gradient(
+    transparent,
+    rgb(179 149 98 / 0.55),
+    rgb(179 149 98 / 0.18),
+    transparent
+  );
   box-shadow: 0 0 26px rgb(179 149 98 / 0.15);
 }
 
@@ -576,7 +586,12 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 42%, transparent 10%, rgb(4 4 6 / 0.28) 48%, rgb(4 4 6 / 0.88) 100%),
+    radial-gradient(
+      circle at 50% 42%,
+      transparent 10%,
+      rgb(4 4 6 / 0.28) 48%,
+      rgb(4 4 6 / 0.88) 100%
+    ),
     linear-gradient(to top, #040406 0%, transparent 35%, rgb(4 4 6 / 0.35) 100%);
 }
 
@@ -672,7 +687,7 @@
   }
 
   .ix-mm-memory-field {
-    inset-left: 37%;
+    left: 37%;
   }
 
   .ix-mm-presence__gallery {

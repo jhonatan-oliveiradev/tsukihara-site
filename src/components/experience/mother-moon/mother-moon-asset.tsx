@@ -1,8 +1,5 @@
 import Image from "next/image";
-import {
-  motherMoonAssets,
-  type MotherMoonAssetCode,
-} from "@/content/mother-moon";
+import { motherMoonAssets, type MotherMoonAssetCode } from "@/content/mother-moon";
 
 type MotherMoonAssetProps = {
   code: MotherMoonAssetCode;
