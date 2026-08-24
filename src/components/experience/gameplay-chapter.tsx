@@ -243,6 +243,26 @@ export function GameplayChapter({ locale }: GameplayChapterProps) {
         })}
       </div>
 
+      <section
+        className="ix-gameplay-reel"
+        aria-label={locale === "pt" ? "Registro de combate" : "Combat reel"}
+        data-reveal
+      >
+        <div className="ix-gameplay-reel__meta">
+          <span>COMBAT REEL / FIELD FOOTAGE</span>
+          <small>2.5D · ACTION · EXPLORATION</small>
+        </div>
+        <div className="ix-gameplay-reel__frame">
+          <video autoPlay muted loop playsInline preload="metadata">
+            <source src="/assets_hq/video_battle.mp4" type="video/mp4" />
+          </video>
+          <span className="ix-gameplay-reel__veil" aria-hidden="true" />
+          <span className="ix-gameplay-reel__code" aria-hidden="true">
+            KINTSUGI COMBAT / 04
+          </span>
+        </div>
+      </section>
+
       <div className="ix-gameplay__closing" data-reveal>
         <div className="ix-gameplay__closing-visual" aria-hidden="true">
           <Image
