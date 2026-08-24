@@ -74,6 +74,163 @@
   transform-origin: center;
 }
 
+.ix-final-footer {
+  min-height: 102svh;
+}
+
+.ix-final-footer__inner {
+  position: relative;
+  z-index: 8;
+}
+
+.ix-final-footer__fade {
+  z-index: 5;
+  pointer-events: none;
+}
+
+.ix-final-footer__world {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ix-final-footer__world::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background:
+    radial-gradient(circle at 50% 23%, transparent 0 19%, rgb(0 0 0 / 0.14) 51%, rgb(0 0 0 / 0.56) 100%),
+    linear-gradient(180deg, transparent 0 28%, rgb(0 0 0 / 0.2) 56%, #000 100%);
+}
+
+.ix-final-footer__world-layer {
+  position: absolute;
+  will-change: transform, opacity;
+}
+
+.ix-final-footer__world-layer img {
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.ix-final-footer__world-layer--ruins {
+  left: 4vw;
+  bottom: 17svh;
+  width: min(35vw, 42rem);
+  height: 50svh;
+  opacity: 0.13;
+  filter: grayscale(0.5) brightness(0.34) saturate(0.6);
+}
+
+.ix-final-footer__world-layer--branch {
+  top: -6svh;
+  left: -8vw;
+  width: min(38vw, 43rem);
+  height: 62svh;
+  opacity: 0.32;
+  transform: rotate(-3deg);
+  filter: saturate(0.58) brightness(0.42) contrast(1.08)
+    drop-shadow(0 2rem 3.5rem rgb(0 0 0 / 0.46));
+}
+
+.ix-final-footer__world-layer--lantern {
+  left: 2vw;
+  bottom: -1svh;
+  width: min(15vw, 17rem);
+  height: 35svh;
+  opacity: 0.54;
+  filter: saturate(0.62) brightness(0.46)
+    drop-shadow(0 1.5rem 2.2rem rgb(0 0 0 / 0.62));
+}
+
+.ix-final-footer__world-layer--bush {
+  right: -5vw;
+  bottom: -4svh;
+  width: min(36vw, 42rem);
+  height: 42svh;
+  opacity: 0.5;
+  filter: saturate(0.6) brightness(0.37) contrast(1.08);
+}
+
+.ix-final-footer__world-layer--stones {
+  left: 24vw;
+  bottom: -5svh;
+  width: min(35vw, 40rem);
+  height: 24svh;
+  opacity: 0.48;
+  filter: saturate(0.48) brightness(0.34) contrast(1.14);
+}
+
+.ix-final-footer__world-layer--grass {
+  right: -5vw;
+  bottom: -7svh;
+  width: min(52vw, 62rem);
+  height: 35svh;
+  opacity: 0.52;
+  transform-origin: bottom right;
+  filter: saturate(0.58) brightness(0.4);
+}
+
+.ix-final-footer__world-layer--leaves {
+  top: 4svh;
+  right: 4vw;
+  width: min(34vw, 38rem);
+  height: 45svh;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  animation: ix-final-footer-leaves-drift 15s ease-in-out infinite alternate;
+}
+
+.ix-final-footer__hud {
+  position: absolute;
+  z-index: 9;
+  top: clamp(3rem, 7svh, 5rem);
+  left: clamp(1.5rem, 5vw, 6rem);
+  right: clamp(1.5rem, 5vw, 6rem);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: rgb(238 231 220 / 0.28);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.22em;
+  pointer-events: none;
+}
+
+.ix-final-footer__hud i {
+  width: min(8rem, 14vw);
+  height: 1px;
+  background: linear-gradient(90deg, rgb(184 154 104 / 0.34), transparent);
+}
+
+.ix-final-footer__link {
+  position: relative;
+}
+
+.ix-final-footer__link::before {
+  content: "";
+  position: absolute;
+  left: -1rem;
+  top: 50%;
+  width: 0.34rem;
+  height: 0.34rem;
+  border: 1px solid rgb(184 154 104 / 0.28);
+  transform: translateY(-50%) rotate(45deg) scale(0.55);
+  opacity: 0;
+  transition:
+    opacity 260ms ease,
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-final-footer__link:hover::before,
+.ix-final-footer__link:focus-visible::before {
+  opacity: 1;
+  transform: translateY(-50%) rotate(45deg) scale(1);
+}
+
 @keyframes ix-final-moon-depth-breathe {
   from {
     opacity: 0.9;
@@ -82,6 +239,30 @@
   to {
     opacity: 1;
     transform: scale(1.014);
+  }
+}
+
+@keyframes ix-final-footer-leaves-drift {
+  from {
+    transform: translate3d(-0.8rem, 0.6rem, 0) rotate(-1deg);
+  }
+  to {
+    transform: translate3d(1rem, -0.7rem, 0) rotate(1.5deg);
+  }
+}
+
+@media (max-width: 1180px) and (min-width: 901px) {
+  .ix-final-footer__world-layer--branch {
+    left: -12vw;
+    width: 44vw;
+  }
+
+  .ix-final-footer__world-layer--lantern {
+    width: 18vw;
+  }
+
+  .ix-final-footer__world-layer--bush {
+    width: 42vw;
   }
 }
 
@@ -122,14 +303,69 @@
   .ix-final-footer__legal {
     order: 6;
   }
+
+  .ix-final-footer__hud {
+    top: 4.5rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    font-size: 0.43rem;
+  }
+
+  .ix-final-footer__hud span:last-child {
+    display: none;
+  }
+
+  .ix-final-footer__world-layer--ruins,
+  .ix-final-footer__world-layer--leaves {
+    display: none;
+  }
+
+  .ix-final-footer__world-layer--branch {
+    top: 1rem;
+    left: -18vw;
+    width: 68vw;
+    height: 25rem;
+    opacity: 0.18;
+  }
+
+  .ix-final-footer__world-layer--lantern {
+    left: -2rem;
+    bottom: 0;
+    width: 8rem;
+    height: 15rem;
+    opacity: 0.38;
+  }
+
+  .ix-final-footer__world-layer--stones {
+    left: 14vw;
+    width: 58vw;
+    height: 10rem;
+  }
+
+  .ix-final-footer__world-layer--bush {
+    right: -25vw;
+    width: 76vw;
+    height: 18rem;
+    opacity: 0.34;
+  }
+
+  .ix-final-footer__world-layer--grass {
+    right: -28vw;
+    width: 88vw;
+    height: 16rem;
+    opacity: 0.36;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ix-final-layer--moon .ix-final-layer__image {
+  .ix-final-layer--moon .ix-final-layer__image,
+  .ix-final-footer__world-layer--leaves {
     animation: none;
   }
 
-  .ix-final-layer {
+  .ix-final-layer,
+  .ix-final-footer__world-layer {
     translate: none !important;
+    transform: none !important;
   }
 }
