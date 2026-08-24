@@ -1,0 +1,104 @@
+:root {
+  --ts-scroll-track: #050507;
+  --ts-scroll-thumb: #66303a;
+  --ts-scroll-thumb-hover: #92505b;
+}
+
+html {
+  scrollbar-color: var(--ts-scroll-thumb) var(--ts-scroll-track);
+  scrollbar-width: thin;
+}
+
+* {
+  scrollbar-color: var(--ts-scroll-thumb) var(--ts-scroll-track);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ts-scroll-track);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--ts-scroll-track);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #7f3b47, #4b252c);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--ts-scroll-thumb-hover), #63313a);
+}
+
+/* The Kintsugi divider is an authored transparent asset, not a stretchable band. */
+.ix-kintsugi-entry-veil img {
+  right: 50% !important;
+  bottom: -18% !important;
+  left: auto !important;
+  width: min(92vw, 1380px) !important;
+  height: 58% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: translateX(50%);
+}
+
+/* Reduce oversized editorial openings without flattening cinematic climaxes. */
+.ix-realm-atlas-head h2,
+.ix-world-map__intro h2,
+.akari-intro h2,
+.ix-gameplay__intro h2,
+.ix-forbidden-intro h2,
+.ix-archive-intro h2 {
+  font-size: clamp(3.15rem, 5.9vw, 7rem);
+}
+
+.ix-realm-atlas-head,
+.ix-world-map__intro,
+.ix-gameplay__intro,
+.ix-forbidden-intro,
+.ix-archive-intro {
+  padding-top: clamp(4.75rem, 8vw, 7.5rem);
+  padding-bottom: clamp(3.75rem, 6.5vw, 6rem);
+}
+
+.akari-intro {
+  min-height: 106svh;
+  padding-top: clamp(6rem, 10vh, 8.5rem);
+  padding-bottom: clamp(5rem, 9vh, 7.5rem);
+}
+
+.ix-realm-index,
+.ix-world-map__inspector,
+.ix-world-map__sheet,
+.ix-archive-horizontal-track {
+  scrollbar-width: thin;
+}
+
+@media (max-width: 900px) {
+  .ix-kintsugi-entry-veil img {
+    right: 50% !important;
+    bottom: -10% !important;
+    left: auto !important;
+    width: min(122vw, 980px) !important;
+    height: 58% !important;
+    transform: translateX(50%);
+  }
+
+  .ix-realm-atlas-head h2,
+  .ix-world-map__intro h2,
+  .akari-intro h2,
+  .ix-gameplay__intro h2,
+  .ix-forbidden-intro h2,
+  .ix-archive-intro h2 {
+    font-size: clamp(2.55rem, 11vw, 4.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
