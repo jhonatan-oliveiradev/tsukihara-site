@@ -29,6 +29,7 @@ import "./mother-moon-density-refinement.css";
 import "./mother-moon-fragment-drag.css";
 import "./lost-memories-chapter.css";
 import "./lost-memories-crops-refinement.css";
+import "./lost-memories-horizontal.css";
 import "./final-journey-closing.css";
 import "./final-journey-closing-refinement.css";
 import "./final-journey-continuity.css";
