@@ -4,6 +4,7 @@ import { useLayoutEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HERO_BREAKPOINTS } from "@/components/experience/hero/constants/hero-scene";
+import { HERO_ECLIPSE_BEATS } from "@/components/experience/hero/hero-timeline-math";
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 const range = (progress: number, start: number, end: number) =>
@@ -90,6 +91,8 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
     }
 
     const timeline = gsap.timeline({ defaults: { ease: "none" } });
+    const contactAt = HERO_ECLIPSE_BEATS.contact;
+    const crimsonAt = HERO_ECLIPSE_BEATS.crimson;
 
     if (reduced) {
       gsap.set(q("[data-hero-eclipse-curtain]"), { clipPath: "circle(0% at 67% 24%)" });
@@ -101,15 +104,18 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           { scale: 1.012, xPercent: -0.2, yPercent: -0.12, duration: 0.16 },
           0,
         )
-        .to(q("[data-copy-intro]"), { y: -16, opacity: 0.55, duration: 0.28 }, 0.9)
-        .to(q("[data-copy-intro]"), { y: -32, opacity: 0, duration: 0.34 }, 1.55)
-        .to(q("[data-copy-omen]"), { y: 0, opacity: 1, duration: 0.42, ease: "power2.out" }, 1.65)
-        .to(q("[data-phase-serene]"), { opacity: 0, duration: 0.24 }, 1.55)
-        .to(q("[data-phase-omen]"), { opacity: 1, duration: 0.24 }, 1.8)
         .to(q("[data-moon-shadow]"), { xPercent: -54, opacity: 0.22, duration: 0.14 }, 0.24)
         .to(q("[data-sky-crimson]"), { opacity: 0.12, duration: 0.16 }, 0.24)
         .to(q("[data-moon-after]"), { opacity: 0.12, duration: 0.14 }, 0.3)
         .to(q("[data-temple-after], [data-mist-after]"), { opacity: 0.12, duration: 0.16 }, 0.3)
+        .to(q("[data-copy-intro]"), { y: -28, opacity: 0, duration: 0.12 }, contactAt)
+        .to(
+          q("[data-copy-omen]"),
+          { y: 0, opacity: 1, duration: 0.14, ease: "power2.out" },
+          contactAt,
+        )
+        .to(q("[data-phase-serene]"), { opacity: 0, duration: 0.12 }, contactAt)
+        .to(q("[data-phase-omen]"), { opacity: 1, duration: 0.12 }, contactAt)
         .to(
           q("[data-moon-shadow]"),
           { xPercent: -4, opacity: 0.62, duration: 0.16, ease: "power1.inOut" },
@@ -128,14 +134,6 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           { opacity: 0.78, duration: 0.18 },
           0.38,
         )
-        .to(q("[data-copy-omen]"), { y: -24, opacity: 0, duration: 0.38 }, 4.35)
-        .to(
-          q("[data-copy-eclipse]"),
-          { y: 0, opacity: 1, duration: 0.42, ease: "power2.out" },
-          4.55,
-        )
-        .to(q("[data-phase-omen]"), { opacity: 0, duration: 0.24 }, 4.35)
-        .to(q("[data-phase-eclipse]"), { opacity: 1, duration: 0.24 }, 4.65)
         .to(q("[data-kanji-memory]"), { opacity: 0.025, yPercent: -8, duration: 0.18 }, 0.5)
         .to(q("[data-kanji-eclipse]"), { opacity: 0.08, scale: 1, duration: 0.18 }, 0.52)
         .to(q("[data-moon-shadow]"), { xPercent: 34, opacity: 0.78, duration: 0.18 }, 0.5)
@@ -169,6 +167,14 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
           { opacity: 0.72, duration: 0.18 },
           0.58,
         )
+        .to(q("[data-copy-omen]"), { y: -20, opacity: 0, duration: 0.12 }, crimsonAt - 0.04)
+        .to(
+          q("[data-copy-eclipse]"),
+          { y: 0, opacity: 1, duration: 0.14, ease: "power2.out" },
+          crimsonAt,
+        )
+        .to(q("[data-phase-omen]"), { opacity: 0, duration: 0.12 }, crimsonAt - 0.04)
+        .to(q("[data-phase-eclipse]"), { opacity: 1, duration: 0.12 }, crimsonAt)
         .to(q("[data-sky-crimson]"), { opacity: 0.94, duration: 0.18 }, 0.68)
         .to(after, { opacity: 1, duration: 0.18 }, 0.68)
         .to(before, { opacity: 0.06, duration: 0.18 }, 0.68)

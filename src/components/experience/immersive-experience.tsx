@@ -23,7 +23,6 @@ import { KintsugiLunarChapter } from "@/components/experience/kintsugi-lunar-cha
 import { MotherMoonChapter } from "@/components/experience/mother-moon-chapter";
 import { NavLabelSwap } from "@/components/experience/nav-label-swap";
 import { RealmAtlas } from "@/components/experience/realm-atlas";
-import { TrailerChapter } from "@/components/experience/trailer-chapter";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
 const ImmersiveWorld = dynamic(
@@ -138,35 +137,6 @@ export function ImmersiveExperience() {
           0.05,
         )
         .fromTo("[data-kintsugi-line]", { scaleY: 0.04 }, { scaleY: 1, ease: "none" }, 0.12);
-
-      gsap.fromTo(
-        "[data-trailer-video]",
-        { scale: 1.08 },
-        {
-          scale: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "[data-trailer-stage]",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1.15,
-          },
-        },
-      );
-      gsap.fromTo(
-        "[data-trailer-veil]",
-        { clipPath: "inset(0 0 0 0)" },
-        {
-          clipPath: "inset(0 0 0 100%)",
-          ease: "power2.inOut",
-          scrollTrigger: {
-            trigger: "[data-trailer-stage]",
-            start: "top 78%",
-            end: "top 34%",
-            scrub: 0.8,
-          },
-        },
-      );
 
       gsap.fromTo(
         "[data-character-stage]",
@@ -366,7 +336,6 @@ export function ImmersiveExperience() {
           <CinematicHero copy={copy} locale={locale} />
           <KintsugiChapter copy={copy} locale={locale} />
           <RealmAtlas copy={copy} locale={locale} />
-          <TrailerChapter copy={copy} locale={locale} />
           <CharacterSpotlight copy={copy} locale={locale} />
           <KintsugiLunarChapter locale={locale} />
           <GameplayChapter locale={locale} />

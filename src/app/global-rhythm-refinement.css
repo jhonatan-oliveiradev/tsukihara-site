@@ -1,0 +1,376 @@
+:root {
+  --ts-scroll-track: #050507;
+  --ts-scroll-thumb: #66303a;
+  --ts-scroll-thumb-hover: #92505b;
+}
+
+html {
+  scrollbar-color: var(--ts-scroll-thumb) var(--ts-scroll-track);
+  scrollbar-width: thin;
+}
+
+* {
+  scrollbar-color: var(--ts-scroll-thumb) var(--ts-scroll-track);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ts-scroll-track);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--ts-scroll-track);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #7f3b47, #4b252c);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--ts-scroll-thumb-hover), #63313a);
+}
+
+/* The Kintsugi divider is an authored transparent asset, not a stretchable band. */
+.ix-kintsugi-entry-veil img {
+  right: 50% !important;
+  bottom: -18% !important;
+  left: auto !important;
+  width: min(92vw, 1380px) !important;
+  height: 58% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: translateX(50%);
+}
+
+/* Reduce oversized editorial openings without flattening cinematic climaxes. */
+.ix-realm-atlas-head h2,
+.ix-world-map__intro h2,
+.akari-intro h2,
+.ix-gameplay__intro h2,
+.ix-forbidden-intro h2,
+.ix-archive-intro h2 {
+  font-size: clamp(3.15rem, 5.9vw, 7rem);
+}
+
+.ix-realm-atlas-head,
+.ix-world-map__intro,
+.ix-gameplay__intro,
+.ix-forbidden-intro,
+.ix-archive-intro {
+  padding-top: clamp(4.75rem, 8vw, 7.5rem);
+  padding-bottom: clamp(3.75rem, 6.5vw, 6rem);
+}
+
+.akari-intro {
+  min-height: 106svh;
+  padding-top: clamp(6rem, 10vh, 8.5rem);
+  padding-bottom: clamp(5rem, 9vh, 7.5rem);
+}
+
+/* Water displacement: the canvas replaces the old lens + CSS rings. */
+.ix-ripple-distortion__water {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ix-ripple-distortion__water canvas,
+.ix-ripple-distortion__canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ix-ripple-distortion__shader,
+.ix-ripple-distortion__waves {
+  display: none !important;
+}
+
+.ix-ripple-distortion__tint {
+  z-index: 3;
+  opacity: 0 !important;
+  background: radial-gradient(
+    circle 180px at var(--ripple-x) var(--ripple-y),
+    color-mix(in srgb, var(--ripple-tint) 12%, transparent),
+    transparent 72%
+  );
+}
+
+.ix-ripple-distortion.is-active .ix-ripple-distortion__tint {
+  opacity: 0.2 !important;
+}
+
+/* Nine Realms becomes one dominant stage + a bounded internal index. */
+@media (min-width: 901px) {
+  .ix-realm-atlas {
+    padding-bottom: clamp(4rem, 7vw, 6rem);
+  }
+
+  .ix-realm-atlas-grid {
+    min-height: 0;
+    align-items: start;
+  }
+
+  .ix-realm-stage {
+    min-height: clamp(430px, 58svh, 640px);
+  }
+
+  .ix-realm-index {
+    display: block;
+    max-height: min(58svh, 35rem);
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding-right: 0.4rem;
+    scrollbar-gutter: stable;
+  }
+
+  .ix-realm-index button {
+    min-height: 4.35rem;
+    padding-top: 0.72rem;
+    padding-bottom: 0.72rem;
+  }
+
+  /* Seven detail beats no longer need more than six viewports of runway. */
+  .akari-details--mosaic {
+    min-height: 455svh;
+  }
+
+  .akari-closing {
+    position: relative;
+    z-index: 12;
+    margin-top: -8svh;
+    padding-top: clamp(7rem, 13vh, 10rem);
+    background: linear-gradient(180deg, rgb(2 3 5 / 0) 0%, #020305 14%, #020305 100%);
+  }
+}
+
+.ix-world-map__inspector,
+.ix-world-map__inspector-content,
+.ix-world-map__sheet,
+.ix-world-map__sheet *,
+.ix-realm-stage-copy,
+.ix-realm-stage-copy * {
+  min-width: 0;
+}
+
+.ix-world-map__inspector {
+  width: min(22rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  overflow-x: clip;
+}
+
+.ix-world-map__inspector-content,
+.ix-world-map__sheet {
+  overflow-x: clip;
+}
+
+.ix-world-map__inspector h3,
+.ix-world-map__inspector p,
+.ix-world-map__inspector dd,
+.ix-world-map__sheet h3,
+.ix-world-map__sheet p,
+.ix-world-map__sheet dd {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Bestiary cards need explicit stacking because their editorial grid overlaps. */
+.ix-bestiary-grid {
+  overflow: visible;
+}
+
+.ix-bestiary-grid .ix-archive-specimen {
+  z-index: 1;
+}
+
+.ix-bestiary-grid .ix-archive-specimen:hover,
+.ix-bestiary-grid .ix-archive-specimen:focus-visible {
+  z-index: 20;
+}
+
+.ix-bestiary-grid .ix-archive-specimen.is-active {
+  z-index: 24;
+}
+
+.ix-archive-break {
+  height: 2rem;
+  margin-bottom: clamp(2rem, 4vw, 4rem);
+}
+
+.ix-boss-index-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ix-boss-index-editorial {
+  margin-bottom: clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+.ix-boss-index-editorial > span {
+  display: block;
+  color: rgb(230 224 215 / 0.44);
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ix-boss-index-editorial h2 {
+  max-width: 9ch;
+  margin: 0.85rem 0 0;
+  color: var(--bone);
+  font-family: var(--display);
+  font-size: clamp(1.65rem, 2.45vw, 3.05rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.ix-boss-index {
+  margin-top: auto;
+}
+
+/* The old trailer is now contextual footage inside Gameplay. */
+.ix-gameplay-reel {
+  position: relative;
+  z-index: 8;
+  width: min(90vw, 1240px);
+  margin: clamp(3.5rem, 6vw, 6rem) auto clamp(4rem, 7vw, 7rem);
+}
+
+.ix-gameplay-reel__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: center;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgb(230 224 215 / 0.12);
+  color: rgb(230 224 215 / 0.46);
+  font-family: var(--sans);
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+}
+
+.ix-gameplay-reel__meta span {
+  color: rgb(230 224 215 / 0.72);
+}
+
+.ix-gameplay-reel__frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  max-height: 55svh;
+  margin-top: 1rem;
+  border: 1px solid rgb(230 224 215 / 0.1);
+  background: #030305;
+  box-shadow: 0 2rem 5rem rgb(0 0 0 / 0.32);
+}
+
+.ix-gameplay-reel__frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.76) contrast(1.06) brightness(0.78);
+}
+
+.ix-gameplay-reel__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(2 3 5 / 0.3), transparent 30%, transparent 74%, rgb(2 3 5 / 0.22)),
+    linear-gradient(180deg, rgb(2 3 5 / 0.25), transparent 24%, transparent 70%, rgb(2 3 5 / 0.64));
+}
+
+.ix-gameplay-reel__code {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1rem;
+  color: rgb(236 224 211 / 0.46);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+}
+
+.ix-realm-index,
+.ix-world-map__inspector,
+.ix-world-map__sheet,
+.ix-archive-horizontal-track {
+  scrollbar-width: thin;
+}
+
+@media (max-width: 900px) {
+  .ix-kintsugi-entry-veil img {
+    right: 50% !important;
+    bottom: -10% !important;
+    left: auto !important;
+    width: min(122vw, 980px) !important;
+    height: 58% !important;
+    transform: translateX(50%);
+  }
+
+  .ix-realm-atlas-head h2,
+  .ix-world-map__intro h2,
+  .akari-intro h2,
+  .ix-gameplay__intro h2,
+  .ix-forbidden-intro h2,
+  .ix-archive-intro h2 {
+    font-size: clamp(2.55rem, 11vw, 4.5rem);
+  }
+
+  .ix-world-map__inspector {
+    width: min(92vw, 25rem);
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  .akari-details--mosaic {
+    min-height: 520svh;
+  }
+
+  .akari-closing {
+    margin-top: 0;
+  }
+
+  .ix-boss-index-editorial {
+    padding: 1.5rem 0 1rem;
+  }
+
+  .ix-boss-index-editorial h2 {
+    max-width: 12ch;
+    font-size: clamp(1.65rem, 7vw, 2.8rem);
+  }
+
+  .ix-gameplay-reel {
+    width: calc(100vw - 32px);
+    margin-top: 3rem;
+    margin-bottom: 4rem;
+  }
+
+  .ix-gameplay-reel__meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .ix-gameplay-reel__frame {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .ix-ripple-distortion__water {
+    display: none;
+  }
+}

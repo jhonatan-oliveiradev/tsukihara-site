@@ -74,7 +74,11 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
 
   return (
     <div className="ix-archive-table" data-archive-table>
-      <section id="archive-letters" className="ix-archive-group ix-archive-group--letters">
+      <section
+        id="archive-letters"
+        className="ix-archive-group ix-archive-group--letters"
+        data-archive-panel
+      >
         <ArchiveGroupHeader index="01" title={copy.groupHeadlines.letters} />
         <div className="ix-archive-letters__surface" data-archive-surface>
           {letters.map((record, index) => (
@@ -89,7 +93,11 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
         </div>
       </section>
 
-      <section id="archive-photographs" className="ix-archive-group ix-archive-group--photographs">
+      <section
+        id="archive-photographs"
+        className="ix-archive-group ix-archive-group--photographs"
+        data-archive-panel
+      >
         <ArchiveGroupHeader index="02" title={copy.groupHeadlines.photographs} />
         <div className="ix-archive-photos__surface" data-archive-surface>
           {photographs.map((record, index) => (
@@ -115,7 +123,11 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
         </div>
       </section>
 
-      <section id="archive-relics" className="ix-archive-group ix-archive-group--relics">
+      <section
+        id="archive-relics"
+        className="ix-archive-group ix-archive-group--relics"
+        data-archive-panel
+      >
         <ArchiveGroupHeader index="03" title={copy.groupHeadlines.relics} />
         <div className="ix-archive-relics__surface" data-archive-surface>
           {relics.map((record, index) => (
@@ -124,13 +136,19 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
               record={record}
               onOpen={onOpen}
               className={`ix-archive-relic ix-archive-relic--${index + 1}`}
-              style={{ "--archive-tilt": `${[-1.5, 1.1, -0.4, 1.3, -1][index]}deg` } as CSSProperties}
+              style={
+                { "--archive-tilt": `${[-1.5, 1.1, -0.4, 1.3, -1][index]}deg` } as CSSProperties
+              }
             />
           ))}
         </div>
       </section>
 
-      <section id="archive-realms" className="ix-archive-group ix-archive-group--realms">
+      <section
+        id="archive-realms"
+        className="ix-archive-group ix-archive-group--realms"
+        data-archive-panel
+      >
         <ArchiveGroupHeader index="04" title={copy.groupHeadlines.realms} />
         <ArchiveRealmRecords
           records={copy.realmRecords}
@@ -139,7 +157,11 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
         />
       </section>
 
-      <section id="archive-lunar" className="ix-archive-group ix-archive-group--lunar">
+      <section
+        id="archive-lunar"
+        className="ix-archive-group ix-archive-group--lunar"
+        data-archive-panel
+      >
         <ArchiveGroupHeader index="05" title={copy.groupHeadlines.lunar} />
         <div className="ix-archive-lunar__surface" data-archive-surface>
           {lunarRecords.map((record, index) => (

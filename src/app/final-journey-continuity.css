@@ -34,7 +34,12 @@
 .ix-final-footer__world::before {
   background:
     linear-gradient(180deg, rgb(1 1 2 / 0.92) 0%, rgb(1 1 2 / 0.42) 18%, transparent 42%),
-    radial-gradient(circle at 50% 23%, transparent 0 19%, rgb(0 0 0 / 0.14) 51%, rgb(0 0 0 / 0.56) 100%),
+    radial-gradient(
+      circle at 50% 23%,
+      transparent 0 19%,
+      rgb(0 0 0 / 0.14) 51%,
+      rgb(0 0 0 / 0.56) 100%
+    ),
     linear-gradient(180deg, transparent 0 28%, rgb(0 0 0 / 0.2) 56%, #000 100%);
 }
 

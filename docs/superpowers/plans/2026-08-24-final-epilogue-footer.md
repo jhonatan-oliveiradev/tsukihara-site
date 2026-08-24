@@ -26,6 +26,7 @@
 ### Task 1 — Final journey copy and asset contract
 
 **Files:**
+
 - Create `src/content/final-journey.ts`
 
 - [ ] Define F01–F07 canonical paths.
@@ -36,6 +37,7 @@
 ### Task 2 — Quiet motion and easter-egg behavior
 
 **Files:**
+
 - Create `src/components/experience/final-journey/use-final-journey-motion.ts`
 - Create `src/components/experience/final-journey/final-moon-easter-egg.tsx`
 
@@ -47,6 +49,7 @@
 ### Task 3 — Epilogue visual composition
 
 **Files:**
+
 - Create `src/components/experience/final-journey/final-epilogue.tsx`
 
 - [ ] Desktop layer order: F03 environment, F04 moon, F02 characters, F05 foreground, F06 atmosphere.
@@ -58,6 +61,7 @@
 ### Task 4 — Cinematic footer
 
 **Files:**
+
 - Create `src/components/experience/final-journey/cinematic-footer.tsx`
 
 - [ ] Continue the epilogue's atmosphere into the footer rather than creating a boxed footer.
@@ -69,6 +73,7 @@
 ### Task 5 — Replace current epilogue shell
 
 **Files:**
+
 - Modify `src/components/experience/cinematic-epilogue.tsx`
 
 - [ ] Convert to client component with root ref.
@@ -80,6 +85,7 @@
 ### Task 6 — Final visual system
 
 **Files:**
+
 - Create `src/app/final-journey-closing.css`
 - Modify `src/app/layout.tsx`
 

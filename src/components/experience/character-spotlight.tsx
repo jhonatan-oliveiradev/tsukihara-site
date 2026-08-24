@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { JpRevealText } from "@/components/experience/jp-reveal-text";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
 type Copy = (typeof immersiveCopy)[Locale];
@@ -73,7 +74,9 @@ const narrative = {
       },
     ],
     closingA: "Ela não foi escolhida para salvar um mundo perfeito.",
+    closingAJp: "彼女は完璧な世界を救うために選ばれたのではない。",
     closingB: "Foi escolhida para salvar um mundo quebrado.",
+    closingBJp: "壊れた世界を救うために選ばれた。",
   },
   en: {
     eyebrow: "GUARDIAN OF LUNAR KINTSUGI",
@@ -129,7 +132,9 @@ const narrative = {
       },
     ],
     closingA: "She was not chosen to save a perfect world.",
-    closingB: "She was chosen to save a broken one.",
+    closingAJp: "彼女は完璧な世界を救うために選ばれたのではない。",
+    closingB: "She was chosen to save a broken world.",
+    closingBJp: "壊れた世界を救うために選ばれた。",
   },
 } as const;
 
@@ -148,6 +153,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
     const progress = root.querySelector<HTMLElement>("[data-akari-detail-progress]");
     const introVisual = root.querySelector<HTMLElement>("[data-akari-intro-visual]");
     const detailStage = root.querySelector<HTMLElement>("[data-akari-details-stage]");
+    const stickyStage = root.querySelector<HTMLElement>("[data-akari-details-sticky]");
     const mosaicBoard = root.querySelector<HTMLElement>("[data-akari-mosaic-board]");
     const fullFigure = root.querySelector<HTMLElement>("[data-akari-mosaic-figure]");
     const completeLabel = root.querySelector<HTMLElement>("[data-akari-complete-label]");
@@ -180,6 +186,8 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
       return;
     }
 
+    let removeMosaicPointerListeners: (() => void) | undefined;
+
     const ctx = gsap.context(() => {
       if (introVisual) {
         gsap.fromTo(
@@ -197,6 +205,37 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
             },
           },
         );
+      }
+
+      if (detailStage && stickyStage) {
+        gsap.fromTo(
+          stickyStage,
+          { autoAlpha: 0.68, y: 34, clipPath: "inset(6% 0 0 0)" },
+          {
+            autoAlpha: 1,
+            y: 0,
+            clipPath: "inset(0% 0 0 0)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: detailStage,
+              start: "top 92%",
+              end: "top 54%",
+              scrub: 0.8,
+            },
+          },
+        );
+
+        gsap.to(stickyStage, {
+          autoAlpha: 0.42,
+          y: -28,
+          ease: "none",
+          scrollTrigger: {
+            trigger: detailStage,
+            start: "bottom 120%",
+            end: "bottom 88%",
+            scrub: 0.85,
+          },
+        });
       }
 
       if (detailStage) {
@@ -259,15 +298,17 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
 
         mosaicBoard.addEventListener("pointermove", onPointerMove);
         mosaicBoard.addEventListener("pointerleave", onPointerLeave);
-
-        return () => {
+        removeMosaicPointerListeners = () => {
           mosaicBoard.removeEventListener("pointermove", onPointerMove);
           mosaicBoard.removeEventListener("pointerleave", onPointerLeave);
         };
       }
     }, root);
 
-    return () => ctx.revert();
+    return () => {
+      removeMosaicPointerListeners?.();
+      ctx.revert();
+    };
   }, [locale]);
 
   return (
@@ -341,7 +382,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
       </div>
 
       <div className="akari-details akari-details--mosaic" data-akari-details-stage>
-        <div className="akari-details__sticky akari-mosaic-layout">
+        <div className="akari-details__sticky akari-mosaic-layout" data-akari-details-sticky>
           <div className="akari-mosaic-stage">
             <div className="akari-mosaic-board" data-akari-mosaic-board>
               <div className="akari-mosaic-figure" data-akari-mosaic-figure>
@@ -359,7 +400,13 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
                 {mosaicTiles.map((image, index) => (
                   <div
                     key={image}
-                    className={`akari-mosaic-tile akari-mosaic-tile--${index + 1}${index === 0 ? "is-revealed is-current" : ""}`}
+                    className={[
+                      "akari-mosaic-tile",
+                      `akari-mosaic-tile--${index + 1}`,
+                      index === 0 ? "is-revealed is-current" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                     data-akari-mosaic-tile
                   >
                     <Image
@@ -397,7 +444,9 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
               {beat.details.map((detail, index) => (
                 <article
                   key={detail.label}
-                  className={`akari-detail${index === 0 ? "is-active" : ""}`}
+                  className={["akari-detail", index === 0 ? "is-active" : ""]
+                    .filter(Boolean)
+                    .join(" ")}
                   data-akari-detail-item
                   hidden={index !== 0}
                 >
@@ -420,7 +469,7 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
         </div>
       </div>
 
-      <div className="akari-closing">
+      <div className="akari-closing" data-akari-release>
         <div className="akari-closing__portrait" aria-hidden="true">
           <Image src="/akari-details/akari_exaltada.png" alt="" fill quality={100} sizes="55vw" />
         </div>
@@ -428,8 +477,24 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
           <span lang="ja" data-akari-reveal>
             傷は記憶になる
           </span>
-          <p data-akari-reveal>{beat.closingA}</p>
-          <strong data-akari-reveal>{beat.closingB}</strong>
+          <p data-akari-reveal>
+            <JpRevealText
+              jp={beat.closingAJp}
+              text={beat.closingA}
+              locale={locale}
+              duration={980}
+              delay={40}
+            />
+          </p>
+          <strong data-akari-reveal>
+            <JpRevealText
+              jp={beat.closingBJp}
+              text={beat.closingB}
+              locale={locale}
+              duration={1040}
+              delay={100}
+            />
+          </strong>
         </div>
       </div>
     </section>

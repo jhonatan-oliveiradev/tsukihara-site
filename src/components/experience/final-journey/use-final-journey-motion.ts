@@ -361,8 +361,14 @@ export function useFinalJourneyMotion(rootRef: RefObject<HTMLElement | null>) {
       const rect = footer.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
 
-      footerTargetX = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
-      footerTargetY = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
+      footerTargetX = Math.max(
+        -1,
+        Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2),
+      );
+      footerTargetY = Math.max(
+        -1,
+        Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2),
+      );
       footerPointerActive = true;
       ensureFooterPointerFrame();
     };
