@@ -30,7 +30,12 @@ export function FinalMoonEasterEgg({ label, message }: FinalMoonEasterEggProps) 
     resetTimerRef.current = window.setTimeout(() => setPhase("idle"), 4200);
   };
 
-  useEffect(() => clearTimers, []);
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current !== null) window.clearTimeout(revealTimerRef.current);
+      if (resetTimerRef.current !== null) window.clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   return (
     <div className="ix-final-easter-egg" data-phase={phase}>
