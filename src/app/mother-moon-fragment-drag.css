@@ -1,0 +1,53 @@
+.ix-mm-presence__gallery figure {
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ix-mm-presence__drag-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  background: #060608;
+  box-shadow: 0 2rem 6rem rgb(0 0 0 / 0.42);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ix-mm-image--presence {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@media (min-width: 901px) and (pointer: fine) {
+  .ix-mm-presence__drag-layer {
+    cursor: grab;
+    will-change: transform;
+    transition:
+      box-shadow 280ms ease,
+      filter 280ms ease;
+  }
+
+  .ix-mm-presence__drag-layer:hover {
+    filter: brightness(1.025);
+    box-shadow:
+      0 2.2rem 6.5rem rgb(0 0 0 / 0.48),
+      0 0 3rem rgb(128 19 37 / 0.1);
+  }
+
+  .ix-mm-presence__drag-layer.is-dragging {
+    cursor: grabbing;
+    filter: brightness(1.035);
+    box-shadow:
+      0 2.5rem 7rem rgb(0 0 0 / 0.54),
+      0 0 3.6rem rgb(128 19 37 / 0.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-mm-presence__drag-layer {
+    transition: none;
+  }
+}
