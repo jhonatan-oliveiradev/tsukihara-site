@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getArchiveImageSource,
   getArchiveImageStyle,
@@ -17,17 +17,38 @@ type ArchiveRecordViewerProps = {
 
 type BlackPhase = "silent" | "revealed";
 
+const VIEWER_EXIT_MS = 300;
+
 export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveRecordViewerProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const decayTimerRef = useRef<number | null>(null);
   const blackTimerRef = useRef<number | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
   const [decayActive, setDecayActive] = useState(false);
   const [blackPhase, setBlackPhase] = useState<BlackPhase>("revealed");
+  const [closing, setClosing] = useState(false);
+
+  const requestClose = useCallback(() => {
+    if (!record || closing) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      onClose();
+      return;
+    }
+
+    setClosing(true);
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
+      onClose();
+    }, VIEWER_EXIT_MS);
+  }, [closing, onClose, record]);
 
   useEffect(() => {
     if (!record) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setClosing(false);
     setDecayActive(false);
     setBlackPhase(record.kind === "black" && !reduced ? "silent" : "revealed");
 
@@ -48,6 +69,13 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
       blackTimerRef.current = null;
     };
   }, [record]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (!record) return;
@@ -71,7 +99,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        requestClose();
         return;
       }
 
@@ -83,7 +111,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose, record]);
+  }, [record, requestClose]);
 
   if (!record) return null;
 
@@ -94,6 +122,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
     <div
       className={isBlack ? "ix-archive-viewer is-black" : "ix-archive-viewer"}
       data-archive-viewer
+      data-viewer-state={closing ? "closing" : "open"}
       data-archive-kind={record.kind}
       data-black-phase={isBlack ? blackPhase : undefined}
       data-lenis-prevent
@@ -103,7 +132,13 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
     >
       <div className="ix-archive-viewer__veil" aria-hidden="true" />
       <div className="ix-archive-viewer__stage">
-        <button ref={closeRef} type="button" className="ix-archive-viewer__close" onClick={onClose}>
+        <button
+          ref={closeRef}
+          type="button"
+          className="ix-archive-viewer__close"
+          onClick={requestClose}
+          disabled={closing}
+        >
           <span aria-hidden="true">×</span>
           <span>{closeLabel}</span>
         </button>
