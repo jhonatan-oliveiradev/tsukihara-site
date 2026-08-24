@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { ArchiveRealmRecords } from "@/components/experience/lost-memories/archive-realm-records";
+import { getArchiveImageStyle } from "@/components/experience/lost-memories/archive-image-crop";
 import type {
   ArchiveRecord,
   LostMemoriesCopy,
@@ -37,7 +38,7 @@ function ArchiveItem({ record, onOpen, className = "", style }: ArchiveItemProps
           alt=""
           fill
           sizes="(max-width: 900px) 92vw, 34vw"
-          style={{ objectPosition: record.crop?.objectPosition }}
+          style={getArchiveImageStyle(record, "surface")}
           className="ix-archive-item__image"
         />
         {record.kind === "photograph" && <i className="ix-archive-item__glass" />}
@@ -150,9 +151,20 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
                 type="button"
                 onClick={(event) => onOpen(record, event.currentTarget)}
               >
-                <span>{record.code}</span>
-                <b>{record.title}</b>
-                <small>{record.story[0]}</small>
+                <span className="ix-archive-relics__mobile-visual" aria-hidden="true">
+                  <Image
+                    src={record.asset}
+                    alt=""
+                    fill
+                    sizes="88px"
+                    style={getArchiveImageStyle(record, "relic-thumbnail")}
+                  />
+                </span>
+                <span className="ix-archive-relics__mobile-copy">
+                  <span>{record.code}</span>
+                  <b>{record.title}</b>
+                  <small>{record.story[0]}</small>
+                </span>
               </button>
             ))}
           </div>
