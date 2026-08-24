@@ -1,4 +1,4 @@
-import { initialRememberState, type RememberAction, type RememberState } from "./remember-state";
+import { initialRememberState, type RememberAction, type RememberState } from "./remember-state.ts";
 
 export function rememberReducer(state: RememberState, action: RememberAction): RememberState {
   switch (action.type) {
