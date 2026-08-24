@@ -223,9 +223,9 @@ export function useMotherMoonMotion(rootRef: RefObject<HTMLElement | null>) {
       if (akariQuote && tsukinoEcho) {
         gsap.fromTo(
           tsukinoEcho,
-          { opacity: 0.13, xPercent: -2, scale: 1.015 },
+          { opacity: 0.085, xPercent: -2, scale: 1.015 },
           {
-            opacity: 0.012,
+            opacity: 0.008,
             xPercent: -8,
             scale: 1.065,
             ease: "none",
@@ -236,6 +236,41 @@ export function useMotherMoonMotion(rootRef: RefObject<HTMLElement | null>) {
               scrub: 1.25,
             },
           },
+        );
+      }
+
+      const akariBranch = root.querySelector<HTMLElement>("[data-mm-akari-branch]");
+      if (akariQuote && akariBranch) {
+        const branchPaths = akariBranch.querySelectorAll<SVGPathElement>("[data-mm-branch-path]");
+        const branchBlooms = akariBranch.querySelectorAll<SVGCircleElement>(
+          "[data-mm-branch-bloom]",
+        );
+
+        gsap.set(branchPaths, { strokeDasharray: 1, strokeDashoffset: 1 });
+
+        const branchTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: akariQuote,
+            start: "top 88%",
+            once: true,
+          },
+        });
+
+        branchTimeline.fromTo(
+          akariBranch,
+          { opacity: 0, x: -18 },
+          { opacity: 0.56, x: 0, duration: 0.58, ease: "power2.out" },
+        );
+        branchTimeline.to(
+          branchPaths,
+          { strokeDashoffset: 0, duration: 1.18, stagger: 0.085, ease: "power2.out" },
+          "-=0.42",
+        );
+        branchTimeline.fromTo(
+          branchBlooms,
+          { opacity: 0, scale: 0.35 },
+          { opacity: 0.72, scale: 1, duration: 0.46, stagger: 0.08, ease: "back.out(1.6)" },
+          "-=0.38",
         );
       }
 
