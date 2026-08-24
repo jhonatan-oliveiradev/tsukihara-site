@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { getArchiveImageStyle } from "@/components/experience/lost-memories/archive-image-crop";
 import { MemoryDecayText } from "@/components/experience/lost-memories/memory-decay-text";
 import type { ArchiveRecord } from "@/components/experience/lost-memories/lost-memories-types";
 
@@ -74,6 +75,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
     <div
       className={isBlack ? "ix-archive-viewer is-black" : "ix-archive-viewer"}
       data-archive-viewer
+      data-archive-kind={record.kind}
       data-black-phase={isBlack ? blackPhase : undefined}
       role="dialog"
       aria-modal="true"
@@ -92,6 +94,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
             alt=""
             fill
             sizes="(max-width: 900px) 92vw, 52vw"
+            style={getArchiveImageStyle(record, "viewer")}
             className="ix-archive-viewer__image"
           />
         </div>
