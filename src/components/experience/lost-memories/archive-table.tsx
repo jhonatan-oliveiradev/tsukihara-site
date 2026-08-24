@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { CSSProperties } from "react";
+import { ArchiveRealmRecords } from "@/components/experience/lost-memories/archive-realm-records";
 import type {
   ArchiveRecord,
   LostMemoriesCopy,
@@ -64,6 +65,7 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
   const letters = copy.records.filter((record) => record.group === "letters");
   const photographs = copy.records.filter((record) => record.group === "photographs");
   const relics = copy.records.filter((record) => record.group === "relics");
+  const lunarRecords = copy.records.filter((record) => record.group === "lunar");
 
   return (
     <div className="ix-archive-table" data-archive-table>
@@ -155,6 +157,30 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
               </button>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="archive-realms" className="ix-archive-group ix-archive-group--realms">
+        <ArchiveGroupHeader index="04" title={copy.groupHeadlines.realms} />
+        <ArchiveRealmRecords
+          records={copy.realmRecords}
+          mapAsset={copy.assets.realms}
+          onOpen={onOpen}
+        />
+      </section>
+
+      <section id="archive-lunar" className="ix-archive-group ix-archive-group--lunar">
+        <ArchiveGroupHeader index="05" title={copy.groupHeadlines.lunar} />
+        <div className="ix-archive-lunar__surface" data-archive-surface>
+          {lunarRecords.map((record, index) => (
+            <ArchiveItem
+              key={record.id}
+              record={record}
+              onOpen={onOpen}
+              className={`ix-archive-lunar-record ix-archive-lunar-record--${index + 1}`}
+              style={{ "--archive-tilt": `${index === 0 ? -0.8 : 1.2}deg` } as CSSProperties}
+            />
+          ))}
         </div>
       </section>
     </div>
