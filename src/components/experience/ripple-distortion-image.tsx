@@ -134,8 +134,20 @@ export function RippleDistortionImage({
     let frame = 0;
     let lastFrame = performance.now();
     let nextRipple = 0;
+    let renderer: WebGLRenderer;
 
-    const renderer = new WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
+    try {
+      renderer = new WebGLRenderer({
+        alpha: true,
+        antialias: false,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      injectRippleRef.current = null;
+      host.replaceChildren();
+      return;
+    }
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.setAttribute("aria-hidden", "true");
@@ -149,28 +161,9 @@ export function RippleDistortionImage({
     const rippleAges = new Float32Array(MAX_RIPPLES).fill(1);
     const rippleStrengths = new Float32Array(MAX_RIPPLES);
 
-    const texture = new TextureLoader().load(
-      src,
-      (loaded) => {
-        if (disposed) return;
-        loaded.colorSpace = SRGBColorSpace;
-        loaded.minFilter = LinearFilter;
-        loaded.magFilter = LinearFilter;
-        const image = loaded.image as { naturalWidth?: number; naturalHeight?: number; width?: number; height?: number };
-        const width = image.naturalWidth ?? image.width ?? 1;
-        const height = image.naturalHeight ?? image.height ?? 1;
-        material.uniforms.uImageAspect.value = width / Math.max(1, height);
-        renderOnce();
-      },
-      undefined,
-      () => {
-        injectRippleRef.current = null;
-      },
-    );
-
     const material = new ShaderMaterial({
       uniforms: {
-        uMap: { value: texture },
+        uMap: { value: null },
         uAspect: { value: 1 },
         uImageAspect: { value: 1 },
         uRipplePos: { value: ripplePositions },
@@ -187,7 +180,39 @@ export function RippleDistortionImage({
     const mesh = new Mesh(geometry, material);
     scene.add(mesh);
 
-    const renderOnce = () => renderer.render(scene, camera);
+    const renderOnce = () => {
+      if (!disposed) renderer.render(scene, camera);
+    };
+
+    const disableWater = () => {
+      injectRippleRef.current = null;
+      renderer.domElement.style.display = "none";
+    };
+
+    const texture = new TextureLoader().load(
+      src,
+      (loaded) => {
+        if (disposed) return;
+        loaded.colorSpace = SRGBColorSpace;
+        loaded.minFilter = LinearFilter;
+        loaded.magFilter = LinearFilter;
+        material.uniforms.uMap.value = loaded;
+        const image = loaded.image as {
+          naturalWidth?: number;
+          naturalHeight?: number;
+          width?: number;
+          height?: number;
+        };
+        const width = image.naturalWidth ?? image.width ?? 1;
+        const height = image.naturalHeight ?? image.height ?? 1;
+        material.uniforms.uImageAspect.value = width / Math.max(1, height);
+        renderer.domElement.style.display = "block";
+        renderOnce();
+      },
+      undefined,
+      disableWater,
+    );
+    renderer.domElement.style.display = "none";
 
     const resize = () => {
       const rect = host.getBoundingClientRect();
@@ -214,6 +239,7 @@ export function RippleDistortionImage({
     };
 
     injectRippleRef.current = (x, y, strength) => {
+      if (!material.uniforms.uMap.value) return;
       const index = nextRipple;
       nextRipple = (nextRipple + 1) % MAX_RIPPLES;
       ripplePositions[index].set(x, 1 - y);
