@@ -31,6 +31,8 @@ import "./lost-memories-chapter.css";
 import "./lost-memories-crops-refinement.css";
 import "./final-journey-closing.css";
 import "./final-journey-closing-refinement.css";
+import "./final-journey-continuity.css";
+import "./smooth-anchor-scroll.css";
 import "./nine-realms-world.css";
 import "./nine-realms-world-calibration.css";
 import "./nine-realms-world-stability.css";
