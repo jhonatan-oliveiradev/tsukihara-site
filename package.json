@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:hero": "node --test src/components/experience/hero/hero-timeline-math.test.ts"
   },
   "dependencies": {
     "@paper-design/shaders-react": "^0.0.80",
