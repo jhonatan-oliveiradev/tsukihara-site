@@ -65,7 +65,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
 
   return (
     <div
-      className={`ix-archive-viewer${isBlack ? " is-black" : ""}`}
+      className={`ix-archive-viewer${isBlack ? "is-black" : ""}`}
       data-archive-viewer
       data-black-phase={isBlack ? blackPhase : undefined}
       role="dialog"
@@ -74,12 +74,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
     >
       <div className="ix-archive-viewer__veil" aria-hidden="true" />
       <div className="ix-archive-viewer__stage">
-        <button
-          ref={closeRef}
-          type="button"
-          className="ix-archive-viewer__close"
-          onClick={onClose}
-        >
+        <button ref={closeRef} type="button" className="ix-archive-viewer__close" onClick={onClose}>
           <span aria-hidden="true">×</span>
           <span>{closeLabel}</span>
         </button>

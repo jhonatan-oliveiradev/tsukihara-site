@@ -55,10 +55,12 @@
 ### Task 1: Define the archive data contract and localized content
 
 **Files:**
+
 - Create: `src/components/experience/lost-memories/lost-memories-types.ts`
 - Create: `src/content/lost-memories.ts`
 
 **Interfaces:**
+
 - Produces `ArchiveStatus`, `ArchiveGroupId`, `ArchiveItemKind`, `ArchiveAssetCrop`, `ArchiveHotspot`, `ArchiveRecord`, `RealmArchiveRecord`, `LostMemoriesCopy`.
 - Produces `lostMemoriesCopy: Record<Locale, LostMemoriesCopy>` consumed by every later task.
 - All openable records, including realms, are assignable to `ArchiveRecord` so one viewer handles every type.
@@ -156,10 +158,12 @@ git commit -m "feat: define Lost Memories archive data"
 ### Task 2: Build Memory Decay and the diegetic record viewer
 
 **Files:**
+
 - Create: `src/components/experience/lost-memories/memory-decay-text.tsx`
 - Create: `src/components/experience/lost-memories/archive-record-viewer.tsx`
 
 **Interfaces:**
+
 - `MemoryDecayText({ text, active }: { text: string; active: boolean })`.
 - `ArchiveRecordViewer({ record, onClose }: { record: ArchiveRecord | null; onClose: () => void })`.
 - Parent chapter owns trigger restoration; viewer owns Escape, focus-on-open, decay timing and BLACK-00 phase.
@@ -224,9 +228,11 @@ git commit -m "feat: add diegetic Lost Memories viewer"
 ### Task 3: Build letters, spiritual photographs and relic interactions
 
 **Files:**
+
 - Create: `src/components/experience/lost-memories/archive-table.tsx`
 
 **Interfaces:**
+
 - Receives `copy: LostMemoriesCopy`.
 - Receives `onOpen(record: ArchiveRecord, trigger: HTMLButtonElement): void`.
 - Produces anchors `archive-letters`, `archive-photographs`, `archive-relics`.
@@ -270,10 +276,12 @@ git commit -m "feat: build Lost Memories archive table"
 ### Task 4: Add Nine-Realm and Lunar/BLACK-00 archive zones
 
 **Files:**
+
 - Create: `src/components/experience/lost-memories/archive-realm-records.tsx`
 - Modify: `src/components/experience/lost-memories/archive-table.tsx`
 
 **Interfaces:**
+
 - `ArchiveRealmRecords({ records, mapAsset, onOpen })` receives `RealmArchiveRecord[]`, the L06 asset, and the same `onOpen(record: ArchiveRecord, trigger: HTMLButtonElement)` callback used everywhere else.
 - Produces anchors `archive-realms`, `archive-lunar`.
 
@@ -319,9 +327,11 @@ git commit -m "feat: add realm and lunar archive records"
 ### Task 5: Compose chapter shell, index, Open-state ownership and closing flow
 
 **Files:**
+
 - Create: `src/components/experience/lost-memories-chapter.tsx`
 
 **Interfaces:**
+
 - Exports `LostMemoriesChapter({ locale }: { locale: Locale })`.
 - Owns `openRecordId: string | null` and `lastTriggerRef: MutableRefObject<HTMLButtonElement | null>`.
 - Consumes `ArchiveTable`, `ArchiveRecordViewer`, `lostMemoriesCopy`, `useLostMemoriesMotion`.
@@ -395,10 +405,12 @@ git commit -m "feat: compose Lost Memories chapter"
 ### Task 6: Implement archive visual language and local motion
 
 **Files:**
+
 - Create: `src/app/lost-memories-chapter.css`
 - Create: `src/components/experience/lost-memories/use-lost-memories-motion.ts`
 
 **Interfaces:**
+
 - `useLostMemoriesMotion(rootRef: RefObject<HTMLElement | null>)` scopes all GSAP selectors to the chapter and reverts its context on cleanup.
 
 - [ ] **Step 1: Establish chapter palette/materials**
@@ -461,6 +473,7 @@ git commit -m "style: add Lost Memories archive visual system"
 ### Task 7: Integrate the new chapter into the immersive sequence
 
 **Files:**
+
 - Modify: `src/components/experience/immersive-experience.tsx`
 - Modify: `src/app/layout.tsx`
 
@@ -522,6 +535,7 @@ git commit -m "feat: replace lore pillars with Lost Memories archive"
 ### Task 8: Manual interaction, responsive and accessibility verification
 
 **Files:**
+
 - Modify only already-in-scope files if validation exposes defects.
 
 - [ ] **Step 1: Validate desktop at 1536×864**

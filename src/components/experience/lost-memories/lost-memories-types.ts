@@ -1,9 +1,4 @@
-export type ArchiveStatus =
-  | "PRESERVED"
-  | "FRAGMENTED"
-  | "UNSTABLE"
-  | "CORRUPTED"
-  | "SEALED";
+export type ArchiveStatus = "PRESERVED" | "FRAGMENTED" | "UNSTABLE" | "CORRUPTED" | "SEALED";
 
 export type ArchiveGroupId = "letters" | "photographs" | "relics" | "realms" | "lunar";
 

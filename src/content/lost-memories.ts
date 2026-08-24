@@ -76,10 +76,7 @@ function createPtRecords(): ArchiveRecord[] {
       title: "Carta de Amahara",
       status: "PRESERVED",
       asset: assets.amahara,
-      story: [
-        "Os sinos tocaram esta noite.",
-        "Nenhum de nós lembra quem deveria ouvi-los.",
-      ],
+      story: ["Os sinos tocaram esta noite.", "Nenhum de nós lembra quem deveria ouvi-los."],
     },
     ...photoCrops.map<ArchiveRecord>((crop, index) => {
       const labels = [
@@ -140,7 +137,9 @@ function createPtRecords(): ArchiveRecord[] {
       title: "Máscara quebrada",
       status: "UNSTABLE",
       asset: assets.relics,
-      story: ["A fratura ainda reage à energia lunar como se aguardasse um rosto que não existe mais."],
+      story: [
+        "A fratura ainda reage à energia lunar como se aguardasse um rosto que não existe mais.",
+      ],
       annotation: "PULSO",
       hotspot: { ...relicHotspots[2], label: "Inspecionar máscara quebrada" },
     },
@@ -164,7 +163,9 @@ function createPtRecords(): ArchiveRecord[] {
       title: "Chave sem fechadura",
       status: "SEALED",
       asset: assets.relics,
-      story: ["Nenhuma porta conhecida aceita sua forma. Ainda assim, o metal aquece diante da Lua-Mãe."],
+      story: [
+        "Nenhuma porta conhecida aceita sua forma. Ainda assim, o metal aquece diante da Lua-Mãe.",
+      ],
       annotation: "PORTA",
       hotspot: { ...relicHotspots[4], label: "Inspecionar chave sem fechadura" },
     },
@@ -223,7 +224,9 @@ function createEnRecords(): ArchiveRecord[] {
     },
     "photo-family": {
       title: "Family before the temple",
-      story: ["The plate still retains four presences, although one name has vanished from its reverse."],
+      story: [
+        "The plate still retains four presences, although one name has vanished from its reverse.",
+      ],
     },
     "photo-child": {
       title: "Child with an amulet",
@@ -235,7 +238,9 @@ function createEnRecords(): ArchiveRecord[] {
     },
     "photo-village": {
       title: "Village before the Eclipse",
-      story: ["The houses remain in the image. No current map recognizes the road that leads to them."],
+      story: [
+        "The houses remain in the image. No current map recognizes the road that leads to them.",
+      ],
     },
     "photo-absence": {
       title: "The absent person",
@@ -248,12 +253,16 @@ function createEnRecords(): ArchiveRecord[] {
     },
     "relic-comb": {
       title: "Nameless comb",
-      story: ["It belonged to someone whose name was erased before the object stopped remembering it."],
+      story: [
+        "It belonged to someone whose name was erased before the object stopped remembering it.",
+      ],
       annotation: "NAME",
     },
     "relic-mask": {
       title: "Broken mask",
-      story: ["The fracture still reacts to lunar energy as if waiting for a face that no longer exists."],
+      story: [
+        "The fracture still reacts to lunar energy as if waiting for a face that no longer exists.",
+      ],
       annotation: "PULSE",
     },
     "relic-amulet": {
@@ -297,14 +306,70 @@ function createEnRecords(): ArchiveRecord[] {
 
 function createPtRealmRecords(): RealmArchiveRecord[] {
   const entries = [
-    ["hanamori", "REALM RECORD 01", "HANAMORI", "FRAGMENTED", "Origin", "Uma casa desapareceu. A família ainda coloca quatro pratos na mesa."],
-    ["kurogane", "REALM RECORD 02", "KUROGANE", "UNSTABLE", "Labor", "As máquinas continuam registrando funcionários que já não existem."],
-    ["mizukyo", "REALM RECORD 03", "MIZUKYO", "UNSTABLE", "Reflection", "Um reflexo apareceu três dias antes da pessoa que deveria produzi-lo."],
-    ["amahara", "REALM RECORD 04", "AMAHARA", "FRAGMENTED", "Faith", "Um monge esqueceu o nome do deus para quem rezava há sessenta anos."],
-    ["hinokagura", "REALM RECORD 05", "HINOKAGURA", "CORRUPTED", "Cycle", "As cinzas começaram a falar com vozes que ninguém reconhece."],
-    ["yumegakure", "REALM RECORD 06", "YUMEGAKURE", "UNSTABLE", "Dream", "Alguns habitantes recusam-se a acordar."],
-    ["yoru-no-mori", "REALM RECORD 07", "YORU NO MORI", "FRAGMENTED", "Fear", "A floresta começou a lembrar medos que seus visitantes já esqueceram."],
-    ["gekkai", "REALM RECORD 08", "GEKKAI", "CORRUPTED", "Space", "Dois lugares tentaram existir no mesmo espaço."],
+    [
+      "hanamori",
+      "REALM RECORD 01",
+      "HANAMORI",
+      "FRAGMENTED",
+      "Origin",
+      "Uma casa desapareceu. A família ainda coloca quatro pratos na mesa.",
+    ],
+    [
+      "kurogane",
+      "REALM RECORD 02",
+      "KUROGANE",
+      "UNSTABLE",
+      "Labor",
+      "As máquinas continuam registrando funcionários que já não existem.",
+    ],
+    [
+      "mizukyo",
+      "REALM RECORD 03",
+      "MIZUKYO",
+      "UNSTABLE",
+      "Reflection",
+      "Um reflexo apareceu três dias antes da pessoa que deveria produzi-lo.",
+    ],
+    [
+      "amahara",
+      "REALM RECORD 04",
+      "AMAHARA",
+      "FRAGMENTED",
+      "Faith",
+      "Um monge esqueceu o nome do deus para quem rezava há sessenta anos.",
+    ],
+    [
+      "hinokagura",
+      "REALM RECORD 05",
+      "HINOKAGURA",
+      "CORRUPTED",
+      "Cycle",
+      "As cinzas começaram a falar com vozes que ninguém reconhece.",
+    ],
+    [
+      "yumegakure",
+      "REALM RECORD 06",
+      "YUMEGAKURE",
+      "UNSTABLE",
+      "Dream",
+      "Alguns habitantes recusam-se a acordar.",
+    ],
+    [
+      "yoru-no-mori",
+      "REALM RECORD 07",
+      "YORU NO MORI",
+      "FRAGMENTED",
+      "Fear",
+      "A floresta começou a lembrar medos que seus visitantes já esqueceram.",
+    ],
+    [
+      "gekkai",
+      "REALM RECORD 08",
+      "GEKKAI",
+      "CORRUPTED",
+      "Space",
+      "Dois lugares tentaram existir no mesmo espaço.",
+    ],
     ["tsuki-no-miya", "REALM RECORD 09", "TSUKI NO MIYA", "SEALED", "Unknown", "RECORD SEALED"],
   ] as const;
 
