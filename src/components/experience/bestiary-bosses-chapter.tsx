@@ -58,6 +58,7 @@ function BossStage({ boss, index, locale }: { boss: BossRecord; index: number; l
       className={`ix-boss-stage${boss.classified ? " is-classified" : ""}`}
       style={{ "--entity-accent": boss.accent } as React.CSSProperties}
       data-boss-stage
+      data-boss-id={boss.id}
     >
       <div className="ix-boss-stage__visual" aria-hidden="true">
         <Image
