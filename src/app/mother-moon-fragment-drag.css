@@ -21,13 +21,19 @@
   -webkit-user-drag: none;
 }
 
+.ix-mm-quote--tsukino,
 .ix-mm-quote--akari {
   isolation: isolate;
   overflow: clip;
 }
 
+.ix-mm-quote--tsukino blockquote,
 .ix-mm-quote--akari blockquote {
   position: relative;
+  z-index: 3;
+}
+
+.ix-mm-quote--tsukino > span {
   z-index: 3;
 }
 
@@ -62,43 +68,22 @@
 
 .ix-mm-quote__branch {
   position: absolute;
-  top: 54%;
-  left: -2.5%;
+  top: 55%;
+  left: 1.5%;
   z-index: 2;
-  width: min(38vw, 35rem);
+  width: min(44vw, 43rem);
+  height: min(43svh, 26rem);
   pointer-events: none;
   transform: translateY(-50%);
   transform-origin: left center;
-  opacity: 0.56;
-  mask-image: linear-gradient(90deg, black 0%, black 76%, transparent 100%);
-  filter: drop-shadow(0 0 1.8rem rgb(126 34 49 / 0.08));
-}
-
-.ix-mm-quote__branch svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-.ix-mm-quote__branch path {
-  stroke: rgb(132 74 80 / 0.66);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.ix-mm-quote__branch path:not(:first-child) {
-  stroke: rgb(142 82 90 / 0.48);
-  stroke-width: 1.45;
-}
-
-.ix-mm-quote__branch circle {
-  fill: rgb(207 155 168 / 0.66);
-  transform-box: fill-box;
-  transform-origin: center;
-  filter: drop-shadow(0 0 0.45rem rgb(164 68 89 / 0.18));
+  opacity: 0.72;
+  background-image: url("/secret-pathways-assets/foreground/png/sakura-branch.webp");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+  clip-path: inset(0 0 0 0);
+  filter: saturate(0.82) brightness(0.72) contrast(1.04)
+    drop-shadow(0 1.2rem 2.8rem rgb(0 0 0 / 0.26));
 }
 
 @media (min-width: 901px) and (pointer: fine) {
@@ -134,9 +119,11 @@
   }
 
   .ix-mm-quote__branch {
-    left: -5%;
-    width: min(42vw, 31rem);
-    opacity: 0.48;
+    top: 56%;
+    left: 0;
+    width: min(48vw, 34rem);
+    height: min(39svh, 23rem);
+    opacity: 0.64;
   }
 }
 
@@ -158,7 +145,8 @@
   }
 
   .ix-mm-quote__branch {
-    opacity: 0.38;
+    opacity: 0.6;
+    clip-path: none !important;
     transform: translateY(-50%) !important;
   }
 }
