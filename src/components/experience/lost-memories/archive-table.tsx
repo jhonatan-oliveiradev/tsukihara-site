@@ -3,6 +3,11 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { ArchiveRealmRecords } from "@/components/experience/lost-memories/archive-realm-records";
+import {
+  getArchiveImageSource,
+  getArchiveImageStyle,
+  unindexedSpiritPhotograph,
+} from "@/components/experience/lost-memories/archive-image-crop";
 import type {
   ArchiveRecord,
   LostMemoriesCopy,
@@ -33,11 +38,11 @@ function ArchiveItem({ record, onOpen, className = "", style }: ArchiveItemProps
     >
       <span className="ix-archive-item__visual" aria-hidden="true">
         <Image
-          src={record.asset}
+          src={getArchiveImageSource(record)}
           alt=""
           fill
           sizes="(max-width: 900px) 92vw, 34vw"
-          style={{ objectPosition: record.crop?.objectPosition }}
+          style={getArchiveImageStyle(record, "surface")}
           className="ix-archive-item__image"
         />
         {record.kind === "photograph" && <i className="ix-archive-item__glass" />}
@@ -98,64 +103,30 @@ export function ArchiveTable({ copy, onOpen }: ArchiveTableProps) {
               }
             />
           ))}
+          <div className="ix-archive-photo-fragment" aria-hidden="true">
+            <Image
+              src={unindexedSpiritPhotograph}
+              alt=""
+              fill
+              sizes="18vw"
+              className="ix-archive-photo-fragment__image"
+            />
+          </div>
         </div>
       </section>
 
       <section id="archive-relics" className="ix-archive-group ix-archive-group--relics">
         <ArchiveGroupHeader index="03" title={copy.groupHeadlines.relics} />
         <div className="ix-archive-relics__surface" data-archive-surface>
-          <div className="ix-archive-relics__sheet" aria-hidden="true">
-            <Image
-              src={copy.assets.relics}
-              alt=""
-              fill
-              sizes="(max-width: 900px) 92vw, 62vw"
-              className="ix-archive-relics__image"
+          {relics.map((record, index) => (
+            <ArchiveItem
+              key={record.id}
+              record={record}
+              onOpen={onOpen}
+              className={`ix-archive-relic ix-archive-relic--${index + 1}`}
+              style={{ "--archive-tilt": `${[-1.5, 1.1, -0.4, 1.3, -1][index]}deg` } as CSSProperties}
             />
-          </div>
-          <div className="ix-archive-relics__hotspots">
-            {relics.map((record) => {
-              if (!record.hotspot) return null;
-              return (
-                <button
-                  key={record.id}
-                  type="button"
-                  className="ix-archive-relic-hotspot"
-                  data-archive-item
-                  data-archive-kind="relic"
-                  style={
-                    {
-                      left: `${record.hotspot.x}%`,
-                      top: `${record.hotspot.y}%`,
-                      width: `${record.hotspot.width}%`,
-                      height: `${record.hotspot.height}%`,
-                    } as CSSProperties
-                  }
-                  onClick={(event) => onOpen(record, event.currentTarget)}
-                  aria-label={record.hotspot.label}
-                >
-                  <span aria-hidden="true" className="ix-archive-relic-hotspot__echo" />
-                  <span className="ix-archive-relic-hotspot__meta">
-                    <small>{record.code}</small>
-                    <b>{record.annotation}</b>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="ix-archive-relics__mobile-list">
-            {relics.map((record) => (
-              <button
-                key={record.id}
-                type="button"
-                onClick={(event) => onOpen(record, event.currentTarget)}
-              >
-                <span>{record.code}</span>
-                <b>{record.title}</b>
-                <small>{record.story[0]}</small>
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 
