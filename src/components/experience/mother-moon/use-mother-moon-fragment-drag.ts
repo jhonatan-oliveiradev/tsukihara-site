@@ -5,6 +5,9 @@ import gsap from "gsap";
 
 const DRAG_MEDIA_QUERY = "(min-width: 901px) and (pointer: fine)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+const FOLLOW_STRENGTH = 0.22;
+const ROTATION_STRENGTH = 0.24;
+const SCALE_STRENGTH = 0.2;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -45,6 +48,7 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
       );
       let stackIndex = shells.length + 1;
       const cleanups: Array<() => void> = [];
+      const keepInBounds: Array<() => void> = [];
 
       shells.forEach((shell, index) => {
         const layer = shell.querySelector<HTMLElement>("[data-mm-fragment-drag]");
@@ -52,13 +56,13 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
 
         shell.style.zIndex = String(index + 1);
 
-        const xTo = gsap.quickTo(layer, "x", { duration: 0.16, ease: "power3.out" });
-        const yTo = gsap.quickTo(layer, "y", { duration: 0.16, ease: "power3.out" });
-        const rotationTo = gsap.quickTo(layer, "rotation", {
-          duration: 0.2,
-          ease: "power3.out",
-        });
+        const setX = gsap.quickSetter(layer, "x", "px");
+        const setY = gsap.quickSetter(layer, "y", "px");
+        const setRotation = gsap.quickSetter(layer, "rotation", "deg");
+        const setScale = gsap.quickSetter(layer, "scale");
 
+        let settleTween: ReturnType<typeof gsap.to> | null = null;
+        let frameId: number | null = null;
         let activePointerId: number | null = null;
         let startPointerX = 0;
         let startPointerY = 0;
@@ -66,25 +70,69 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
         let startY = 0;
         let targetX = 0;
         let targetY = 0;
+        let targetRotation = 0;
+        let targetScale = 1;
+        let visualX = 0;
+        let visualY = 0;
+        let visualRotation = 0;
+        let visualScale = 1;
         let lastPointerX = 0;
         let lastPointerY = 0;
         let lastPointerTime = 0;
         let velocityX = 0;
         let velocityY = 0;
 
+        const stopFrame = () => {
+          if (frameId === null) return;
+          cancelAnimationFrame(frameId);
+          frameId = null;
+        };
+
+        const renderDragFrame = () => {
+          if (activePointerId === null) {
+            frameId = null;
+            return;
+          }
+
+          visualX += (targetX - visualX) * FOLLOW_STRENGTH;
+          visualY += (targetY - visualY) * FOLLOW_STRENGTH;
+          visualRotation += (targetRotation - visualRotation) * ROTATION_STRENGTH;
+          visualScale += (targetScale - visualScale) * SCALE_STRENGTH;
+
+          setX(visualX);
+          setY(visualY);
+          setRotation(visualRotation);
+          setScale(visualScale);
+          frameId = requestAnimationFrame(renderDragFrame);
+        };
+
+        const startFrame = () => {
+          if (frameId !== null || reducedMotion.matches) return;
+          frameId = requestAnimationFrame(renderDragFrame);
+        };
+
         const onPointerDown = (event: PointerEvent) => {
+          if (activePointerId !== null) return;
           if (event.pointerType === "mouse" && event.button !== 0) return;
+
+          settleTween?.kill();
+          settleTween = null;
 
           activePointerId = event.pointerId;
           layer.setPointerCapture(event.pointerId);
-          gsap.killTweensOf(layer);
 
           startPointerX = event.clientX;
           startPointerY = event.clientY;
-          startX = Number(gsap.getProperty(layer, "x")) || 0;
-          startY = Number(gsap.getProperty(layer, "y")) || 0;
-          targetX = startX;
-          targetY = startY;
+          visualX = Number(gsap.getProperty(layer, "x")) || 0;
+          visualY = Number(gsap.getProperty(layer, "y")) || 0;
+          visualRotation = Number(gsap.getProperty(layer, "rotation")) || 0;
+          visualScale = Number(gsap.getProperty(layer, "scale")) || 1;
+          startX = visualX;
+          startY = visualY;
+          targetX = visualX;
+          targetY = visualY;
+          targetRotation = visualRotation;
+          targetScale = reducedMotion.matches ? 1 : 1.018;
           lastPointerX = event.clientX;
           lastPointerY = event.clientY;
           lastPointerTime = performance.now();
@@ -94,13 +142,11 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
           shell.style.zIndex = String(stackIndex++);
           layer.classList.add("is-dragging");
 
-          if (!reducedMotion.matches) {
-            gsap.to(layer, {
-              scale: 1.018,
-              duration: 0.2,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
+          if (reducedMotion.matches) {
+            setRotation(0);
+            setScale(1);
+          } else {
+            startFrame();
           }
 
           event.preventDefault();
@@ -117,13 +163,17 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
           const elapsed = Math.max(8, now - lastPointerTime);
           velocityX = ((event.clientX - lastPointerX) / elapsed) * 1000;
           velocityY = ((event.clientY - lastPointerY) / elapsed) * 1000;
+          targetRotation = reducedMotion.matches ? 0 : clamp(velocityX * 0.0016, -2, 2);
 
           if (reducedMotion.matches) {
-            gsap.set(layer, { x: targetX, y: targetY, rotation: 0, scale: 1 });
-          } else {
-            xTo(targetX);
-            yTo(targetY);
-            rotationTo(clamp(velocityX * 0.0016, -2, 2));
+            visualX = targetX;
+            visualY = targetY;
+            visualRotation = 0;
+            visualScale = 1;
+            setX(visualX);
+            setY(visualY);
+            setRotation(visualRotation);
+            setScale(visualScale);
           }
 
           lastPointerX = event.clientX;
@@ -137,6 +187,7 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
 
           const pointerId = activePointerId;
           activePointerId = null;
+          stopFrame();
           layer.classList.remove("is-dragging");
 
           if (layer.hasPointerCapture(pointerId)) {
@@ -144,7 +195,14 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
           }
 
           if (reducedMotion.matches) {
-            gsap.set(layer, { x: targetX, y: targetY, rotation: 0, scale: 1 });
+            visualX = targetX;
+            visualY = targetY;
+            visualRotation = 0;
+            visualScale = 1;
+            setX(visualX);
+            setY(visualY);
+            setRotation(visualRotation);
+            setScale(visualScale);
             return;
           }
 
@@ -152,17 +210,41 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
           targetX = clamp(targetX + clamp(velocityX * 0.012, -18, 18), bounds.minX, bounds.maxX);
           targetY = clamp(targetY + clamp(velocityY * 0.012, -18, 18), bounds.minY, bounds.maxY);
 
-          gsap.to(layer, {
+          settleTween = gsap.to(layer, {
             x: targetX,
             y: targetY,
             rotation: 0,
             scale: 1,
             duration: 0.62,
             ease: "power3.out",
-            overwrite: "auto",
+            overwrite: true,
+            onComplete: () => {
+              settleTween = null;
+            },
           });
         };
 
+        const keepFragmentInBounds = () => {
+          if (activePointerId !== null) return;
+
+          settleTween?.kill();
+          settleTween = null;
+          const bounds = getDragBounds(shell, gallery);
+          const currentX = Number(gsap.getProperty(layer, "x")) || 0;
+          const currentY = Number(gsap.getProperty(layer, "y")) || 0;
+          const nextX = clamp(currentX, bounds.minX, bounds.maxX);
+          const nextY = clamp(currentY, bounds.minY, bounds.maxY);
+
+          targetX = nextX;
+          targetY = nextY;
+          visualX = nextX;
+          visualY = nextY;
+          visualRotation = 0;
+          visualScale = 1;
+          gsap.set(layer, { x: nextX, y: nextY, rotation: 0, scale: 1 });
+        };
+
+        keepInBounds.push(keepFragmentInBounds);
         layer.addEventListener("pointerdown", onPointerDown);
         layer.addEventListener("pointermove", onPointerMove);
         layer.addEventListener("pointerup", finishDrag);
@@ -170,6 +252,8 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
         layer.addEventListener("lostpointercapture", finishDrag);
 
         cleanups.push(() => {
+          stopFrame();
+          settleTween?.kill();
           layer.removeEventListener("pointerdown", onPointerDown);
           layer.removeEventListener("pointermove", onPointerMove);
           layer.removeEventListener("pointerup", finishDrag);
@@ -177,28 +261,11 @@ export function useMotherMoonFragmentDrag(rootRef: RefObject<HTMLElement | null>
           layer.removeEventListener("lostpointercapture", finishDrag);
           layer.classList.remove("is-dragging");
           shell.style.zIndex = "";
-          gsap.killTweensOf(layer);
           gsap.set(layer, { clearProps: "transform" });
         });
       });
 
-      const keepFragmentsInBounds = () => {
-        shells.forEach((shell) => {
-          const layer = shell.querySelector<HTMLElement>("[data-mm-fragment-drag]");
-          if (!layer) return;
-
-          const bounds = getDragBounds(shell, gallery);
-          const currentX = Number(gsap.getProperty(layer, "x")) || 0;
-          const currentY = Number(gsap.getProperty(layer, "y")) || 0;
-          const nextX = clamp(currentX, bounds.minX, bounds.maxX);
-          const nextY = clamp(currentY, bounds.minY, bounds.maxY);
-
-          if (nextX !== currentX || nextY !== currentY) {
-            gsap.set(layer, { x: nextX, y: nextY });
-          }
-        });
-      };
-
+      const keepFragmentsInBounds = () => keepInBounds.forEach((keepFragment) => keepFragment());
       window.addEventListener("resize", keepFragmentsInBounds, { passive: true });
       cleanups.push(() => window.removeEventListener("resize", keepFragmentsInBounds));
 
