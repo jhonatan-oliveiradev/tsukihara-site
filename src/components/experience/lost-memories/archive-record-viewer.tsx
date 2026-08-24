@@ -49,9 +49,16 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
     if (!record) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      onClose();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key === "Tab") {
+        event.preventDefault();
+        closeRef.current?.focus();
+      }
     };
 
     window.addEventListener("keydown", onKeyDown);
@@ -65,7 +72,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
 
   return (
     <div
-      className={`ix-archive-viewer${isBlack ? "is-black" : ""}`}
+      className={isBlack ? "ix-archive-viewer is-black" : "ix-archive-viewer"}
       data-archive-viewer
       data-black-phase={isBlack ? blackPhase : undefined}
       role="dialog"
