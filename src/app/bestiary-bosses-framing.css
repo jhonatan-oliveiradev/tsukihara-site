@@ -1,0 +1,44 @@
+.ix-boss-stage[data-boss-id] .ix-boss-stage__image {
+  transform-origin: center;
+  transition:
+    object-position 520ms var(--ease),
+    scale 520ms var(--ease);
+}
+
+.ix-boss-stage[data-boss-id="B07"] .ix-boss-stage__image {
+  object-position: 62% 18%;
+  scale: 1.02;
+}
+
+.ix-boss-stage[data-boss-id="B08"] .ix-boss-stage__image {
+  object-position: 56% 22%;
+  scale: 1.01;
+}
+
+.ix-boss-stage[data-boss-id="B09"] .ix-boss-stage__image {
+  object-position: 52% 14%;
+  scale: 1.01;
+}
+
+.ix-boss-stage[data-boss-id="B10"] .ix-boss-stage__image {
+  object-position: 50% 28%;
+  scale: 1;
+}
+
+@media (max-width: 900px) {
+  .ix-boss-stage[data-boss-id="B07"] .ix-boss-stage__image {
+    object-position: 60% 16%;
+  }
+
+  .ix-boss-stage[data-boss-id="B08"] .ix-boss-stage__image {
+    object-position: 54% 18%;
+  }
+
+  .ix-boss-stage[data-boss-id="B09"] .ix-boss-stage__image {
+    object-position: 50% 10%;
+  }
+
+  .ix-boss-stage[data-boss-id="B10"] .ix-boss-stage__image {
+    object-position: 50% 24%;
+  }
+}
