@@ -87,7 +87,12 @@ export function RealmAtlas({ copy, locale }: RealmAtlasProps) {
             </div>
           </div>
 
-          <div ref={indexRef} className="ix-realm-index" role="tablist" aria-label={copy.nav.realms}>
+          <div
+            ref={indexRef}
+            className="ix-realm-index"
+            role="tablist"
+            aria-label={copy.nav.realms}
+          >
             {realmWorld.map((realm, index) => {
               const local = localWorldCopy.realms[realm.id];
               const selected = realm.id === active.id;
