@@ -52,6 +52,22 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
   useEffect(() => {
     if (!record) return;
 
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+    };
+  }, [record]);
+
+  useEffect(() => {
+    if (!record) return;
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -80,6 +96,7 @@ export function ArchiveRecordViewer({ record, onClose, closeLabel }: ArchiveReco
       data-archive-viewer
       data-archive-kind={record.kind}
       data-black-phase={isBlack ? blackPhase : undefined}
+      data-lenis-prevent
       role="dialog"
       aria-modal="true"
       aria-labelledby={`archive-viewer-title-${record.id}`}
