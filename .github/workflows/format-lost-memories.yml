@@ -23,11 +23,33 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install
+      - name: Apply archive compatibility cleanup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          css = Path("src/app/lost-memories-chapter.css")
+          css_text = css.read_text()
+          css_text = css_text.replace(
+              "transform: translateY(-7px) rotate(calc(var(--archive-tilt) * 0.45));",
+              "transform: translateY(-7px) rotate(var(--archive-tilt));",
+          )
+          css.write_text(css_text)
+
+          chapter = Path("src/components/experience/lost-memories-chapter.tsx")
+          chapter_text = chapter.read_text()
+          chapter_text = chapter_text.replace(
+              '<section className="ix-archive-transition" data-archive-transition aria-hidden="true">',
+              '<section className="ix-archive-transition" data-archive-transition>',
+          )
+          chapter.write_text(chapter_text)
+          PY
       - name: Format Lost Memories files
         run: >-
           npx prettier --write
           docs/superpowers/plans/2026-08-24-lost-memories-archives.md
           src/app/lost-memories-chapter.css
+          src/components/experience/lost-memories-chapter.tsx
           src/components/experience/lost-memories/archive-record-viewer.tsx
           src/components/experience/lost-memories/archive-table.tsx
           src/components/experience/lost-memories/lost-memories-types.ts
@@ -37,6 +59,6 @@ jobs:
           if git diff --quiet; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/superpowers/plans/2026-08-24-lost-memories-archives.md src/app/lost-memories-chapter.css src/components/experience/lost-memories/archive-record-viewer.tsx src/components/experience/lost-memories/archive-table.tsx src/components/experience/lost-memories/lost-memories-types.ts src/content/lost-memories.ts
-          git commit -m "style: format Lost Memories implementation"
+          git add docs/superpowers/plans/2026-08-24-lost-memories-archives.md src/app/lost-memories-chapter.css src/components/experience/lost-memories-chapter.tsx src/components/experience/lost-memories/archive-record-viewer.tsx src/components/experience/lost-memories/archive-table.tsx src/components/experience/lost-memories/lost-memories-types.ts src/content/lost-memories.ts
+          git commit -m "style: finalize Lost Memories compatibility"
           git push origin HEAD:feat/lost-memories-archives
