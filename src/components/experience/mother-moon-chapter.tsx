@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { JpRevealText } from "@/components/experience/jp-reveal-text";
 import { MotherMoonAsset } from "@/components/experience/mother-moon/mother-moon-asset";
 import { MotherMoonMemoryField } from "@/components/experience/mother-moon/mother-moon-memory-field";
+import { useMotherMoonFragmentDrag } from "@/components/experience/mother-moon/use-mother-moon-fragment-drag";
 import { useMotherMoonMotion } from "@/components/experience/mother-moon/use-mother-moon-motion";
 import { motherMoonCopy } from "@/content/mother-moon";
 import type { Locale } from "@/content/immersive-copy";
@@ -26,6 +27,7 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
   const rootRef = useRef<HTMLElement>(null);
   const copy = motherMoonCopy[locale];
   useMotherMoonMotion(rootRef);
+  useMotherMoonFragmentDrag(rootRef);
 
   return (
     <section
@@ -140,18 +142,26 @@ export function MotherMoonChapter({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <div className="ix-mm-presence__gallery" aria-hidden="true">
+        <div className="ix-mm-presence__gallery" data-mm-presence-gallery aria-hidden="true">
           <figure className="ix-mm-presence__silhouette" data-mm-presence-detail>
-            <MotherMoonAsset code="M04" className="ix-mm-image ix-mm-image--presence" />
+            <div className="ix-mm-presence__drag-layer" data-mm-fragment-drag>
+              <MotherMoonAsset code="M04" className="ix-mm-image ix-mm-image--presence" />
+            </div>
           </figure>
           <figure className="ix-mm-presence__hand" data-mm-presence-detail>
-            <MotherMoonAsset code="M06" className="ix-mm-image ix-mm-image--presence" />
+            <div className="ix-mm-presence__drag-layer" data-mm-fragment-drag>
+              <MotherMoonAsset code="M06" className="ix-mm-image ix-mm-image--presence" />
+            </div>
           </figure>
           <figure className="ix-mm-presence__eye" data-mm-presence-detail>
-            <MotherMoonAsset code="M05" className="ix-mm-image ix-mm-image--presence" />
+            <div className="ix-mm-presence__drag-layer" data-mm-fragment-drag>
+              <MotherMoonAsset code="M05" className="ix-mm-image ix-mm-image--presence" />
+            </div>
           </figure>
           <figure className="ix-mm-presence__profile" data-mm-presence-detail>
-            <MotherMoonAsset code="M07" className="ix-mm-image ix-mm-image--presence" />
+            <div className="ix-mm-presence__drag-layer" data-mm-fragment-drag>
+              <MotherMoonAsset code="M07" className="ix-mm-image ix-mm-image--presence" />
+            </div>
           </figure>
         </div>
 
