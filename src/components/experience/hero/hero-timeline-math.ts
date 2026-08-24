@@ -27,3 +27,23 @@ export const phaseWeights = (progress: number): HeroPhaseWeights => ({
   crimson: rangeProgress(progress, 0.68, 0.86),
   resolve: rangeProgress(progress, 0.86, 1),
 });
+
+/**
+ * Semantic beats shared by the moon choreography and hero copy.
+ * Values live in the normalized pre-blackout portion of the GSAP timeline.
+ *
+ * contact: the occulting body first visibly touches the yellow moon.
+ * crimson: the transit is complete and the Crimson Moon owns the scene.
+ */
+export const HERO_ECLIPSE_BEATS = {
+  contact: 0.3,
+  crimson: 0.68,
+} as const;
+
+export type HeroCopyPhase = "intro" | "transit" | "crimson";
+
+export const heroCopyPhase = (progress: number): HeroCopyPhase => {
+  if (progress < HERO_ECLIPSE_BEATS.contact) return "intro";
+  if (progress < HERO_ECLIPSE_BEATS.crimson) return "transit";
+  return "crimson";
+};
