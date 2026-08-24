@@ -136,6 +136,19 @@ html {
     padding-top: 0.72rem;
     padding-bottom: 0.72rem;
   }
+
+  /* Seven detail beats no longer need more than six viewports of runway. */
+  .akari-details--mosaic {
+    min-height: 455svh;
+  }
+
+  .akari-closing {
+    position: relative;
+    z-index: 12;
+    margin-top: -8svh;
+    padding-top: clamp(7rem, 13vh, 10rem);
+    background: linear-gradient(180deg, rgb(2 3 5 / 0) 0%, #020305 14%, #020305 100%);
+  }
 }
 
 .ix-world-map__inspector,
@@ -197,6 +210,14 @@ html {
   .ix-world-map__inspector {
     width: min(92vw, 25rem);
     max-width: calc(100vw - 1.5rem);
+  }
+
+  .akari-details--mosaic {
+    min-height: 520svh;
+  }
+
+  .akari-closing {
+    margin-top: 0;
   }
 }
 
