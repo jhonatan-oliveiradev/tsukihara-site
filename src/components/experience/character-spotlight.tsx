@@ -400,7 +400,13 @@ export function CharacterSpotlight({ locale }: CharacterSpotlightProps) {
                 {mosaicTiles.map((image, index) => (
                   <div
                     key={image}
-                    className={`akari-mosaic-tile akari-mosaic-tile--${index + 1}${index === 0 ? "is-revealed is-current" : ""}`}
+                    className={[
+                      "akari-mosaic-tile",
+                      `akari-mosaic-tile--${index + 1}`,
+                      index === 0 ? "is-revealed is-current" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                     data-akari-mosaic-tile
                   >
                     <Image
