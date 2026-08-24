@@ -1,0 +1,304 @@
+/* Final viewport calibration for Mother Moon, Lost Memories and Akari. */
+
+.ix-archive__content {
+  transition: filter 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ix-archive-viewer__veil {
+  animation: ixArchiveViewerVeilIn 320ms ease both;
+}
+
+.ix-archive-viewer__stage {
+  transform-origin: 50% 52%;
+  animation: ixArchiveViewerStageIn 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ix-archive-viewer[data-viewer-state="closing"] {
+  pointer-events: none;
+}
+
+.ix-archive-viewer[data-viewer-state="closing"] .ix-archive-viewer__veil {
+  animation: ixArchiveViewerVeilOut 280ms ease both;
+}
+
+.ix-archive-viewer[data-viewer-state="closing"] .ix-archive-viewer__stage {
+  animation: ixArchiveViewerStageOut 300ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes ixArchiveViewerVeilIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ixArchiveViewerVeilOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+}
+
+@keyframes ixArchiveViewerStageIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes ixArchiveViewerStageOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+    filter: blur(5px);
+  }
+}
+
+@media (min-width: 901px) {
+  /* Mother Moon typography must respond to both width and viewport height. */
+  .ix-mm [data-mm-title],
+  .ix-mm [data-mm-title-block],
+  .ix-mm [data-mm-quote] blockquote {
+    overflow: visible;
+  }
+
+  .ix-mm-opening__copy h2 {
+    max-width: 9ch;
+    font-size: clamp(3.35rem, min(5.25vw, 8.3svh), 6.25rem);
+    line-height: 0.94;
+    letter-spacing: -0.042em;
+  }
+
+  .ix-mm-forgetting__copy h2 {
+    font-size: clamp(3.1rem, min(4.7vw, 7.7svh), 5.6rem);
+    line-height: 0.95;
+  }
+
+  .ix-mm-presence__intro h2,
+  .ix-mm-philosophy__intro h2 {
+    font-size: clamp(3.35rem, min(5.55vw, 8.6svh), 6.6rem);
+    line-height: 0.94;
+  }
+
+  .ix-mm-quote {
+    padding-inline: clamp(1rem, 2.5vw, 2.75rem);
+  }
+
+  .ix-mm-quote blockquote {
+    width: min(100%, 13.5ch);
+    max-width: 13.5ch;
+    font-size: clamp(3.15rem, min(6.1vw, 8.9svh), 7rem);
+    line-height: 0.94;
+    letter-spacing: -0.043em;
+  }
+
+  .ix-mm-quote--akari blockquote {
+    width: min(100%, 12.5ch);
+    max-width: 12.5ch;
+    font-size: clamp(2.55rem, min(4.45vw, 7.2svh), 5.2rem);
+    line-height: 0.97;
+  }
+
+  .ix-mm-philosophy__side h3 {
+    font-size: clamp(3.25rem, min(5.8vw, 8.5svh), 6.8rem);
+  }
+
+  .ix-mm-closing__copy p {
+    font-size: clamp(2rem, min(3.7vw, 6.2svh), 4.25rem);
+  }
+
+  .ix-mm-closing__copy h2 {
+    font-size: clamp(3.35rem, min(6vw, 8.8svh), 6.8rem);
+    line-height: 0.94;
+  }
+
+  /* The horizontal lore lives below the fixed 72px site header. */
+  .ix-archive-horizontal {
+    --archive-pin-offset: 72px;
+    --archive-stage-height: calc(100svh - var(--archive-pin-offset));
+    height: var(--archive-stage-height);
+  }
+
+  .ix-archive-horizontal-track,
+  .ix-archive-horizontal .ix-archive-intro,
+  .ix-archive-table,
+  .ix-archive-group,
+  .ix-archive-horizontal .ix-archive-thesis,
+  .ix-archive-horizontal .ix-archive-akari {
+    height: var(--archive-stage-height);
+    min-height: var(--archive-stage-height);
+  }
+
+  .ix-archive-horizontal .ix-archive-intro {
+    padding-top: clamp(3.5rem, 5.8svh, 5rem);
+    padding-bottom: clamp(2rem, 3.5svh, 3rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-intro h2 {
+    font-size: clamp(3rem, min(4.55vw, 7.4svh), 5.45rem);
+    line-height: 0.94;
+  }
+
+  .ix-archive-horizontal .ix-archive-intro__support {
+    margin-top: 1.5rem;
+  }
+
+  .ix-archive-group {
+    padding-top: clamp(3.3rem, 5.5svh, 4.75rem);
+    padding-bottom: clamp(1.6rem, 2.8svh, 2.35rem);
+  }
+
+  .ix-archive-group__header {
+    margin-bottom: clamp(0.85rem, 1.6svh, 1.35rem);
+  }
+
+  .ix-archive-group__header h3 {
+    font-size: clamp(1.7rem, min(2.4vw, 4.2svh), 2.9rem);
+  }
+
+  .ix-archive-letters__surface,
+  .ix-archive-photos__surface,
+  .ix-archive-relics__surface,
+  .ix-archive-realms__surface,
+  .ix-archive-lunar__surface {
+    height: min(60svh, 40.5rem);
+  }
+
+  .ix-archive-letter {
+    max-height: 55svh;
+  }
+
+  .ix-archive-realms__surface {
+    height: min(62svh, 42rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-thesis,
+  .ix-archive-horizontal .ix-archive-akari {
+    padding-top: clamp(3.5rem, 5.8svh, 5rem);
+    padding-bottom: clamp(2.4rem, 4svh, 3.5rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-thesis p {
+    font-size: clamp(2.4rem, min(3.9vw, 6.8svh), 4.8rem);
+  }
+
+  .ix-archive-horizontal .ix-archive-akari__record {
+    width: min(44vw, 39rem);
+    max-height: 60svh;
+  }
+
+  /* The Akari sticky releases into the next chapter sooner instead of a blank viewport. */
+  .akari-details--mosaic {
+    min-height: 420svh;
+  }
+
+  .akari-closing {
+    min-height: 106svh;
+    margin-top: -14svh;
+    place-items: start center;
+    padding-top: clamp(7rem, 16svh, 11rem);
+    padding-bottom: clamp(7rem, 11svh, 9rem);
+  }
+
+  .akari-closing__portrait img {
+    object-position: center 68%;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 820px) {
+  .ix-mm-opening,
+  .ix-mm-forgetting,
+  .ix-mm-presence,
+  .ix-mm-philosophy,
+  .ix-mm-closing {
+    padding-top: clamp(4.5rem, 8svh, 6rem);
+    padding-bottom: clamp(4rem, 7svh, 5.5rem);
+  }
+
+  .ix-mm-quote {
+    min-height: 62svh;
+  }
+
+  .ix-mm-quote--akari {
+    min-height: 42svh;
+  }
+
+  .ix-archive-horizontal .ix-archive-intro {
+    gap: 2.5rem;
+    padding-top: 2.9rem;
+    padding-bottom: 1.7rem;
+  }
+
+  .ix-archive-group {
+    padding-top: 2.8rem;
+    padding-bottom: 1.4rem;
+  }
+
+  .ix-archive-letters__surface,
+  .ix-archive-photos__surface,
+  .ix-archive-relics__surface,
+  .ix-archive-lunar__surface {
+    height: 56svh;
+  }
+
+  .ix-archive-realms__surface {
+    height: 58svh;
+  }
+
+  .akari-details--mosaic {
+    min-height: 400svh;
+  }
+
+  .akari-closing {
+    margin-top: -18svh;
+    padding-top: clamp(6rem, 13svh, 8rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .ix-mm-opening__copy h2,
+  .ix-mm-forgetting__copy h2,
+  .ix-mm-presence__intro h2,
+  .ix-mm-philosophy__intro h2,
+  .ix-mm-closing__copy h2 {
+    font-size: clamp(2.75rem, 9.8vw, 4.8rem);
+    line-height: 0.96;
+  }
+
+  .ix-mm-quote blockquote {
+    max-width: 12.5ch;
+    font-size: clamp(2.8rem, 10.5vw, 4.9rem);
+    line-height: 0.96;
+  }
+
+  .ix-mm-quote--akari blockquote {
+    max-width: 12ch;
+    font-size: clamp(2.45rem, 9.2vw, 4.2rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-archive-viewer__veil,
+  .ix-archive-viewer__stage,
+  .ix-archive-viewer[data-viewer-state="closing"] .ix-archive-viewer__veil,
+  .ix-archive-viewer[data-viewer-state="closing"] .ix-archive-viewer__stage {
+    animation: none;
+  }
+}

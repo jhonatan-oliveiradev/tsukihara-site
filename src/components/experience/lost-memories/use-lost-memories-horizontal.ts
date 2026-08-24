@@ -4,6 +4,8 @@ import { useLayoutEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+const FALLBACK_HEADER_HEIGHT = 72;
+
 export function useLostMemoriesHorizontal(rootRef: RefObject<HTMLElement | null>) {
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -17,6 +19,17 @@ export function useLostMemoriesHorizontal(rootRef: RefObject<HTMLElement | null>
       const track = root.querySelector<HTMLElement>("[data-archive-horizontal-track]");
       if (!viewport || !track) return;
 
+      const getHeaderOffset = () => {
+        const header = document.querySelector<HTMLElement>(".ix-header");
+        return Math.round(header?.getBoundingClientRect().height || FALLBACK_HEADER_HEIGHT);
+      };
+
+      const syncViewportMetrics = () => {
+        viewport.style.setProperty("--archive-pin-offset", `${getHeaderOffset()}px`);
+      };
+
+      syncViewportMetrics();
+
       const getDistance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
       const tween = gsap.to(track, {
         x: () => -getDistance(),
@@ -24,7 +37,7 @@ export function useLostMemoriesHorizontal(rootRef: RefObject<HTMLElement | null>
         scrollTrigger: {
           id: "lost-memories-horizontal",
           trigger: viewport,
-          start: "top top",
+          start: () => `top ${getHeaderOffset()}px`,
           end: () => `+=${getDistance()}`,
           pin: true,
           scrub: 1,
@@ -59,12 +72,16 @@ export function useLostMemoriesHorizontal(rootRef: RefObject<HTMLElement | null>
           anchorListeners.push(() => anchor.removeEventListener("click", onClick));
         });
 
+      window.addEventListener("resize", syncViewportMetrics, { passive: true });
       const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+
       return () => {
         window.cancelAnimationFrame(refreshFrame);
+        window.removeEventListener("resize", syncViewportMetrics);
         anchorListeners.forEach((remove) => remove());
         trigger?.kill();
         tween.kill();
+        viewport.style.removeProperty("--archive-pin-offset");
         gsap.set(track, { clearProps: "transform" });
       };
     });

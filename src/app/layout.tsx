@@ -39,6 +39,8 @@ import "./nine-realms-world-calibration.css";
 import "./nine-realms-world-stability.css";
 import "./nine-realms-inspector-motion.css";
 import "./global-rhythm-refinement.css";
+import "./viewport-rhythm-fixes.css";
+import "./viewport-rhythm-reduced-motion.css";
 
 export const metadata: Metadata = {
   title: "Tsukihara — Eclipse of the Nine Realms",
