@@ -53,6 +53,20 @@ test("restored memories hand off organically through preload plus the transition
   assert.match(handleContinue, /preloadRememberAssetsInBackground\(manifest\.next\)/);
 });
 
+test("Yumegakure wires false assets, instability, and reversible stabilized fragments", () => {
+  const puzzle = read("../restore/memory-puzzle.tsx");
+  const fragment = read("../restore/memory-fragment.tsx");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(puzzle, /getFragmentSource\(memory, fragment\)/);
+  assert.match(puzzle, /memory\.distortionAsset/);
+  assert.match(puzzle, /onUnrestore=\{interactive \? onUnrestore : undefined\}/);
+  assert.match(fragment, /releaseSettlement/);
+  assert.match(fragment, /is-reversible/);
+  assert.match(experience, /isMemoryReadyForRestoration\(activeMemory, restoredFragmentIds\)/);
+  assert.match(experience, /type: "UNRESTORE_FRAGMENT"/);
+});
+
 test("game preloader exposes loaded and total counts instead of synthetic percentage", () => {
   const preloader = read("../scenes/game-preloader.tsx");
   assert.match(preloader, /progress\.loaded/);
