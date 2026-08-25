@@ -8,10 +8,11 @@ import { JpRevealText } from "@/components/shared/jp-reveal-text";
 type MenuSceneProps = {
   copy: RememberLocaleCopy["menu"];
   locale: RememberLocale;
+  revealReady: boolean;
   onBegin: () => Promise<void>;
 };
 
-export function MenuScene({ copy, locale, onBegin }: MenuSceneProps) {
+export function MenuScene({ copy, locale, revealReady, onBegin }: MenuSceneProps) {
   const [starting, setStarting] = useState(false);
 
   const handleBegin = async () => {
@@ -33,14 +34,20 @@ export function MenuScene({ copy, locale, onBegin }: MenuSceneProps) {
 
       <div className="remember-menu__title-wrap">
         <p>TSUKIHARA</p>
-        <h1 id="remember-menu-title">
-          <JpRevealText
-            jp="記憶"
-            text={copy.title}
-            locale={locale}
-            duration={1120}
-            className="remember-menu__title-reveal"
-          />
+        <h1 id="remember-menu-title" aria-label={copy.title}>
+          {revealReady ? (
+            <JpRevealText
+              jp="記憶"
+              text={copy.title}
+              locale={locale}
+              duration={1120}
+              className="remember-menu__title-reveal"
+            />
+          ) : (
+            <span className="remember-menu__title-reveal" aria-hidden="true">
+              記憶
+            </span>
+          )}
         </h1>
         <i aria-hidden="true" />
       </div>
@@ -55,14 +62,18 @@ export function MenuScene({ copy, locale, onBegin }: MenuSceneProps) {
         <i aria-hidden="true" />
       </button>
 
-      <p className="remember-menu__thesis">
-        <JpRevealText
-          jp="記憶を取り戻せ"
-          text={copy.thesis}
-          locale={locale}
-          duration={980}
-          delay={360}
-        />
+      <p className="remember-menu__thesis" aria-label={copy.thesis}>
+        {revealReady ? (
+          <JpRevealText
+            jp="記憶を取り戻せ"
+            text={copy.thesis}
+            locale={locale}
+            duration={980}
+            delay={240}
+          />
+        ) : (
+          <span aria-hidden="true">記憶を取り戻せ</span>
+        )}
       </p>
     </section>
   );
