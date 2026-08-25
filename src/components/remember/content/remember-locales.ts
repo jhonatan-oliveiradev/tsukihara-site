@@ -10,6 +10,13 @@ export type RememberLocaleCopy = {
     title: string;
     begin: string;
     language: string;
+    thesis: string;
+  };
+  loading: {
+    label: string;
+    fragments: string;
+    retry: string;
+    transition: string;
   };
   controls: {
     exit: string;
@@ -47,7 +54,7 @@ export type RememberLocaleCopy = {
 export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
   pt: {
     boot: {
-      prompt: "CLIQUE PARA LEMBRAR",
+      prompt: "APERTE QUALQUER BOTÃO PARA LEMBRAR",
       headphones: "Fones de ouvido recomendados",
     },
     menu: {
@@ -55,6 +62,13 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       title: "REMEMBER",
       begin: "INICIAR",
       language: "Idioma",
+      thesis: "RESTAURE A MEMÓRIA. CARREGUE A CICATRIZ.",
+    },
+    loading: {
+      label: "RECUPERANDO MEMÓRIAS",
+      fragments: "FRAGMENTOS DE MEMÓRIA",
+      retry: "TENTAR NOVAMENTE",
+      transition: "ATRAVESSANDO A MEMÓRIA",
     },
     controls: {
       exit: "Sair da memória",
@@ -90,7 +104,7 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
   },
   en: {
     boot: {
-      prompt: "PRESS ANYWHERE TO REMEMBER",
+      prompt: "PRESS ANY BUTTON TO REMEMBER",
       headphones: "Headphones recommended",
     },
     menu: {
@@ -98,6 +112,13 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       title: "REMEMBER",
       begin: "BEGIN",
       language: "Language",
+      thesis: "RESTORE THE MEMORY. KEEP THE SCAR.",
+    },
+    loading: {
+      label: "RECOVERING MEMORIES",
+      fragments: "MEMORY FRAGMENTS",
+      retry: "TRY AGAIN",
+      transition: "CROSSING THE MEMORY",
     },
     controls: {
       exit: "Exit memory",
