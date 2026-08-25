@@ -15,6 +15,7 @@ import { rememberReducer } from "@/components/remember/state/remember-reducer";
 import {
   initialRememberState,
   type RememberLocale,
+  type RestorationPhase,
 } from "@/components/remember/state/remember-state";
 import { trackRememberEvent } from "@/components/remember/system/remember-analytics";
 import { useRememberReducedMotion } from "@/components/remember/system/use-remember-reduced-motion";
@@ -123,10 +124,18 @@ export function RememberExperience() {
     ],
   );
 
-  const handleContinue = useCallback(() => {
-    dispatch({ type: "CONTINUE" });
+  const handleRestorationPhaseChange = useCallback((phase: RestorationPhase) => {
+    dispatch({ type: "SET_RESTORATION_PHASE", phase });
   }, []);
 
+  const handleRestorationComplete = useCallback(() => {
+    trackRememberEvent("remember_restore_completed", { realm: activeMemory.id });
+    dispatch({ type: "MARK_MEMORY_RESTORED", memoryId: activeMemory.id });
+  }, [activeMemory.id]);
+
+  const handleKintsugi = useCallback(() => audio.playKintsugi(), [audio]);
+  const handleRestored = useCallback(() => audio.playRestored(), [audio]);
+  const handleContinue = useCallback(() => dispatch({ type: "CONTINUE" }), []);
   const menuVisible = state.scene === "boot" || state.scene === "menu";
 
   return (
@@ -141,18 +150,22 @@ export function RememberExperience() {
       {menuVisible && <RememberMenuBackdrop reducedMotion={reducedMotion} />}
 
       {state.scene === "boot" && <BootScene copy={copy.boot} onUnlock={handleUnlockMenu} />}
-
       {state.scene === "menu" && <MenuScene copy={copy.menu} onBegin={handleBegin} />}
 
       {state.scene === "memory" && (
         <RestoreScene
           memory={activeMemory}
           copy={copy.memory}
+          completionLine={activeMemory.completionCopy[state.locale]}
           restoredFragmentIds={state.restoredFragmentIds}
           restorationPhase={state.restorationPhase}
           reducedMotion={reducedMotion}
           interactive={state.restorationPhase === "idle"}
           onRestore={handleRestore}
+          onRestorationPhaseChange={handleRestorationPhaseChange}
+          onRestorationComplete={handleRestorationComplete}
+          onKintsugi={handleKintsugi}
+          onRestored={handleRestored}
           onContinue={handleContinue}
         />
       )}
