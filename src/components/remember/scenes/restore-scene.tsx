@@ -57,7 +57,16 @@ export function RestoreScene({
     const instruction = root.querySelector("[data-restore-instruction]");
     const memorySurface = root.querySelector(".remember-memory__surface");
 
-    if (!intro || !introLabel || !introTitle || !introJp || !label || !instruction || !memorySurface) return;
+    if (
+      !intro ||
+      !introLabel ||
+      !introTitle ||
+      !introJp ||
+      !label ||
+      !instruction ||
+      !memorySurface
+    )
+      return;
 
     const ctx = gsap.context(() => {
       gsap.set(intro, { opacity: 1 });
@@ -76,7 +85,11 @@ export function RestoreScene({
           .to(introLabel, { opacity: 0.72, duration: 0.12 }, schedule.labelIn)
           .to(introTitle, { opacity: 1, duration: 0.16 }, schedule.titleIn)
           .to(introJp, { opacity: 0.48, duration: 0.14 }, schedule.jpIn)
-          .to([introLabel, introTitle, introJp], { opacity: 0, duration: 0.16 }, schedule.copyOut)
+          .to(
+            [introLabel, introTitle, introJp],
+            { opacity: 0, duration: 0.16 },
+            schedule.copyOut,
+          )
           .to(intro, { opacity: 0, duration: 0.28 }, schedule.copyOut)
           .to(memorySurface, { opacity: 1, duration: 0.34 }, schedule.surfaceIn)
           .to([label, instruction], { opacity: 1, duration: 0.24 }, schedule.uiIn);
@@ -105,14 +118,23 @@ export function RestoreScene({
             { opacity: 0, y: -10, filter: "blur(7px)", duration: 0.55, ease: "power2.in" },
             schedule.copyOut,
           )
-          .to(intro, { opacity: 0, duration: 0.82, ease: "power2.inOut" }, schedule.copyOut + 0.1)
+          .to(
+            intro,
+            { opacity: 0, duration: 0.82, ease: "power2.inOut" },
+            schedule.copyOut + 0.1,
+          )
           .fromTo(
             memorySurface,
             { opacity: 0, scale: 0.975, filter: "blur(16px) brightness(0.55)" },
             { opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", duration: 0.92 },
             schedule.surfaceIn,
           )
-          .fromTo(label, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.56 }, schedule.uiIn)
+          .fromTo(
+            label,
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.56 },
+            schedule.uiIn,
+          )
           .fromTo(
             instruction,
             { opacity: 0, y: 8 },
@@ -138,7 +160,9 @@ export function RestoreScene({
       data-memory-intro-state={introComplete ? "complete" : "playing"}
     >
       <div
-        className={["remember-memory-intro", introComplete && "is-finished"].filter(Boolean).join(" ")}
+        className={["remember-memory-intro", introComplete && "is-finished"]
+          .filter(Boolean)
+          .join(" ")}
         data-memory-intro
         aria-hidden="true"
       >
