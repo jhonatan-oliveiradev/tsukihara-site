@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { memoryDefinitions } from "./memory-definitions.ts";
+import {
+  getFragmentSource,
+  getRequiredFragmentIds,
+  getStabilizedFalseFragmentIds,
+  isMemoryReadyForRestoration,
+} from "../restore/memory-mechanic-policy.ts";
 
 test("memory definitions follow the five-memory prologue order", () => {
   assert.deepEqual(
@@ -48,6 +54,38 @@ test("Yumegakure has seven true and exactly two false fragments with real false 
     falseFragments.every((fragment) => fragment.sourceAsset?.startsWith("/remember-experience/")),
   );
   assert.ok(yumegakure.distortionAsset.startsWith("/remember-experience/"));
+});
+
+test("Yumegakure completes with seven true fragments and no stabilized false fragment", () => {
+  const yumegakure = memoryDefinitions.find((memory) => memory.id === "yumegakure");
+  assert.ok(yumegakure);
+  assert.equal(yumegakure.mechanic, "false-memory");
+
+  const required = getRequiredFragmentIds(yumegakure);
+  assert.equal(required.length, 7);
+  assert.equal(isMemoryReadyForRestoration(yumegakure, required), true);
+
+  const withFalse = [...required, "yumegakure-false-01"];
+  assert.equal(isMemoryReadyForRestoration(yumegakure, withFalse), false);
+  assert.deepEqual(getStabilizedFalseFragmentIds(yumegakure, withFalse), [
+    "yumegakure-false-01",
+  ]);
+});
+
+test("Yumegakure false fragments render from their dedicated source assets", () => {
+  const yumegakure = memoryDefinitions.find((memory) => memory.id === "yumegakure");
+  assert.ok(yumegakure);
+  assert.equal(yumegakure.mechanic, "false-memory");
+
+  const falseFragment = yumegakure.fragments.find(
+    (fragment) => fragment.id === "yumegakure-false-01",
+  );
+  assert.ok(falseFragment);
+  assert.equal(getFragmentSource(yumegakure, falseFragment), falseFragment.sourceAsset);
+
+  const trueFragment = yumegakure.fragments.find((fragment) => fragment.id === "yumegakure-a");
+  assert.ok(trueFragment);
+  assert.equal(getFragmentSource(yumegakure, trueFragment), yumegakure.brokenAsset);
 });
 
 test("Gekkai has eight fragments with stable realities and real focus assets", () => {
