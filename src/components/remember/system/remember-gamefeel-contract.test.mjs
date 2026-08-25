@@ -71,6 +71,20 @@ test("Yumegakure wires false assets, instability, and reversible stabilized frag
   assert.match(experience, /type: "UNRESTORE_FRAGMENT"/);
 });
 
+test("rotated puzzle fragments use their own geometry as the transform origin", () => {
+  const fragment = read("../restore/memory-fragment.tsx");
+  const styles = read("../../../app/remember/remember.css");
+
+  assert.match(fragment, /hitRef\.current\?\.getBBox\(\)/);
+  assert.match(fragment, /transformOrigin/);
+  assert.match(fragment, /viewBox\.width/);
+  assert.match(fragment, /viewBox\.height/);
+  assert.doesNotMatch(
+    styles,
+    /\.remember-fragment\s*\{[\s\S]*?transform-origin:\s*center;[\s\S]*?\}/,
+  );
+});
+
 test("game preloader exposes loaded and total counts instead of synthetic percentage", () => {
   const preloader = read("../scenes/game-preloader.tsx");
   assert.match(preloader, /progress\.loaded/);
