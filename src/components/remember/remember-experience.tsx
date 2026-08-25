@@ -414,7 +414,9 @@ export function RememberExperience() {
           dispatch({ type: "ENTER_STAGE", stage: memoryId });
           void audio.startMemory();
         },
-        async () => preloadRememberAssets(manifest.critical),
+        async () => {
+          await preloadRememberAssets(manifest.critical);
+        },
       );
       void preloadRememberAssetsInBackground(manifest.next);
     },
