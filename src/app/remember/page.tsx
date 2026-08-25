@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { RememberExperience } from "@/components/remember/remember-experience";
 import "./remember.css";
 import "./remember-refinement.css";
+import "./remember-game.css";
 
 export const metadata: Metadata = {
   title: "REMEMBER — Tsukihara",
