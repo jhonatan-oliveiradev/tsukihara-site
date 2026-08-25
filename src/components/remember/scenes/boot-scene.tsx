@@ -28,8 +28,7 @@ export function BootScene({ copy, onUnlock }: BootSceneProps) {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
 
-      const validKey =
-        event.key === "Enter" || event.key === " " || event.key.length === 1;
+      const validKey = event.key === "Enter" || event.key === " " || event.key.length === 1;
       if (!validKey) return;
 
       event.preventDefault();
@@ -55,9 +54,7 @@ export function BootScene({ copy, onUnlock }: BootSceneProps) {
         <span id="remember-boot-title" className="remember-boot__title">
           REMEMBER
         </span>
-        <span className="remember-boot__prompt">
-          {unlocking ? "…" : copy.prompt}
-        </span>
+        <span className="remember-boot__prompt">{unlocking ? "…" : copy.prompt}</span>
         <small>{copy.headphones}</small>
       </button>
     </section>
