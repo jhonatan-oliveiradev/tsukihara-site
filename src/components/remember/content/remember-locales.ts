@@ -34,6 +34,7 @@ export type RememberLocaleCopy = {
     soundOn: string;
     soundOff: string;
     pause: string;
+    resume: string;
   };
   pause: {
     eyebrow: string;
@@ -116,6 +117,7 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       soundOn: "Som ligado",
       soundOff: "Som desligado",
       pause: "Pausar memória",
+      resume: "Retomar memória",
     },
     pause: {
       eyebrow: "MEMÓRIA SUSPENSA",
@@ -196,6 +198,7 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       soundOn: "Sound on",
       soundOff: "Sound off",
       pause: "Pause memory",
+      resume: "Resume memory",
     },
     pause: {
       eyebrow: "MEMORY SUSPENDED",
