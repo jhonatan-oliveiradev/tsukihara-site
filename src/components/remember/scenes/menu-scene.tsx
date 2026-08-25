@@ -47,8 +47,7 @@ export function MenuScene({
         ? copy.revisit
         : copy.newGame;
 
-  const handlePrimary = () =>
-    void run(policy.primary === "new-game" ? onNewGame : onPrimary);
+  const handlePrimary = () => void run(policy.primary === "new-game" ? onNewGame : onPrimary);
 
   const handleConfirmedNewGame = () => {
     setConfirmingNewGame(false);
