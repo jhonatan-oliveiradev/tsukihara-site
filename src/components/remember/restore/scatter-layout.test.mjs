@@ -29,10 +29,7 @@ test("standard-memory fragments begin well outside their snap radius and inside 
       assert.ok(point, `missing scatter point for ${fragment.id}`);
 
       const snapRadius = Math.max(36, fragment.snapRadius * minimumDimension);
-      assert.ok(
-        Math.hypot(point.x, point.y) > snapRadius * 1.9,
-        `${fragment.id} starts too close`,
-      );
+      assert.ok(Math.hypot(point.x, point.y) > snapRadius * 1.9, `${fragment.id} starts too close`);
       assert.ok(
         Math.abs(point.x) <= desktop.width * 0.43,
         `${fragment.id} escapes horizontal safe zone`,
