@@ -97,7 +97,8 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       newGame: "NOVA MEMÓRIA",
       archive: "ARQUIVO DE MEMÓRIAS",
       beginAgain: "LEMBRAR NOVAMENTE?",
-      beginAgainBody: "A memória atual será substituída. As cicatrizes registradas não poderão ser recuperadas.",
+      beginAgainBody:
+        "A memória atual será substituída. As cicatrizes registradas não poderão ser recuperadas.",
       confirm: "COMEÇAR NOVAMENTE",
       cancel: "CANCELAR",
       progress: "MEMÓRIA ATUAL",
