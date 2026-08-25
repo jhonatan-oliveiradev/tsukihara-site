@@ -21,10 +21,9 @@ test("BEGIN_GAME enters memory 01 with clean restoration state", () => {
 });
 
 test("fragment restoration is idempotent and the final unique fragment starts the climax", () => {
-  let state = rememberReducer(
-    rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }),
-    { type: "BEGIN_GAME" },
-  );
+  let state = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
+    type: "BEGIN_GAME",
+  });
 
   state = rememberReducer(state, {
     type: "RESTORE_FRAGMENT",
@@ -50,19 +49,17 @@ test("fragment restoration is idempotent and the final unique fragment starts th
 });
 
 test("CONTINUE does not advance a memory before restoration is stable", () => {
-  const playing = rememberReducer(
-    rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }),
-    { type: "BEGIN_GAME" },
-  );
+  const playing = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
+    type: "BEGIN_GAME",
+  });
   const attempted = rememberReducer(playing, { type: "CONTINUE" });
   assert.deepEqual(attempted, playing);
 });
 
 test("three restored memories advance Hanamori to Mizukyo to Kurogane to Akari", () => {
-  let state = rememberReducer(
-    rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }),
-    { type: "BEGIN_GAME" },
-  );
+  let state = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
+    type: "BEGIN_GAME",
+  });
 
   state = rememberReducer(state, { type: "MARK_MEMORY_RESTORED", memoryId: "hanamori" });
   state = rememberReducer(state, { type: "CONTINUE" });
@@ -84,10 +81,9 @@ test("three restored memories advance Hanamori to Mizukyo to Kurogane to Akari",
 });
 
 test("marking a restored memory twice is idempotent", () => {
-  const playing = rememberReducer(
-    rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }),
-    { type: "BEGIN_GAME" },
-  );
+  const playing = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
+    type: "BEGIN_GAME",
+  });
   const restored = rememberReducer(playing, {
     type: "MARK_MEMORY_RESTORED",
     memoryId: "hanamori",
