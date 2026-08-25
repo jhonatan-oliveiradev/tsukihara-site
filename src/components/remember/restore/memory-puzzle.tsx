@@ -4,6 +4,7 @@ import Image from "next/image";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
 import type { RestorationPhase } from "@/components/remember/state/remember-state";
+import { shouldMountRestorationEffect } from "@/components/remember/system/remember-render-policy";
 import { KintsugiSeams } from "./kintsugi-seams";
 import { MemoryFragment } from "./memory-fragment";
 import { MemoryRestorationEffect } from "./memory-restoration-effect";
@@ -42,6 +43,7 @@ export function MemoryPuzzle({
   const restored = new Set(restoredFragmentIds);
   const allFragmentsPlaced = restoredFragmentIds.length === memory.fragments.length;
   const visuallyRestored = restorationPhase === "restored";
+  const showRestorationEffect = shouldMountRestorationEffect(restorationPhase);
   const lastFragmentId = restoredFragmentIds.at(-1);
   const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
   const originPoint = lastFragment
@@ -144,18 +146,20 @@ export function MemoryPuzzle({
           />
         </div>
 
-        <MemoryRestorationEffect
-          active={restorationPhase !== "idle"}
-          memory={memory}
-          originPoint={originPoint}
-          reducedMotion={reducedMotion}
-          restoredLabel={restoredLabel}
-          completionLine={completionLine}
-          onPhaseChange={onRestorationPhaseChange}
-          onComplete={onRestorationComplete}
-          onKintsugi={onKintsugi}
-          onRestored={onRestored}
-        />
+        {showRestorationEffect && (
+          <MemoryRestorationEffect
+            active
+            memory={memory}
+            originPoint={originPoint}
+            reducedMotion={reducedMotion}
+            restoredLabel={restoredLabel}
+            completionLine={completionLine}
+            onPhaseChange={onRestorationPhaseChange}
+            onComplete={onRestorationComplete}
+            onKintsugi={onKintsugi}
+            onRestored={onRestored}
+          />
+        )}
 
         <span className="remember-memory__edge" aria-hidden="true" />
       </div>

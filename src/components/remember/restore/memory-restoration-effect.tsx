@@ -36,7 +36,10 @@ export function MemoryRestorationEffect({
   const rootRef = useRef<HTMLDivElement>(null);
   const ranMemoryRef = useRef<string | null>(null);
   const callbacksRef = useRef({ onPhaseChange, onComplete, onKintsugi, onRestored });
-  callbacksRef.current = { onPhaseChange, onComplete, onKintsugi, onRestored };
+
+  useLayoutEffect(() => {
+    callbacksRef.current = { onPhaseChange, onComplete, onKintsugi, onRestored };
+  }, [onComplete, onKintsugi, onPhaseChange, onRestored]);
 
   useLayoutEffect(() => {
     if (ranMemoryRef.current !== memory.id) ranMemoryRef.current = null;
@@ -255,9 +258,7 @@ export function MemoryRestorationEffect({
       />
 
       <div className="remember-restoration__copy" data-restoration-copy>
-        <span>
-          MEMORY / {String(memory.index).padStart(2, "0")}
-        </span>
+        <span>MEMORY / {String(memory.index).padStart(2, "0")}</span>
         <strong>{restoredLabel}</strong>
         <h2>{memory.title}</h2>
         <p>{completionLine}</p>

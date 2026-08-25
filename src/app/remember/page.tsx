@@ -5,6 +5,7 @@ import "./remember-refinement.css";
 import "./remember-game.css";
 import "./remember-puzzle.css";
 import "./remember-restoration.css";
+import "./remember-menu-ether.css";
 
 export const metadata: Metadata = {
   title: "REMEMBER — Tsukihara",

@@ -12,5 +12,6 @@ export default defineConfig([
     "next-env.d.ts",
     "public/secret-pathways-assets/**",
     "public/models/**",
+    "src/vendor/react-bits/**",
   ]),
 ]);
