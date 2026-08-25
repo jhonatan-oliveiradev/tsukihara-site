@@ -255,9 +255,7 @@ export function MemoryRestorationEffect({
       />
 
       <div className="remember-restoration__copy" data-restoration-copy>
-        <span>
-          MEMORY / {String(memory.index).padStart(2, "0")}
-        </span>
+        <span>MEMORY / {String(memory.index).padStart(2, "0")}</span>
         <strong>{restoredLabel}</strong>
         <h2>{memory.title}</h2>
         <p>{completionLine}</p>
