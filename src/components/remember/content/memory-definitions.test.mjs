@@ -5,7 +5,12 @@ async function loadDefinitions() {
   try {
     return await import("./memory-definitions.ts");
   } catch (error) {
-    if (error && typeof error === "object" && "code" in error && error.code === "ERR_MODULE_NOT_FOUND") {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ERR_MODULE_NOT_FOUND"
+    ) {
       return { memoryDefinitions: undefined };
     }
     throw error;
