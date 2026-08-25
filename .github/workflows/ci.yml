@@ -22,10 +22,6 @@ jobs:
         run: npm run test:hero
       - name: REMEMBER regression
         run: npm run test:remember
-      - name: Canonical Task 4 formatting diagnostic
-        run: |
-          npx prettier --write src/components/remember/restore/scatter-layout.test.mjs
-          git diff --no-color -- src/components/remember/restore/scatter-layout.test.mjs
       - name: Check formatting
         run: npm run format:check
       - name: Lint
