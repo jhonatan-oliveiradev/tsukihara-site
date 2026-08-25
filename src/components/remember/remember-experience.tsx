@@ -4,15 +4,23 @@ import { useCallback, useEffect, useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { useRememberAudio } from "@/components/remember/audio/use-remember-audio";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
+import { memoryDefinitions } from "@/components/remember/content/memory-definitions";
+import { getRememberCopy } from "@/components/remember/content/remember-locales";
 import { RememberShell } from "@/components/remember/remember-shell";
-import { EntryScene } from "@/components/remember/scenes/entry-scene";
-import { MemoryRevealScene } from "@/components/remember/scenes/memory-reveal-scene";
+import { BootScene } from "@/components/remember/scenes/boot-scene";
+import { RememberMenuBackdrop } from "@/components/remember/scenes/menu-backdrop";
+import { MenuScene } from "@/components/remember/scenes/menu-scene";
 import { RestoreScene } from "@/components/remember/scenes/restore-scene";
 import { rememberReducer } from "@/components/remember/state/remember-reducer";
-import { initialRememberState } from "@/components/remember/state/remember-state";
+import {
+  initialRememberState,
+  type RememberLocale,
+} from "@/components/remember/state/remember-state";
 import { trackRememberEvent } from "@/components/remember/system/remember-analytics";
 import { useRememberReducedMotion } from "@/components/remember/system/use-remember-reduced-motion";
 import { useRememberScrollLock } from "@/components/remember/system/use-remember-scroll-lock";
+
+const localeStorageKey = "tsukihara:remember:locale";
 
 const preloadImage = (src: string) => {
   const image = new window.Image();
@@ -25,8 +33,17 @@ export function RememberExperience() {
   const [state, dispatch] = useReducer(rememberReducer, initialRememberState);
   const reducedMotion = useRememberReducedMotion();
   const audio = useRememberAudio();
+  const copy = getRememberCopy(state.locale);
+  const activeMemory = memoryDefinitions[state.activeMemoryIndex] ?? memoryDefinitions[0];
 
   useRememberScrollLock();
+
+  useEffect(() => {
+    const storedLocale = window.localStorage.getItem(localeStorageKey);
+    if (storedLocale === "pt" || storedLocale === "en") {
+      dispatch({ type: "SET_LOCALE", locale: storedLocale });
+    }
+  }, []);
 
   useEffect(() => {
     audio.setMuted(state.muted);
@@ -56,42 +73,74 @@ export function RememberExperience() {
     audio.setMuted(muted);
   }, [audio, state.muted]);
 
-  const handleEnter = useCallback(async () => {
-    await audio.unlock().catch(() => undefined);
+  const handleLocaleChange = useCallback((locale: RememberLocale) => {
+    window.localStorage.setItem(localeStorageKey, locale);
+    dispatch({ type: "SET_LOCALE", locale });
+  }, []);
 
-    preloadImage(rememberAssets.hanamoriBroken);
-    preloadImage(rememberAssets.hanamoriRestored);
-    trackRememberEvent("remember_started");
-    dispatch({ type: "ENTER" });
-    void audio.enterRestore();
+  const handleUnlockMenu = useCallback(async () => {
+    await audio.unlockMenu().catch(() => undefined);
+    dispatch({ type: "UNLOCK_MENU" });
   }, [audio]);
+
+  const handleBegin = useCallback(async () => {
+    preloadImage(activeMemory.brokenAsset);
+    preloadImage(activeMemory.restoredAsset);
+    preloadImage(rememberAssets.kintsugiCrackOverlay);
+    preloadImage(rememberAssets.memoryParticles);
+    preloadImage(rememberAssets.memoryPulseRing);
+    preloadImage(rememberAssets.completionBurst);
+    preloadImage(rememberAssets.restoredScarOverlay);
+
+    trackRememberEvent("remember_started");
+    dispatch({ type: "BEGIN_GAME" });
+    void audio.startMemory();
+  }, [activeMemory, audio]);
 
   const handleRestore = useCallback(
     (fragmentId: string) => {
-      if (state.scene !== "restore" || state.restoredFragmentIds.includes(fragmentId)) return;
-      audio.playKintsugi();
-      dispatch({ type: "RESTORE_FRAGMENT", fragmentId, totalFragments: 5 });
+      if (
+        state.scene !== "memory" ||
+        state.restorationPhase !== "idle" ||
+        state.restoredFragmentIds.includes(fragmentId)
+      ) {
+        return;
+      }
+
+      audio.playPieceComplete();
+      dispatch({
+        type: "RESTORE_FRAGMENT",
+        fragmentId,
+        totalFragments: activeMemory.fragments.length,
+      });
     },
-    [audio, state.restoredFragmentIds, state.scene],
+    [activeMemory.fragments.length, audio, state.restorationPhase, state.restoredFragmentIds, state.scene],
   );
 
-  return (
-    <RememberShell muted={state.muted} onExit={handleExit} onToggleMute={handleToggleMute}>
-      {state.scene === "entry" && (
-        <EntryScene reducedMotion={reducedMotion} onEnter={handleEnter} />
-      )}
+  const menuVisible = state.scene === "boot" || state.scene === "menu";
 
-      {state.scene !== "entry" && (
+  return (
+    <RememberShell
+      scene={state.scene}
+      locale={state.locale}
+      muted={state.muted}
+      onExit={handleExit}
+      onToggleMute={handleToggleMute}
+      onLocaleChange={handleLocaleChange}
+    >
+      {menuVisible && <RememberMenuBackdrop reducedMotion={reducedMotion} />}
+
+      {state.scene === "boot" && <BootScene copy={copy.boot} onUnlock={handleUnlockMenu} />}
+
+      {state.scene === "menu" && <MenuScene copy={copy.menu} onBegin={handleBegin} />}
+
+      {state.scene === "memory" && (
         <RestoreScene
           restoredFragmentIds={state.restoredFragmentIds}
           reducedMotion={reducedMotion}
-          interactive={state.scene === "restore"}
+          interactive={state.restorationPhase === "idle"}
           onRestore={handleRestore}
         />
-      )}
-
-      {state.scene === "memory-reveal" && (
-        <MemoryRevealScene reducedMotion={reducedMotion} onReveal={audio.playReveal} />
       )}
     </RememberShell>
   );
