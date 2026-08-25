@@ -46,3 +46,23 @@ test("game preloader exposes loaded and total counts instead of synthetic percen
   assert.match(preloader, /progress\.total/);
   assert.doesNotMatch(preloader, /%/);
 });
+
+test("pause control switches between pause and resume copy while preserving header typography", () => {
+  const shell = read("../remember-shell.tsx");
+  const locales = read("../content/remember-locales.ts");
+  const styles = read("../../../app/remember/remember-game.css");
+
+  assert.match(shell, /paused \? copy\.controls\.resume : copy\.controls\.pause/);
+  assert.match(locales, /resume: "Retomar memória"/);
+  assert.match(locales, /resume: "Resume memory"/);
+  assert.match(styles, /\.remember-pause-toggle[\s\S]*font: inherit/);
+});
+
+test("pause and archive overlays render outside the gameplay stage stacking context", () => {
+  const shell = read("../remember-shell.tsx");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(shell, /overlay\?: ReactNode/);
+  assert.match(shell, /<div className="remember-stage">\{children\}<\/div>[\s\S]*\{overlay\}/);
+  assert.match(experience, /overlay=\{/);
+});
