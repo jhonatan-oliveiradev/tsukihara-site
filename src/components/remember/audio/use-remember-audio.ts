@@ -41,7 +41,7 @@ export function useRememberAudio(): RememberAudioController {
   const mutedRef = useRef(false);
   const unlockedRef = useRef(false);
   const fadeAbortRef = useRef<AbortController | null>(null);
-  const pausedPhaseVolumeRef = useRef(rememberAudioTracks.phase.volume);
+  const pausedPhaseVolumeRef = useRef<number>(rememberAudioTracks.phase.volume);
 
   const getTrack = useCallback((key: TrackKey) => {
     const existing = tracksRef.current[key];
@@ -129,7 +129,6 @@ export function useRememberAudio(): RememberAudioController {
     });
     transientsRef.current.clear();
     unlockedRef.current = false;
-    pausedPhaseVolumeRef.current = rememberAudioTracks.phase.volume;
   }, [abortFades]);
 
   useEffect(() => stopAll, [stopAll]);
