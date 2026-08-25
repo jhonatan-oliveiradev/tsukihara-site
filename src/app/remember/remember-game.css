@@ -38,7 +38,12 @@
   inset: 0;
   background:
     linear-gradient(90deg, rgb(3 3 5 / 0.82) 0%, rgb(3 3 5 / 0.38) 46%, rgb(3 3 5 / 0.66) 100%),
-    radial-gradient(circle at 62% 38%, transparent 0 24%, rgb(2 2 4 / 0.18) 48%, rgb(2 2 4 / 0.7) 100%);
+    radial-gradient(
+      circle at 62% 38%,
+      transparent 0 24%,
+      rgb(2 2 4 / 0.18) 48%,
+      rgb(2 2 4 / 0.7) 100%
+    );
 }
 
 [data-remember-scene="boot"] .remember-root__moon,
@@ -66,8 +71,7 @@
   align-items: center;
   justify-content: center;
   border: 0;
-  padding:
-    max(4rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right))
+  padding: max(4rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right))
     max(3rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
   background: transparent;
   color: inherit;
@@ -156,8 +160,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding:
-    max(6.5rem, calc(env(safe-area-inset-top) + 4.8rem))
+  padding: max(6.5rem, calc(env(safe-area-inset-top) + 4.8rem))
     max(5vw, calc(env(safe-area-inset-right) + 2rem))
     max(4rem, calc(env(safe-area-inset-bottom) + 2rem))
     max(6vw, calc(env(safe-area-inset-left) + 2rem));
@@ -382,8 +385,7 @@
 
   .remember-menu {
     justify-content: flex-end;
-    padding:
-      max(7rem, calc(env(safe-area-inset-top) + 5rem))
+    padding: max(7rem, calc(env(safe-area-inset-top) + 5rem))
       max(1.4rem, calc(env(safe-area-inset-right) + 1rem))
       max(5.5rem, calc(env(safe-area-inset-bottom) + 3rem))
       max(1.4rem, calc(env(safe-area-inset-left) + 1rem));
