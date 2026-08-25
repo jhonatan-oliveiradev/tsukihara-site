@@ -4,6 +4,10 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
 import type { RememberLocaleCopy } from "@/components/remember/content/remember-locales";
+import {
+  getRequiredFragmentIds,
+  getRestoredRequiredFragmentCount,
+} from "@/components/remember/restore/memory-mechanic-policy";
 import { getMemoryIntroSchedule } from "@/components/remember/restore/memory-intro-timeline";
 import { MemoryPuzzle } from "@/components/remember/restore/memory-puzzle";
 import type { RestorationPhase } from "@/components/remember/state/remember-state";
@@ -17,6 +21,7 @@ type RestoreSceneProps = {
   reducedMotion: boolean;
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
+  onUnrestore: (fragmentId: string) => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
   onRestorationComplete: () => void;
   onKintsugi: () => void;
@@ -33,6 +38,7 @@ export function RestoreScene({
   reducedMotion,
   interactive,
   onRestore,
+  onUnrestore,
   onRestorationPhaseChange,
   onRestorationComplete,
   onKintsugi,
@@ -43,6 +49,8 @@ export function RestoreScene({
   const [introComplete, setIntroComplete] = useState(false);
   const restored = restorationPhase === "restored";
   const climax = restorationPhase !== "idle" && !restored;
+  const requiredFragmentCount = getRequiredFragmentIds(memory).length;
+  const restoredRequiredCount = getRestoredRequiredFragmentCount(memory, restoredFragmentIds);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -180,6 +188,7 @@ export function RestoreScene({
         restoredLabel={copy.restored}
         completionLine={completionLine}
         onRestore={onRestore}
+        onUnrestore={onUnrestore}
         onRestorationPhaseChange={onRestorationPhaseChange}
         onRestorationComplete={onRestorationComplete}
         onKintsugi={onKintsugi}
@@ -207,8 +216,8 @@ export function RestoreScene({
             <span>{copy.instruction}</span>
             <i aria-hidden="true" />
             <small>
-              {copy.fragments} {String(restoredFragmentIds.length).padStart(2, "0")} /{" "}
-              {String(memory.fragments.length).padStart(2, "0")}
+              {copy.fragments} {String(restoredRequiredCount).padStart(2, "0")} /{" "}
+              {String(requiredFragmentCount).padStart(2, "0")}
             </small>
           </>
         )}
