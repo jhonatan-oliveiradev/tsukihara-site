@@ -32,7 +32,9 @@ export function Interlude01Scene({
   onContinue,
 }: Interlude01SceneProps) {
   const [discovered, setDiscovered] = useState<Interlude01TraceId[]>([]);
+  const [continueHovered, setContinueHovered] = useState(false);
   const complete = isInterlude01Complete(discovered);
+  const continueUnlocked = complete && interactive;
 
   const discover = (traceId: Interlude01TraceId) => {
     if (!interactive) return;
@@ -217,22 +219,44 @@ export function Interlude01Scene({
           </small>
 
           <button
+            className="remember-interlude__continue"
+            data-unlocked={continueUnlocked}
             type="button"
-            disabled={!complete || !interactive}
+            disabled={!continueUnlocked}
             onClick={onContinue}
+            onPointerEnter={() => {
+              if (continueUnlocked) setContinueHovered(true);
+            }}
+            onPointerLeave={() => setContinueHovered(false)}
+            onFocus={() => {
+              if (continueUnlocked) setContinueHovered(true);
+            }}
+            onBlur={() => setContinueHovered(false)}
             style={{
               marginTop: "1.35rem",
               padding: "0.9rem 1.35rem",
-              border: "1px solid rgb(203 180 142 / 0.32)",
-              background: "rgb(8 10 14 / 0.56)",
-              color: "rgb(225 210 185 / 0.82)",
+              border: continueUnlocked
+                ? "1px solid rgb(229 196 135 / 0.78)"
+                : "1px solid rgb(203 180 142 / 0.32)",
+              background: complete && interactive
+                ? "linear-gradient(135deg, rgb(210 174 108 / 0.96), rgb(159 118 61 / 0.96))"
+                : "rgb(8 10 14 / 0.56)",
+              color: continueUnlocked ? "rgb(24 18 12 / 0.94)" : "rgb(225 210 185 / 0.82)",
+              boxShadow:
+                continueUnlocked && continueHovered
+                  ? "0 0 1.4rem rgb(225 187 117 / 0.62), 0 0 3.8rem rgb(225 187 117 / 0.24)"
+                  : "0 0 0 rgb(225 187 117 / 0)",
               font: "inherit",
               fontSize: "0.62rem",
               letterSpacing: "0.22em",
               textTransform: "uppercase",
-              opacity: complete && interactive ? 1 : 0.25,
-              cursor: complete && interactive ? "pointer" : "default",
-              pointerEvents: complete && interactive ? "auto" : "none",
+              opacity: continueUnlocked ? 1 : 0.25,
+              cursor: continueUnlocked ? "pointer" : "default",
+              pointerEvents: continueUnlocked ? "auto" : "none",
+              transition: reducedMotion
+                ? "background 120ms ease, color 120ms ease"
+                : "background 240ms ease, color 240ms ease, border-color 240ms ease, box-shadow 320ms ease, transform 240ms ease",
+              transform: continueHovered && continueUnlocked ? "translateY(-1px)" : "translateY(0)",
             }}
           >
             {copy.continue}
