@@ -1,23 +1,11 @@
-export type RememberScene =
-  | "boot"
-  | "menu"
-  | "memory"
-  | "akari-reveal"
-  | "epilogue"
-  | "credits";
+export type RememberScene = "boot" | "menu" | "memory" | "akari-reveal" | "epilogue" | "credits";
 
 export type RememberLocale = "pt" | "en";
 
 export type MemoryId = "hanamori" | "mizukyo" | "kurogane";
 
 export type RestorationPhase =
-  | "idle"
-  | "last-piece"
-  | "kintsugi"
-  | "pulse"
-  | "restoring"
-  | "revealing"
-  | "restored";
+  "idle" | "last-piece" | "kintsugi" | "pulse" | "restoring" | "revealing" | "restored";
 
 export type RememberState = {
   scene: RememberScene;
