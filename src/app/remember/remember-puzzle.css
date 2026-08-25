@@ -1,0 +1,116 @@
+.remember-memory__realm-atmosphere {
+  position: absolute;
+  z-index: 3;
+  inset: -18% -14%;
+  pointer-events: none;
+  opacity: 0.72;
+  filter: blur(1px);
+}
+
+.remember-memory--mizukyo .remember-memory__realm-atmosphere {
+  background:
+    radial-gradient(circle at 24% 36%, rgb(116 171 191 / 0.13), transparent 24%),
+    radial-gradient(circle at 82% 62%, rgb(60 111 139 / 0.12), transparent 30%);
+}
+
+.remember-memory--kurogane .remember-memory__realm-atmosphere {
+  background:
+    radial-gradient(circle at 30% 72%, rgb(156 102 71 / 0.11), transparent 28%),
+    radial-gradient(circle at 76% 28%, rgb(105 73 57 / 0.11), transparent 26%);
+}
+
+.remember-memory--mizukyo .remember-memory__surface {
+  box-shadow:
+    0 3rem 8rem rgb(0 0 0 / 0.48),
+    0 0 4rem rgb(86 142 165 / 0.08);
+}
+
+.remember-memory--kurogane .remember-memory__surface {
+  box-shadow:
+    0 3rem 8rem rgb(0 0 0 / 0.5),
+    0 0 4rem rgb(139 89 62 / 0.07);
+}
+
+.remember-fragment:nth-child(n + 6) {
+  z-index: 1;
+}
+
+.remember-restore__header,
+.remember-restore__instruction {
+  transition:
+    opacity 420ms ease,
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.remember-restore.is-climax .remember-restore__header,
+.remember-restore__instruction.is-hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+  transform: translateY(-0.45rem);
+}
+
+.remember-restore__instruction.is-restored {
+  opacity: 1 !important;
+}
+
+.remember-restore__continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 0;
+  padding: 0.7rem 0;
+  background: transparent;
+  color: rgb(241 232 219 / 0.82);
+  font: inherit;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.remember-restore__continue i {
+  display: block;
+  width: 3rem;
+  height: 1px;
+  background: rgb(203 165 105 / 0.7);
+  transform-origin: left;
+  transition: transform 300ms ease;
+}
+
+.remember-restore__continue:hover i,
+.remember-restore__continue:focus-visible i {
+  transform: scaleX(1.35);
+}
+
+.remember-restore__continue:focus-visible {
+  outline: 1px solid rgb(218 189 139 / 0.62);
+  outline-offset: 6px;
+}
+
+@media (max-width: 900px) {
+  .remember-memory {
+    width: min(94vw, 760px);
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  .remember-memory__realm-atmosphere {
+    inset: -12% -8%;
+    opacity: 0.54;
+  }
+
+  .remember-restore__header {
+    left: max(1.2rem, calc(env(safe-area-inset-left) + 0.8rem));
+  }
+
+  .remember-restore__instruction {
+    right: max(1.2rem, calc(env(safe-area-inset-right) + 0.8rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-restore__header,
+  .remember-restore__instruction,
+  .remember-restore__continue i {
+    transition-duration: 120ms;
+  }
+}
