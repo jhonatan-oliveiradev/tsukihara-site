@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
@@ -46,6 +46,34 @@ type MemoryPuzzleProps = {
   onRestorationComplete: () => void;
   onKintsugi: () => void;
   onRestored: () => void;
+};
+
+const guidanceStyle: CSSProperties = {
+  position: "absolute",
+  zIndex: 9,
+  left: "50%",
+  bottom: "clamp(4.8rem, 10vh, 7.5rem)",
+  width: "min(34rem, calc(100vw - 3rem))",
+  transform: "translateX(-50%)",
+  pointerEvents: "none",
+  textAlign: "center",
+  textShadow: "0 0.5rem 2rem rgb(0 0 0 / 0.82)",
+};
+
+const guidanceTitleStyle: CSSProperties = {
+  display: "block",
+  color: "rgb(228 214 193 / 0.78)",
+  fontSize: "clamp(0.58rem, 0.8vw, 0.72rem)",
+  letterSpacing: "0.28em",
+  textTransform: "uppercase",
+};
+
+const guidanceBodyStyle: CSSProperties = {
+  margin: "0.55rem auto 0",
+  color: "rgb(226 220 211 / 0.52)",
+  fontFamily: "var(--display, Georgia, serif)",
+  fontSize: "clamp(0.78rem, 1.1vw, 1rem)",
+  lineHeight: 1.45,
 };
 
 export function MemoryPuzzle({
@@ -184,9 +212,14 @@ export function MemoryPuzzle({
       )}
 
       {showHanamoriGuidance ? (
-        <div className="remember-memory-guidance" data-hanamori-guidance>
-          <span>{guidanceTitle}</span>
-          <p>{guidanceBody}</p>
+        <div
+          className="remember-memory-guidance"
+          data-hanamori-guidance
+          role="status"
+          style={guidanceStyle}
+        >
+          <span style={guidanceTitleStyle}>{guidanceTitle}</span>
+          <p style={guidanceBodyStyle}>{guidanceBody}</p>
         </div>
       ) : null}
 
