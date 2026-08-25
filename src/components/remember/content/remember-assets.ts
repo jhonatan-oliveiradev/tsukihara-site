@@ -12,6 +12,25 @@ export const rememberAssets = {
   kuroganeBroken: `${imageBase}/remember-kurogane-broken.png`,
   kuroganeRestored: `${imageBase}/remember-kurogane-restored.png`,
 
+  yumegakureBroken: `${imageBase}/yumegakure/remember-yumegakure-broken.png`,
+  yumegakureRestored: `${imageBase}/yumegakure/remember-yumegakure-restored.png`,
+  yumegakureFalseFragment01: `${imageBase}/yumegakure/remember-yumegakure-false-fragment-01.png`,
+  yumegakureFalseFragment02: `${imageBase}/yumegakure/remember-yumegakure-false-fragment-02.png`,
+  yumegakureDistortionOverlay: `${imageBase}/yumegakure/remember-yumegakure-distortion-overlay.png`,
+
+  gekkaiStateA: `${imageBase}/gekkai/remember-gekkai-state-a.png`,
+  gekkaiStateB: `${imageBase}/gekkai/remember-gekkai-state-b.png`,
+  gekkaiRestored: `${imageBase}/gekkai/remember-gekkai-restored.png`,
+  gekkaiLunarFocusOverlay: `${imageBase}/gekkai/remember-gekkai-lunar-focus-overlay.png`,
+
+  memoryArchiveBackground: `${imageBase}/archive/remember-memory-archive-background.png`,
+  memoryArchiveSigil: `${imageBase}/archive/remember-memory-archive-sigil.png`,
+  akr001Signature: `${imageBase}/archive/remember-akr001-signature.png`,
+  interludeUnknownMemory: `${imageBase}/interludes/remember-interlude-01-unknown-memory.png`,
+  interludeMemoryNetwork: `${imageBase}/interludes/remember-interlude-02-memory-network.png`,
+
+  signatureFoundBurst: `${imageBase}/fx/remember-signature-found-burst.png`,
+  stageLockOverlay: `${imageBase}/fx/remember-stage-lock-overlay.png`,
   kintsugiCrackOverlay: `${imageBase}/mr01-kintsugi-crack-overlay.png`,
   memoryParticles: `${imageBase}/mr02-memory-particles.png`,
   memoryPulseRing: `${imageBase}/mr03-memory-pulse-ring.png`,
