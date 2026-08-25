@@ -40,21 +40,19 @@ test("REMEMBER composition routes scene changes through the transition director 
   assert.match(experience, /requestTransition/);
 });
 
-test("restored memories hand off organically through preload plus the transition veil", () => {
+test("restored memories hand off organically through the canonical stage graph and transition veil", () => {
   const experience = read("../remember-experience.tsx");
-  const handleContinue =
-    experience.match(/const handleContinue = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/)?.[0] ??
+  const transitionToNextStage =
+    experience.match(/const transitionToNextStage = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/)?.[0] ??
     "";
 
-  assert.match(
-    handleContinue,
-    /const nextMemory = memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/,
-  );
-  assert.match(handleContinue, /getStageAssetManifest\(nextMemory\.id\)/);
-  assert.match(handleContinue, /await requestTransition/);
-  assert.match(handleContinue, /dispatch\(\{ type: "CONTINUE" \}\)/);
-  assert.match(handleContinue, /preloadRememberAssets\(manifest\.critical\)/);
-  assert.match(handleContinue, /preloadRememberAssetsInBackground\(manifest\.next\)/);
+  assert.match(transitionToNextStage, /getNextStage\(state\.currentStage\)/);
+  assert.match(transitionToNextStage, /getStageAssetManifest\(nextStage\)/);
+  assert.match(transitionToNextStage, /await requestTransition/);
+  assert.match(transitionToNextStage, /dispatch\(\{ type: "CONTINUE" \}\)/);
+  assert.match(transitionToNextStage, /preloadRememberAssets\(manifest\.critical\)/);
+  assert.match(transitionToNextStage, /preloadRememberAssetsInBackground\(manifest\.next\)/);
+  assert.doesNotMatch(experience, /memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/);
 });
 
 test("Yumegakure wires false assets, instability, and reversible stabilized fragments", () => {
