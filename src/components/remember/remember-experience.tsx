@@ -100,6 +100,7 @@ export function RememberExperience() {
   );
 
   useEffect(() => {
+    let cancelled = false;
     const storedLocale = window.localStorage.getItem(localeStorageKey);
     if (storedLocale === "pt" || storedLocale === "en") {
       dispatch({ type: "SET_LOCALE", locale: storedLocale });
@@ -107,7 +108,16 @@ export function RememberExperience() {
 
     const save = loadRememberSave(window.localStorage.getItem(REMEMBER_SAVE_KEY));
     saveRef.current = save;
-    setStoredSave(save);
+    if (save) {
+      window.localStorage.setItem(REMEMBER_SAVE_KEY, serializeRememberSave(save));
+    }
+    queueMicrotask(() => {
+      if (!cancelled) setStoredSave(save);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -116,8 +126,6 @@ export function RememberExperience() {
 
   useEffect(() => {
     let cancelled = false;
-    setPreloadError(false);
-    setPreloadProgress(createPreloadProgress(0, initialAssetManifest.critical.length));
 
     void preloadRememberAssets(initialAssetManifest.critical, (progress) => {
       if (!cancelled) setPreloadProgress(progress);
@@ -413,6 +421,12 @@ export function RememberExperience() {
     [audio, requestTransition],
   );
 
+  const handleRetryPreload = useCallback(() => {
+    setPreloadError(false);
+    setPreloadProgress(createPreloadProgress(0, initialAssetManifest.critical.length));
+    setPreloadAttempt((attempt) => attempt + 1);
+  }, []);
+
   const menuVisible = state.scene === "boot" || state.scene === "menu";
   const pauseAvailable =
     ((state.scene === "memory" && state.restorationPhase === "idle") ||
@@ -437,6 +451,30 @@ export function RememberExperience() {
   const archiveCurrentStage =
     state.scene === "menu" && storedSave ? storedSave.currentStage : state.currentStage;
 
+  const overlay = (
+    <>
+      {state.paused && !state.archiveOpen ? (
+        <PauseMenu
+          copy={copy.pause}
+          onResume={closePause}
+          onRestartMemory={handleRestartMemory}
+          onOpenArchive={handleOpenArchive}
+          onReturnTitle={() => void handleReturnTitle()}
+        />
+      ) : null}
+
+      {state.archiveOpen ? (
+        <MemoryArchive
+          copy={copy.archive}
+          save={storedSave}
+          currentStage={archiveCurrentStage}
+          onClose={handleCloseArchive}
+          onReplayMemory={(memoryId) => void handleReplayMemory(memoryId)}
+        />
+      ) : null}
+    </>
+  );
+
   return (
     <>
       <RememberShell
@@ -449,6 +487,7 @@ export function RememberExperience() {
         onToggleMute={handleToggleMute}
         onTogglePause={handleTogglePause}
         onLocaleChange={handleLocaleChange}
+        overlay={overlay}
       >
         {menuVisible && <RememberMenuBackdrop reducedMotion={reducedMotion} />}
 
@@ -484,26 +523,6 @@ export function RememberExperience() {
             onContinue={handleContinue}
           />
         )}
-
-        {state.paused && !state.archiveOpen ? (
-          <PauseMenu
-            copy={copy.pause}
-            onResume={closePause}
-            onRestartMemory={handleRestartMemory}
-            onOpenArchive={handleOpenArchive}
-            onReturnTitle={() => void handleReturnTitle()}
-          />
-        ) : null}
-
-        {state.archiveOpen ? (
-          <MemoryArchive
-            copy={copy.archive}
-            save={storedSave}
-            currentStage={archiveCurrentStage}
-            onClose={handleCloseArchive}
-            onReplayMemory={(memoryId) => void handleReplayMemory(memoryId)}
-          />
-        ) : null}
       </RememberShell>
 
       <SceneTransitionDirector
@@ -521,7 +540,7 @@ export function RememberExperience() {
           retryLabel={copy.loading.retry}
           error={preloadError}
           reducedMotion={reducedMotion}
-          onRetry={() => setPreloadAttempt((attempt) => attempt + 1)}
+          onRetry={handleRetryPreload}
           onFinished={() => setPreloaderVisible(false)}
         />
       )}
