@@ -1,12 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
 import gsap from "gsap";
 import { magneticProgress, isWithinSnapRadius, type Point } from "./restore-math";
-import {
-  HANAMORI_VIEWBOX,
-  type MemoryFragmentDefinition,
-} from "./restore-geometry";
+import { HANAMORI_VIEWBOX, type MemoryFragmentDefinition } from "./restore-geometry";
 
 type MemoryFragmentProps = {
   definition: MemoryFragmentDefinition;
