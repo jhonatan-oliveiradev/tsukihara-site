@@ -32,16 +32,35 @@ export function MemoryRevealScene({ reducedMotion, onReveal }: MemoryRevealScene
       const veil = root.querySelector("[data-reveal-veil]");
 
       if (reducedMotion) {
-        gsap.fromTo([veil, realm, guardian, name, line], { opacity: 0 }, { opacity: 1, duration: 0.35, stagger: 0.1 });
+        gsap.fromTo(
+          [veil, realm, guardian, name, line],
+          { opacity: 0 },
+          { opacity: 1, duration: 0.35, stagger: 0.1, delay: 0.16 },
+        );
         return;
       }
 
       gsap
-        .timeline({ defaults: { ease: "power3.out" } })
+        .timeline({ defaults: { ease: "power3.out" }, delay: 0.68 })
         .fromTo(veil, { opacity: 0 }, { opacity: 1, duration: 1.1 })
-        .fromTo(realm, { opacity: 0, y: 18, letterSpacing: "0.34em" }, { opacity: 1, y: 0, letterSpacing: "0.24em", duration: 0.9 }, 0.42)
-        .fromTo(guardian, { opacity: 0, y: 16 }, { opacity: 0.72, y: 0, duration: 0.75 }, 0.88)
-        .fromTo(name, { opacity: 0, y: 20, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.05 }, 1.22)
+        .fromTo(
+          realm,
+          { opacity: 0, y: 18, letterSpacing: "0.34em" },
+          { opacity: 1, y: 0, letterSpacing: "0.24em", duration: 0.9 },
+          0.42,
+        )
+        .fromTo(
+          guardian,
+          { opacity: 0, y: 16 },
+          { opacity: 0.72, y: 0, duration: 0.75 },
+          0.88,
+        )
+        .fromTo(
+          name,
+          { opacity: 0, y: 20, filter: "blur(8px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.05 },
+          1.22,
+        )
         .fromTo(line, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.8 }, 1.78);
     }, root);
 
