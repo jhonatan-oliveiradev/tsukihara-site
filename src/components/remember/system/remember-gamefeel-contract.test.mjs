@@ -43,9 +43,13 @@ test("REMEMBER composition routes scene changes through the transition director 
 test("restored memories hand off organically through preload plus the transition veil", () => {
   const experience = read("../remember-experience.tsx");
   const handleContinue =
-    experience.match(/const handleContinue = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/)?.[0] ?? "";
+    experience.match(/const handleContinue = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/)?.[0] ??
+    "";
 
-  assert.match(handleContinue, /const nextMemory = memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/);
+  assert.match(
+    handleContinue,
+    /const nextMemory = memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/,
+  );
   assert.match(handleContinue, /getStageAssetManifest\(nextMemory\.id\)/);
   assert.match(handleContinue, /await requestTransition/);
   assert.match(handleContinue, /dispatch\(\{ type: "CONTINUE" \}\)/);
