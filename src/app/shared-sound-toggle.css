@@ -1,0 +1,39 @@
+.shared-sound-toggle .shared-sound-bars {
+  display: flex;
+  height: 12px;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.shared-sound-toggle .shared-sound-bars i {
+  display: block;
+  width: 1px;
+  background: #c24a52;
+  animation: ix-audio 0.8s ease-in-out infinite alternate;
+}
+
+.shared-sound-toggle .shared-sound-bars i:nth-child(1) {
+  height: 4px;
+}
+
+.shared-sound-toggle .shared-sound-bars i:nth-child(2) {
+  height: 9px;
+  animation-delay: 0.2s;
+}
+
+.shared-sound-toggle .shared-sound-bars i:nth-child(3) {
+  height: 6px;
+  animation-delay: 0.4s;
+}
+
+.shared-sound-toggle[aria-pressed="false"] .shared-sound-bars i {
+  height: 2px;
+  background: #777;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shared-sound-toggle .shared-sound-bars i {
+    animation: none;
+  }
+}
