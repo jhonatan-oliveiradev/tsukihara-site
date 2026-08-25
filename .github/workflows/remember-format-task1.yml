@@ -1,9 +1,9 @@
 name: REMEMBER Task 1 formatter
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/remember-prologue-expansion
+      - main
     paths:
       - ".github/workflows/remember-format-task1.yml"
       - "src/components/remember/content/memory-definitions.test.mjs"
@@ -18,11 +18,12 @@ permissions:
 
 jobs:
   format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feat/remember-prologue-expansion
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -51,4 +52,4 @@ jobs:
             src/components/remember/state/remember-save.ts \
             src/components/remember/state/remember-state.ts
           git commit -m "style: format REMEMBER task 1 files"
-          git push origin HEAD:feat/remember-prologue-expansion
+          git push origin HEAD:${{ github.head_ref }}
