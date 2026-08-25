@@ -44,7 +44,9 @@ test("Yumegakure has seven true and exactly two false fragments with real false 
   const falseFragments = yumegakure.fragments.filter((fragment) => fragment.truth === "false");
   assert.equal(trueFragments.length, 7);
   assert.equal(falseFragments.length, 2);
-  assert.ok(falseFragments.every((fragment) => fragment.sourceAsset?.startsWith("/remember-experience/")));
+  assert.ok(
+    falseFragments.every((fragment) => fragment.sourceAsset?.startsWith("/remember-experience/")),
+  );
   assert.ok(yumegakure.distortionAsset.startsWith("/remember-experience/"));
 });
 
@@ -53,7 +55,11 @@ test("Gekkai has eight fragments with stable realities and real focus assets", (
   assert.ok(gekkai);
   assert.equal(gekkai.mechanic, "overlapping");
   assert.equal(gekkai.fragments.length, 8);
-  assert.ok(gekkai.fragments.every((fragment) => fragment.stableReality === "a" || fragment.stableReality === "b"));
+  assert.ok(
+    gekkai.fragments.every(
+      (fragment) => fragment.stableReality === "a" || fragment.stableReality === "b",
+    ),
+  );
   assert.ok(gekkai.stateAAsset.startsWith("/remember-experience/"));
   assert.ok(gekkai.stateBAsset.startsWith("/remember-experience/"));
   assert.ok(gekkai.focusOverlayAsset.startsWith("/remember-experience/"));

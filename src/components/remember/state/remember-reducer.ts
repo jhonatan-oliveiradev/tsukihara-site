@@ -56,7 +56,7 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
         (memoryId) => action.save.memories[memoryId]?.completed === true,
       );
       const restoredFragmentIds = isMemoryStage(action.save.currentStage)
-        ? action.save.memoryProgress[action.save.currentStage]?.restoredFragmentIds ?? []
+        ? (action.save.memoryProgress[action.save.currentStage]?.restoredFragmentIds ?? [])
         : [];
 
       return {
@@ -112,7 +112,8 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
       return resetPuzzleRuntime({ ...state, paused: false, archiveOpen: false });
 
     case "RESTORE_FRAGMENT": {
-      if (state.scene !== "memory" || state.restorationPhase !== "idle" || state.paused) return state;
+      if (state.scene !== "memory" || state.restorationPhase !== "idle" || state.paused)
+        return state;
       if (state.restoredFragmentIds.includes(action.fragmentId)) return state;
 
       const restoredFragmentIds = [...state.restoredFragmentIds, action.fragmentId];
@@ -120,7 +121,9 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
         ...state,
         restoredFragmentIds,
         restorationPhase:
-          restoredFragmentIds.length >= action.totalFragments ? "last-piece" : state.restorationPhase,
+          restoredFragmentIds.length >= action.totalFragments
+            ? "last-piece"
+            : state.restorationPhase,
       };
     }
 

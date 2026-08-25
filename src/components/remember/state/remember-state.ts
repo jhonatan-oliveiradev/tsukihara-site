@@ -1,13 +1,7 @@
 import type { RememberSaveV1 } from "./remember-save.ts";
 
 export type RememberScene =
-  | "boot"
-  | "menu"
-  | "memory"
-  | "interlude"
-  | "akari-reveal"
-  | "epilogue"
-  | "credits";
+  "boot" | "menu" | "memory" | "interlude" | "akari-reveal" | "epilogue" | "credits";
 
 export type RememberLocale = "pt" | "en";
 
@@ -26,13 +20,7 @@ export type RememberStageId =
   | "credits";
 
 export type RestorationPhase =
-  | "idle"
-  | "last-piece"
-  | "kintsugi"
-  | "pulse"
-  | "restoring"
-  | "revealing"
-  | "restored";
+  "idle" | "last-piece" | "kintsugi" | "pulse" | "restoring" | "revealing" | "restored";
 
 export type RememberState = {
   scene: RememberScene;

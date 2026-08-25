@@ -47,13 +47,7 @@ const stageIds = new Set<RememberStageId>([
   "credits",
 ]);
 
-const memoryIds = new Set<MemoryId>([
-  "hanamori",
-  "mizukyo",
-  "kurogane",
-  "yumegakure",
-  "gekkai",
-]);
+const memoryIds = new Set<MemoryId>(["hanamori", "mizukyo", "kurogane", "yumegakure", "gekkai"]);
 
 const resonanceRanks = new Set<ResonanceRank>(["S", "A", "B", "C"]);
 
@@ -104,9 +98,7 @@ const isMemoryProgressRecord = (
   return Object.values(value).every(isMemoryProgress);
 };
 
-const isMemoryResultRecord = (
-  value: unknown,
-): value is Partial<Record<MemoryId, MemoryResult>> => {
+const isMemoryResultRecord = (value: unknown): value is Partial<Record<MemoryId, MemoryResult>> => {
   if (!isRecord(value) || !hasOnlyKnownKeys(value, memoryIds as Set<string>)) return false;
   return Object.values(value).every(isMemoryResult);
 };

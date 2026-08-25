@@ -1,10 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  createNewRememberSave,
-  loadRememberSave,
-  serializeRememberSave,
-} from "./remember-save.ts";
+import { createNewRememberSave, loadRememberSave, serializeRememberSave } from "./remember-save.ts";
 
 const now = "2026-08-25T16:00:00.000Z";
 
