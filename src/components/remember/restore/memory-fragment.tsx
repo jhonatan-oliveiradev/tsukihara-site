@@ -20,9 +20,11 @@ type MemoryFragmentProps = {
   definition: MemoryFragmentDefinition;
   source: string;
   restored: boolean;
+  reversible?: boolean;
   reducedMotion: boolean;
   keyboardLabel: string;
   onRestore: (fragmentId: string) => void;
+  onUnrestore?: (fragmentId: string) => void;
 };
 
 type DragState = {
@@ -37,9 +39,11 @@ export function MemoryFragment({
   definition,
   source,
   restored,
+  reversible = false,
   reducedMotion,
   keyboardLabel,
   onRestore,
+  onUnrestore,
 }: MemoryFragmentProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const hitRef = useRef<SVGPathElement>(null);
@@ -139,6 +143,13 @@ export function MemoryFragment({
     });
   }, [definition.id, onRestore, reducedMotion]);
 
+  const releaseSettlement = useCallback(() => {
+    if (!settledRef.current || !reversible || !onUnrestore) return false;
+    settledRef.current = false;
+    onUnrestore(definition.id);
+    return true;
+  }, [definition.id, onUnrestore, reversible]);
+
   const releasePointer = (target: SVGPathElement, pointerId: number) => {
     if (target.hasPointerCapture(pointerId)) target.releasePointerCapture(pointerId);
     dragRef.current = null;
@@ -146,7 +157,8 @@ export function MemoryFragment({
   };
 
   const handlePointerDown = (event: PointerEvent<SVGPathElement>) => {
-    if (settledRef.current) return;
+    if (settledRef.current && !releaseSettlement()) return;
+
     interactedRef.current = true;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -202,17 +214,44 @@ export function MemoryFragment({
   };
 
   const handleKeyDown = (event: KeyboardEvent<SVGPathElement>) => {
-    if (settledRef.current) return;
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
     interactedRef.current = true;
+
+    if (settledRef.current) {
+      if (!releaseSettlement()) return;
+      const metrics = getStageMetrics();
+      if (!metrics) return;
+      const point = {
+        x: definition.initial.x * metrics.width * metrics.responsiveScale,
+        y: definition.initial.y * metrics.height * metrics.responsiveScale,
+      };
+      translationRef.current = point;
+      gsap.to(wrapperRef.current, {
+        x: point.x,
+        y: point.y,
+        rotation: definition.rotation,
+        scale: 1,
+        duration: reducedMotion ? 0.12 : 0.32,
+        ease: "power2.out",
+      });
+      return;
+    }
+
     settle();
   };
+
+  const locked = restored && !reversible;
 
   return (
     <div
       ref={wrapperRef}
-      className={["remember-fragment", active && "is-active", restored && "is-restored"]
+      className={[
+        "remember-fragment",
+        active && "is-active",
+        restored && "is-restored",
+        restored && reversible && "is-reversible",
+      ]
         .filter(Boolean)
         .join(" ")}
       data-fragment-id={definition.id}
@@ -240,11 +279,11 @@ export function MemoryFragment({
           d={definition.path}
           className="remember-fragment__hit"
           fill="transparent"
-          pointerEvents={restored ? "none" : "all"}
+          pointerEvents={locked ? "none" : "all"}
           role="button"
-          tabIndex={restored ? -1 : 0}
+          tabIndex={locked ? -1 : 0}
           aria-label={`${keyboardLabel}: ${definition.id}`}
-          aria-disabled={restored}
+          aria-disabled={locked}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerEnd}
