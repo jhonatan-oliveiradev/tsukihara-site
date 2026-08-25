@@ -16,9 +16,11 @@ REMEMBER should feel like a small downloadable game embedded inside the Tsukihar
 
 The experience must retain Tsukihara's ritualistic, editorial and Kintsugi-driven identity while adding enough game-language to communicate state, progression, objectives, completion and chapter transitions.
 
-The official flow is:
+The official player-facing flow is:
 
 `Menu → Hanamori → Mizukyo → Kurogane → Akari Reveal → Eclipse Epilogue → Credits / CTA`
+
+A technical `boot` state precedes the menu only to satisfy browser audio-unlock requirements.
 
 The core restoration loop for each memory is:
 
@@ -99,7 +101,6 @@ type RememberScene =
   | "boot"
   | "menu"
   | "memory"
-  | "memory-complete"
   | "akari-reveal"
   | "epilogue"
   | "credits";
@@ -120,6 +121,8 @@ type RememberState = {
 ```
 
 `activeMemoryIndex` is the single source of truth for Hanamori → Mizukyo → Kurogane.
+
+The player remains in the `memory` scene during the complete restoration ritual; `restorationPhase` owns `last-piece → kintsugi → pulse → restoring → revealing → restored`. This avoids a redundant scene transition during the most sensitive animation.
 
 No scene progression should depend on scattered `setTimeout` calls.
 
@@ -451,7 +454,9 @@ The epilogue follows Akari immediately.
 
 Narrative function:
 
-> One memory returned, but Tsukihara is still forgetting.
+> Memories returned, but Tsukihara is still forgetting.
+
+Localized copy should preserve this meaning in PT/EN rather than referring to only one recovered memory.
 
 The video:
 
