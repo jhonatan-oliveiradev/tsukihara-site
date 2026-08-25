@@ -62,7 +62,10 @@ const gekkaiAssets = unique([
   ...sharedRestorationAssets,
 ]);
 
-export const createPreloadProgress = (loaded: number, total: number): PreloadProgress => {
+export const createPreloadProgress = (
+  loaded: number,
+  total: number,
+): PreloadProgress => {
   const safeTotal = Math.max(0, Math.floor(total));
   const safeLoaded = Math.min(safeTotal, Math.max(0, Math.floor(loaded)));
   return {
@@ -82,7 +85,9 @@ export const getInitialAssetManifest = (): StageAssetManifest => ({
   next: [rememberAudioTracks.kintsugi.src, rememberAudioTracks.harp.src],
 });
 
-export const getStageAssetManifest = (stage: RememberStageId): StageAssetManifest => {
+export const getStageAssetManifest = (
+  stage: RememberStageId,
+): StageAssetManifest => {
   switch (stage) {
     case "hanamori":
       return {
@@ -90,9 +95,15 @@ export const getStageAssetManifest = (stage: RememberStageId): StageAssetManifes
         next: [rememberAssets.mizukyoBroken, rememberAssets.mizukyoRestored],
       };
     case "mizukyo":
-      return { critical: mizukyoAssets, next: [rememberAssets.interludeUnknownMemory] };
+      return {
+        critical: mizukyoAssets,
+        next: [rememberAssets.interludeUnknownMemory],
+      };
     case "interlude-01":
-      return { critical: [rememberAssets.interludeUnknownMemory], next: kuroganeAssets };
+      return {
+        critical: [rememberAssets.interludeUnknownMemory],
+        next: kuroganeAssets,
+      };
     case "kurogane":
       return { critical: kuroganeAssets, next: yumegakureAssets };
     case "yumegakure":
@@ -122,9 +133,15 @@ export const getStageAssetManifest = (stage: RememberStageId): StageAssetManifes
         next: [rememberAssets.akariReveal],
       };
     case "akari-reveal":
-      return { critical: [rememberAssets.akariReveal], next: [rememberAssets.epilogueEclipse] };
+      return {
+        critical: [rememberAssets.akariReveal],
+        next: [rememberAssets.epilogueEclipse],
+      };
     case "epilogue":
-      return { critical: [rememberAssets.epilogueEclipse], next: [rememberAssets.creditsLoop] };
+      return {
+        critical: [rememberAssets.epilogueEclipse],
+        next: [rememberAssets.creditsLoop],
+      };
     case "credits":
       return { critical: [rememberAssets.creditsLoop], next: [] };
   }
