@@ -29,6 +29,7 @@ const createAudio = (track: RememberAudioTrack) => {
 
 export function useRememberAudio(): RememberAudioController {
   const tracksRef = useRef<BaseTracks>({});
+  const kintsugiTemplateRef = useRef<HTMLAudioElement | null>(null);
   const transientsRef = useRef<Set<HTMLAudioElement>>(new Set());
   const mutedRef = useRef(false);
   const unlockedRef = useRef(false);
@@ -61,6 +62,14 @@ export function useRememberAudio(): RememberAudioController {
     });
     tracksRef.current = {};
 
+    const template = kintsugiTemplateRef.current;
+    if (template) {
+      template.pause();
+      template.removeAttribute("src");
+      template.load();
+      kintsugiTemplateRef.current = null;
+    }
+
     transientsRef.current.forEach((audio) => {
       audio.pause();
       audio.currentTime = 0;
@@ -88,6 +97,18 @@ export function useRememberAudio(): RememberAudioController {
       enterRestore: async () => {
         const menu = getTrack("menu");
         const phase = getTrack("phase");
+        const harp = getTrack("harp");
+
+        phase.preload = "auto";
+        harp.preload = "auto";
+        harp.load();
+
+        if (!kintsugiTemplateRef.current) {
+          const template = createAudio(rememberAudioTracks.kintsugi);
+          template.preload = "auto";
+          template.load();
+          kintsugiTemplateRef.current = template;
+        }
 
         abortFades();
         const controller = new AbortController();
@@ -113,7 +134,9 @@ export function useRememberAudio(): RememberAudioController {
         const active = transientsRef.current;
         if (active.size >= 3) return;
 
-        const audio = createAudio(rememberAudioTracks.kintsugi);
+        const template = kintsugiTemplateRef.current ?? createAudio(rememberAudioTracks.kintsugi);
+        const audio = template.cloneNode(true) as HTMLAudioElement;
+        audio.volume = rememberAudioTracks.kintsugi.volume;
         audio.muted = mutedRef.current;
         active.add(audio);
 
