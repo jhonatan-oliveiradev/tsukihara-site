@@ -1,4 +1,4 @@
-import { isMemoryStage } from "./remember-progression.ts";
+import { getNextStage, isMemoryStage } from "./remember-progression.ts";
 import {
   initialRememberState,
   type MemoryId,
@@ -29,6 +29,18 @@ const resetPuzzleRuntime = (state: RememberState): RememberState => ({
   restoredFragmentIds: [],
   restorationPhase: "idle",
 });
+
+const enterNarrativeStage = (state: RememberState, stage: RememberStageId): RememberState =>
+  resetPuzzleRuntime({
+    ...state,
+    scene: sceneForStage(stage),
+    currentStage: stage,
+    activeMemoryIndex: isMemoryStage(stage)
+      ? memoryIndexForStage(stage)
+      : state.activeMemoryIndex,
+    paused: false,
+    archiveOpen: false,
+  });
 
 const startFreshGame = (state: RememberState): RememberState => ({
   ...initialRememberState,
@@ -75,14 +87,7 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
     }
 
     case "ENTER_STAGE":
-      return resetPuzzleRuntime({
-        ...state,
-        scene: sceneForStage(action.stage),
-        currentStage: action.stage,
-        activeMemoryIndex: memoryIndexForStage(action.stage),
-        paused: false,
-        archiveOpen: false,
-      });
+      return enterNarrativeStage(state, action.stage);
 
     case "COMPLETE_STAGE": {
       const completedStages = state.completedStages.includes(action.stage)
@@ -178,33 +183,21 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
           return state;
         }
 
-        if (state.activeMemoryIndex < memoryOrder.length - 1) {
-          const nextIndex = state.activeMemoryIndex + 1;
-          return {
-            ...state,
-            scene: "memory",
-            currentStage: memoryOrder[nextIndex],
-            activeMemoryIndex: nextIndex,
-            restoredFragmentIds: [],
-            restorationPhase: "idle",
-          };
-        }
-
-        return {
-          ...state,
-          scene: "akari-reveal",
-          currentStage: "akari-reveal",
-          restoredFragmentIds: [],
-          restorationPhase: "idle",
-        };
+        const nextStage = getNextStage(state.currentStage);
+        return nextStage ? enterNarrativeStage(state, nextStage) : state;
       }
 
-      if (state.scene === "akari-reveal") {
-        return { ...state, scene: "epilogue", currentStage: "epilogue" };
+      if (state.scene === "interlude") {
+        if (!state.completedStages.includes(state.currentStage)) return state;
+        const nextStage = getNextStage(state.currentStage);
+        return nextStage ? enterNarrativeStage(state, nextStage) : state;
       }
-      if (state.scene === "epilogue") {
-        return { ...state, scene: "credits", currentStage: "credits" };
+
+      if (state.scene === "akari-reveal" || state.scene === "epilogue") {
+        const nextStage = getNextStage(state.currentStage);
+        return nextStage ? enterNarrativeStage(state, nextStage) : state;
       }
+
       return state;
     }
 
