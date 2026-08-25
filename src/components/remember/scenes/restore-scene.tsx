@@ -20,6 +20,7 @@ type RestoreSceneProps = {
   restorationPhase: RestorationPhase;
   reducedMotion: boolean;
   interactive: boolean;
+  scatterSeed: number;
   onRestore: (fragmentId: string) => void;
   onUnrestore: (fragmentId: string) => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
@@ -37,6 +38,7 @@ export function RestoreScene({
   restorationPhase,
   reducedMotion,
   interactive,
+  scatterSeed,
   onRestore,
   onUnrestore,
   onRestorationPhaseChange,
@@ -187,6 +189,9 @@ export function RestoreScene({
         keyboardLabel={copy.keyboardAction}
         restoredLabel={copy.restored}
         completionLine={completionLine}
+        guidanceTitle={copy.guidanceTitle}
+        guidanceBody={copy.guidanceBody}
+        scatterSeed={scatterSeed}
         onRestore={onRestore}
         onUnrestore={onUnrestore}
         onRestorationPhaseChange={onRestorationPhaseChange}
