@@ -31,8 +31,7 @@ export function BootScene({ copy, onUnlock }: BootSceneProps) {
         aria-label={copy.prompt}
       >
         <span className="remember-boot__sigil" aria-hidden="true">
-          <i />
-          月
+          <i />月
         </span>
         <span id="remember-boot-title" className="remember-boot__title">
           REMEMBER
