@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
@@ -8,6 +9,13 @@ import {
   shouldMountKintsugiSeams,
   shouldMountRestorationEffect,
 } from "@/components/remember/system/remember-render-policy";
+import { GhostSeams } from "./ghost-seams";
+import {
+  createHanamoriGuidanceState,
+  markHanamoriGuidanceLearned,
+  recordHanamoriHint,
+  shouldShowHanamoriHint,
+} from "./hanamori-guidance";
 import { KintsugiSeams } from "./kintsugi-seams";
 import {
   getFragmentSource,
@@ -29,6 +37,9 @@ type MemoryPuzzleProps = {
   keyboardLabel: string;
   restoredLabel: string;
   completionLine: string;
+  guidanceTitle: string;
+  guidanceBody: string;
+  scatterSeed: number;
   onRestore: (fragmentId: string) => void;
   onUnrestore: (fragmentId: string) => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
@@ -46,6 +57,9 @@ export function MemoryPuzzle({
   keyboardLabel,
   restoredLabel,
   completionLine,
+  guidanceTitle,
+  guidanceBody,
+  scatterSeed,
   onRestore,
   onUnrestore,
   onRestorationPhaseChange,
@@ -63,6 +77,13 @@ export function MemoryPuzzle({
   const showKintsugiSeams = shouldMountKintsugiSeams(restorationPhase);
   const showRestorationEffect = shouldMountRestorationEffect(restorationPhase);
   const reversible = isFragmentReversible(memory) && restorationPhase === "idle";
+  const showGhostSeams = memory.mechanic === "standard" && restorationPhase === "idle";
+  const showHanamoriGuidance =
+    memory.id === "hanamori" && restorationPhase === "idle" && restoredRequiredCount === 0;
+  const [activeFragmentId, setActiveFragmentId] = useState<string | null>(null);
+  const [hintPulse, setHintPulse] = useState(0);
+  const guidanceStateRef = useRef(createHanamoriGuidanceState());
+  const guidanceElapsedRef = useRef(0);
   const lastFragmentId = restoredFragmentIds.at(-1);
   const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
   const originPoint = lastFragment
@@ -71,6 +92,44 @@ export function MemoryPuzzle({
         y: 50 + lastFragment.initial.y * 85,
       }
     : { x: 50, y: 50 };
+
+  useEffect(() => {
+    if (memory.id !== "hanamori" || restoredRequiredCount === 0) return;
+    guidanceStateRef.current = markHanamoriGuidanceLearned(guidanceStateRef.current);
+  }, [memory.id, restoredRequiredCount]);
+
+  useEffect(() => {
+    if (
+      memory.id !== "hanamori" ||
+      !interactive ||
+      restorationPhase !== "idle" ||
+      restoredRequiredCount > 0 ||
+      guidanceStateRef.current.learned
+    ) {
+      return;
+    }
+
+    let frame = 0;
+    let previous = performance.now();
+
+    const tick = (now: number) => {
+      guidanceElapsedRef.current += Math.max(0, now - previous);
+      previous = now;
+
+      if (shouldShowHanamoriHint(guidanceStateRef.current, guidanceElapsedRef.current)) {
+        guidanceStateRef.current = recordHanamoriHint(
+          guidanceStateRef.current,
+          guidanceElapsedRef.current,
+        );
+        setHintPulse((pulse) => pulse + 1);
+      }
+
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [interactive, memory.id, restorationPhase, restoredRequiredCount]);
 
   return (
     <div
@@ -124,6 +183,13 @@ export function MemoryPuzzle({
         <div className="remember-memory__realm-atmosphere" aria-hidden="true" />
       )}
 
+      {showHanamoriGuidance ? (
+        <div className="remember-memory-guidance" data-hanamori-guidance>
+          <span>{guidanceTitle}</span>
+          <p>{guidanceBody}</p>
+        </div>
+      ) : null}
+
       <div className="remember-memory__surface" data-remember-memory-surface>
         <Image
           src={memory.brokenAsset}
@@ -153,11 +219,22 @@ export function MemoryPuzzle({
           />
         ) : null}
 
+        {showGhostSeams ? (
+          <GhostSeams
+            memoryId={memory.id}
+            viewBox={memory.viewBox}
+            seams={memory.seams}
+            restoredFragmentIds={restoredFragmentIds}
+            activeFragmentId={activeFragmentId}
+            hintPulse={hintPulse}
+          />
+        ) : null}
+
         <div className="remember-memory__fragments">
           {memory.fragments.map((fragment) => (
             <MemoryFragment
               key={fragment.id}
-              memoryId={memory.id}
+              memory={memory}
               viewBox={memory.viewBox}
               definition={fragment}
               source={getFragmentSource(memory, fragment)}
@@ -165,8 +242,10 @@ export function MemoryPuzzle({
               reversible={interactive && reversible}
               reducedMotion={reducedMotion}
               keyboardLabel={keyboardLabel}
+              scatterSeed={scatterSeed}
               onRestore={interactive ? onRestore : () => undefined}
               onUnrestore={interactive ? onUnrestore : undefined}
+              onInteractionChange={setActiveFragmentId}
             />
           ))}
         </div>
