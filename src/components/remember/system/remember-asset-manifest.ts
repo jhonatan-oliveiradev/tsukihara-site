@@ -1,3 +1,4 @@
+import { rememberAudioTracks } from "../audio/remember-audio.ts";
 import { rememberAssets } from "../content/remember-assets.ts";
 import type { RememberStageId } from "../state/remember-state.ts";
 
@@ -72,8 +73,13 @@ export const createPreloadProgress = (loaded: number, total: number): PreloadPro
 };
 
 export const getInitialAssetManifest = (): StageAssetManifest => ({
-  critical: unique([rememberAssets.menuBackground, ...hanamoriAssets]),
-  next: [],
+  critical: unique([
+    rememberAssets.menuBackground,
+    rememberAudioTracks.menu.src,
+    rememberAudioTracks.phase.src,
+    ...hanamoriAssets,
+  ]),
+  next: [rememberAudioTracks.kintsugi.src, rememberAudioTracks.harp.src],
 });
 
 export const getStageAssetManifest = (stage: RememberStageId): StageAssetManifest => {
@@ -135,6 +141,30 @@ const preloadImage = (src: string) =>
     image.src = src;
   });
 
+const preloadAudio = (src: string) =>
+  new Promise<void>((resolve, reject) => {
+    const audio = document.createElement("audio");
+    const cleanup = () => {
+      audio.removeEventListener("loadeddata", handleLoaded);
+      audio.removeEventListener("error", handleError);
+      audio.removeAttribute("src");
+      audio.load();
+    };
+    const handleLoaded = () => {
+      cleanup();
+      resolve();
+    };
+    const handleError = () => {
+      cleanup();
+      reject(new Error(`Failed to preload audio: ${src}`));
+    };
+    audio.preload = "auto";
+    audio.addEventListener("loadeddata", handleLoaded, { once: true });
+    audio.addEventListener("error", handleError, { once: true });
+    audio.src = src;
+    audio.load();
+  });
+
 const preloadVideo = (src: string) =>
   new Promise<void>((resolve, reject) => {
     const video = document.createElement("video");
@@ -159,7 +189,11 @@ const preloadVideo = (src: string) =>
     video.load();
   });
 
-const preloadAsset = (src: string) => (src.endsWith(".mp4") ? preloadVideo(src) : preloadImage(src));
+const preloadAsset = (src: string) => {
+  if (src.endsWith(".mp4")) return preloadVideo(src);
+  if (src.endsWith(".mp3")) return preloadAudio(src);
+  return preloadImage(src);
+};
 
 export async function preloadRememberAssets(
   sources: readonly string[],
