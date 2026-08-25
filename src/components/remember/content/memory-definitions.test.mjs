@@ -1,42 +1,27 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { memoryDefinitions } from "./memory-definitions.ts";
 
-async function loadDefinitions() {
-  try {
-    return await import("./memory-definitions.ts");
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ERR_MODULE_NOT_FOUND"
-    ) {
-      return { memoryDefinitions: undefined };
-    }
-    throw error;
-  }
-}
-
-test("memory definitions are ordered and increase difficulty", async () => {
-  const { memoryDefinitions } = await loadDefinitions();
-
-  assert.ok(Array.isArray(memoryDefinitions), "memoryDefinitions must be exported");
+test("memory definitions follow the five-memory prologue order", () => {
   assert.deepEqual(
     memoryDefinitions.map((memory) => memory.id),
-    ["hanamori", "mizukyo", "kurogane"],
+    ["hanamori", "mizukyo", "kurogane", "yumegakure", "gekkai"],
+  );
+  assert.deepEqual(
+    memoryDefinitions.map((memory) => memory.index),
+    [1, 2, 3, 4, 5],
+  );
+  assert.deepEqual(
+    memoryDefinitions.map((memory) => memory.mechanic),
+    ["standard", "standard", "standard", "false-memory", "overlapping"],
   );
   assert.deepEqual(
     memoryDefinitions.map((memory) => memory.fragments.length),
-    [5, 7, 9],
+    [5, 7, 9, 9, 8],
   );
-  assert.ok(memoryDefinitions[0].snapRatio > memoryDefinitions[1].snapRatio);
-  assert.ok(memoryDefinitions[1].snapRatio > memoryDefinitions[2].snapRatio);
 });
 
-test("every memory has a complete reusable puzzle contract", async () => {
-  const { memoryDefinitions } = await loadDefinitions();
-  assert.ok(Array.isArray(memoryDefinitions), "memoryDefinitions must be exported");
-
+test("every memory keeps the reusable puzzle contract", () => {
   for (const memory of memoryDefinitions) {
     assert.deepEqual(memory.viewBox, { width: 1000, height: 625 });
     assert.ok(memory.brokenAsset.startsWith("/"));
@@ -46,5 +31,30 @@ test("every memory has a complete reusable puzzle contract", async () => {
     assert.ok(memory.fragments.every((fragment) => fragment.snapRadius <= 0.11));
     assert.ok(memory.completionCopy.pt.length > 0);
     assert.ok(memory.completionCopy.en.length > 0);
+    assert.ok(Number.isFinite(memory.parSeconds) && memory.parSeconds > 0);
   }
+});
+
+test("Yumegakure has seven true and exactly two false fragments with real false assets", () => {
+  const yumegakure = memoryDefinitions.find((memory) => memory.id === "yumegakure");
+  assert.ok(yumegakure);
+  assert.equal(yumegakure.mechanic, "false-memory");
+
+  const trueFragments = yumegakure.fragments.filter((fragment) => fragment.truth === "true");
+  const falseFragments = yumegakure.fragments.filter((fragment) => fragment.truth === "false");
+  assert.equal(trueFragments.length, 7);
+  assert.equal(falseFragments.length, 2);
+  assert.ok(falseFragments.every((fragment) => fragment.sourceAsset?.startsWith("/remember-experience/")));
+  assert.ok(yumegakure.distortionAsset.startsWith("/remember-experience/"));
+});
+
+test("Gekkai has eight fragments with stable realities and real focus assets", () => {
+  const gekkai = memoryDefinitions.find((memory) => memory.id === "gekkai");
+  assert.ok(gekkai);
+  assert.equal(gekkai.mechanic, "overlapping");
+  assert.equal(gekkai.fragments.length, 8);
+  assert.ok(gekkai.fragments.every((fragment) => fragment.stableReality === "a" || fragment.stableReality === "b"));
+  assert.ok(gekkai.stateAAsset.startsWith("/remember-experience/"));
+  assert.ok(gekkai.stateBAsset.startsWith("/remember-experience/"));
+  assert.ok(gekkai.focusOverlayAsset.startsWith("/remember-experience/"));
 });
