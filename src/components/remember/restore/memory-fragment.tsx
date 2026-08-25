@@ -59,6 +59,14 @@ export function MemoryFragment({
     };
   }, []);
 
+  const getSnapRadius = useCallback(
+    (minimumStageDimension: number) => {
+      const proportional = definition.snapRadius * minimumStageDimension;
+      return Math.max(window.innerWidth <= 900 ? 42 : 36, proportional);
+    },
+    [definition.snapRadius],
+  );
+
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -152,7 +160,7 @@ export function MemoryFragment({
       y: drag.startTranslation.y + event.clientY - drag.startClient.y,
     };
     const distance = Math.hypot(raw.x, raw.y);
-    const snapRadius = definition.snapRadius * metrics.min;
+    const snapRadius = getSnapRadius(metrics.min);
     const magneticRadius = snapRadius * 1.75;
     const pull = magneticProgress(distance, magneticRadius) * 0.36;
     setTransform({ x: raw.x * (1 - pull), y: raw.y * (1 - pull) });
@@ -165,7 +173,7 @@ export function MemoryFragment({
     const metrics = getStageMetrics();
     const point = translationRef.current;
     const shouldSnap = Boolean(
-      metrics && isWithinSnapRadius(point, { x: 0, y: 0 }, definition.snapRadius * metrics.min),
+      metrics && isWithinSnapRadius(point, { x: 0, y: 0 }, getSnapRadius(metrics.min)),
     );
 
     releasePointer(event.currentTarget, event.pointerId);
