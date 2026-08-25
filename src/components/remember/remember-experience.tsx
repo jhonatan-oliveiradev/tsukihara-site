@@ -1,16 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRememberAudio } from "@/components/remember/audio/use-remember-audio";
-import { rememberAssets } from "@/components/remember/content/remember-assets";
 import { memoryDefinitions } from "@/components/remember/content/memory-definitions";
 import { getRememberCopy } from "@/components/remember/content/remember-locales";
 import { RememberShell } from "@/components/remember/remember-shell";
 import { BootScene } from "@/components/remember/scenes/boot-scene";
+import { GamePreloader } from "@/components/remember/scenes/game-preloader";
 import { RememberMenuBackdrop } from "@/components/remember/scenes/menu-backdrop";
 import { MenuScene } from "@/components/remember/scenes/menu-scene";
 import { RestoreScene } from "@/components/remember/scenes/restore-scene";
+import {
+  SceneTransitionDirector,
+  type SceneTransitionDirectorHandle,
+} from "@/components/remember/scenes/scene-transition-director";
 import { rememberReducer } from "@/components/remember/state/remember-reducer";
 import {
   initialRememberState,
@@ -18,20 +22,31 @@ import {
   type RestorationPhase,
 } from "@/components/remember/state/remember-state";
 import { trackRememberEvent } from "@/components/remember/system/remember-analytics";
+import {
+  createPreloadProgress,
+  getInitialAssetManifest,
+  getStageAssetManifest,
+  preloadRememberAssets,
+  preloadRememberAssetsInBackground,
+} from "@/components/remember/system/remember-asset-manifest";
+import type { TransitionState } from "@/components/remember/system/scene-transition-policy";
 import { useRememberReducedMotion } from "@/components/remember/system/use-remember-reduced-motion";
 import { useRememberScrollLock } from "@/components/remember/system/use-remember-scroll-lock";
 
 const localeStorageKey = "tsukihara:remember:locale";
-
-const preloadImage = (src: string) => {
-  const image = new window.Image();
-  image.decoding = "async";
-  image.src = src;
-};
+const initialAssetManifest = getInitialAssetManifest();
 
 export function RememberExperience() {
   const router = useRouter();
   const [state, dispatch] = useReducer(rememberReducer, initialRememberState);
+  const [transitionState, setTransitionState] = useState<TransitionState>("idle");
+  const [preloaderVisible, setPreloaderVisible] = useState(true);
+  const [preloadError, setPreloadError] = useState(false);
+  const [preloadAttempt, setPreloadAttempt] = useState(0);
+  const [preloadProgress, setPreloadProgress] = useState(() =>
+    createPreloadProgress(0, initialAssetManifest.critical.length),
+  );
+  const transitionDirectorRef = useRef<SceneTransitionDirectorHandle>(null);
   const reducedMotion = useRememberReducedMotion();
   const audio = useRememberAudio();
   const copy = getRememberCopy(state.locale);
@@ -51,6 +66,28 @@ export function RememberExperience() {
   }, [audio, state.muted]);
 
   useEffect(() => {
+    let cancelled = false;
+    setPreloadError(false);
+    setPreloadProgress(createPreloadProgress(0, initialAssetManifest.critical.length));
+
+    void preloadRememberAssets(initialAssetManifest.critical, (progress) => {
+      if (!cancelled) setPreloadProgress(progress);
+    })
+      .then(() => {
+        if (!cancelled && initialAssetManifest.next.length > 0) {
+          void preloadRememberAssetsInBackground(initialAssetManifest.next);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setPreloadError(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [preloadAttempt]);
+
+  useEffect(() => {
     if (process.env.NODE_ENV === "production") return;
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -62,6 +99,15 @@ export function RememberExperience() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [audio]);
+
+  const requestTransition = useCallback(
+    async (commitDestination: () => void, prepareDestination?: () => Promise<void>) => {
+      const director = transitionDirectorRef.current;
+      if (!director) return false;
+      return director.requestTransition(commitDestination, prepareDestination);
+    },
+    [],
+  );
 
   const handleExit = useCallback(() => {
     audio.stopAll();
@@ -81,22 +127,25 @@ export function RememberExperience() {
 
   const handleUnlockMenu = useCallback(async () => {
     await audio.unlockMenu().catch(() => undefined);
-    dispatch({ type: "UNLOCK_MENU" });
-  }, [audio]);
+    await requestTransition(() => dispatch({ type: "UNLOCK_MENU" }));
+  }, [audio, requestTransition]);
 
   const handleBegin = useCallback(async () => {
-    preloadImage(activeMemory.brokenAsset);
-    preloadImage(activeMemory.restoredAsset);
-    preloadImage(rememberAssets.kintsugiCrackOverlay);
-    preloadImage(rememberAssets.memoryParticles);
-    preloadImage(rememberAssets.memoryPulseRing);
-    preloadImage(rememberAssets.completionBurst);
-    preloadImage(rememberAssets.restoredScarOverlay);
-
+    const manifest = getStageAssetManifest("hanamori");
     trackRememberEvent("remember_started");
-    dispatch({ type: "BEGIN_GAME" });
-    void audio.startMemory();
-  }, [activeMemory, audio]);
+
+    const transitioned = await requestTransition(
+      () => {
+        dispatch({ type: "BEGIN_GAME" });
+        void audio.startMemory();
+      },
+      async () => {
+        await preloadRememberAssets(manifest.critical);
+      },
+    ).catch(() => false);
+
+    if (transitioned) void preloadRememberAssetsInBackground(manifest.next);
+  }, [audio, requestTransition]);
 
   const handleRestore = useCallback(
     (fragmentId: string) => {
@@ -144,40 +193,67 @@ export function RememberExperience() {
     }
     dispatch({ type: "CONTINUE" });
   }, [audio, state.activeMemoryIndex]);
+
   const menuVisible = state.scene === "boot" || state.scene === "menu";
+  const gameplayInteractive =
+    state.restorationPhase === "idle" && transitionState === "idle" && !preloaderVisible;
 
   return (
-    <RememberShell
-      scene={state.scene}
-      locale={state.locale}
-      muted={state.muted}
-      onExit={handleExit}
-      onToggleMute={handleToggleMute}
-      onLocaleChange={handleLocaleChange}
-    >
-      {menuVisible && <RememberMenuBackdrop reducedMotion={reducedMotion} />}
+    <>
+      <RememberShell
+        scene={state.scene}
+        locale={state.locale}
+        muted={state.muted}
+        onExit={handleExit}
+        onToggleMute={handleToggleMute}
+        onLocaleChange={handleLocaleChange}
+      >
+        {menuVisible && <RememberMenuBackdrop reducedMotion={reducedMotion} />}
 
-      {state.scene === "boot" && <BootScene copy={copy.boot} onUnlock={handleUnlockMenu} />}
-      {state.scene === "menu" && <MenuScene copy={copy.menu} onBegin={handleBegin} />}
+        {state.scene === "boot" && <BootScene copy={copy.boot} onUnlock={handleUnlockMenu} />}
+        {state.scene === "menu" && (
+          <MenuScene copy={copy.menu} locale={state.locale} onBegin={handleBegin} />
+        )}
 
-      {state.scene === "memory" && (
-        <RestoreScene
-          key={activeMemory.id}
-          memory={activeMemory}
-          copy={copy.memory}
-          completionLine={activeMemory.completionCopy[state.locale]}
-          restoredFragmentIds={state.restoredFragmentIds}
-          restorationPhase={state.restorationPhase}
+        {state.scene === "memory" && (
+          <RestoreScene
+            key={activeMemory.id}
+            memory={activeMemory}
+            copy={copy.memory}
+            completionLine={activeMemory.completionCopy[state.locale]}
+            restoredFragmentIds={state.restoredFragmentIds}
+            restorationPhase={state.restorationPhase}
+            reducedMotion={reducedMotion}
+            interactive={gameplayInteractive}
+            onRestore={handleRestore}
+            onRestorationPhaseChange={handleRestorationPhaseChange}
+            onRestorationComplete={handleRestorationComplete}
+            onKintsugi={handleKintsugi}
+            onRestored={handleRestored}
+            onContinue={handleContinue}
+          />
+        )}
+      </RememberShell>
+
+      <SceneTransitionDirector
+        ref={transitionDirectorRef}
+        reducedMotion={reducedMotion}
+        label={copy.loading.transition}
+        onStateChange={setTransitionState}
+      />
+
+      {preloaderVisible && (
+        <GamePreloader
+          progress={preloadProgress}
+          label={copy.loading.label}
+          fragmentsLabel={copy.loading.fragments}
+          retryLabel={copy.loading.retry}
+          error={preloadError}
           reducedMotion={reducedMotion}
-          interactive={state.restorationPhase === "idle"}
-          onRestore={handleRestore}
-          onRestorationPhaseChange={handleRestorationPhaseChange}
-          onRestorationComplete={handleRestorationComplete}
-          onKintsugi={handleKintsugi}
-          onRestored={handleRestored}
-          onContinue={handleContinue}
+          onRetry={() => setPreloadAttempt((attempt) => attempt + 1)}
+          onFinished={() => setPreloaderVisible(false)}
         />
       )}
-    </RememberShell>
+    </>
   );
 }
