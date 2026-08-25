@@ -33,12 +33,40 @@ test("restoration overlays do not exist while a memory is idle", async () => {
   assert.equal(shouldMountRestorationEffect("restored"), true);
 });
 
-test("Liquid Ether is restricted to motion-capable fine-pointer menu sessions", async () => {
+test("Liquid Ether is restricted to motion-capable fine-pointer WebGL sessions", async () => {
   const { shouldUseMenuLiquidEther } = await loadPolicy();
   assert.equal(typeof shouldUseMenuLiquidEther, "function");
 
-  assert.equal(shouldUseMenuLiquidEther({ reducedMotion: false, coarsePointer: false }), true);
-  assert.equal(shouldUseMenuLiquidEther({ reducedMotion: true, coarsePointer: false }), false);
-  assert.equal(shouldUseMenuLiquidEther({ reducedMotion: false, coarsePointer: true }), false);
-  assert.equal(shouldUseMenuLiquidEther({ reducedMotion: true, coarsePointer: true }), false);
+  assert.equal(
+    shouldUseMenuLiquidEther({
+      reducedMotion: false,
+      coarsePointer: false,
+      webglAvailable: true,
+    }),
+    true,
+  );
+  assert.equal(
+    shouldUseMenuLiquidEther({
+      reducedMotion: true,
+      coarsePointer: false,
+      webglAvailable: true,
+    }),
+    false,
+  );
+  assert.equal(
+    shouldUseMenuLiquidEther({
+      reducedMotion: false,
+      coarsePointer: true,
+      webglAvailable: true,
+    }),
+    false,
+  );
+  assert.equal(
+    shouldUseMenuLiquidEther({
+      reducedMotion: false,
+      coarsePointer: false,
+      webglAvailable: false,
+    }),
+    false,
+  );
 });
