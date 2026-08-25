@@ -62,10 +62,7 @@ const gekkaiAssets = unique([
   ...sharedRestorationAssets,
 ]);
 
-export const createPreloadProgress = (
-  loaded: number,
-  total: number,
-): PreloadProgress => {
+export const createPreloadProgress = (loaded: number, total: number): PreloadProgress => {
   const safeTotal = Math.max(0, Math.floor(total));
   const safeLoaded = Math.min(safeTotal, Math.max(0, Math.floor(loaded)));
   return {
@@ -85,9 +82,7 @@ export const getInitialAssetManifest = (): StageAssetManifest => ({
   next: [rememberAudioTracks.kintsugi.src, rememberAudioTracks.harp.src],
 });
 
-export const getStageAssetManifest = (
-  stage: RememberStageId,
-): StageAssetManifest => {
+export const getStageAssetManifest = (stage: RememberStageId): StageAssetManifest => {
   switch (stage) {
     case "hanamori":
       return {
@@ -152,7 +147,10 @@ const preloadImage = (src: string) =>
     const image = new window.Image();
     image.decoding = "async";
     image.onload = () => {
-      void image.decode().catch(() => undefined).finally(resolve);
+      void image
+        .decode()
+        .catch(() => undefined)
+        .finally(resolve);
     };
     image.onerror = () => reject(new Error(`Failed to preload image: ${src}`));
     image.src = src;
