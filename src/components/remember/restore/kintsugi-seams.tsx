@@ -48,7 +48,10 @@ export function KintsugiSeams({ restoredFragmentIds, complete }: KintsugiSeamsPr
       {hanamoriSeams.map((seam) => {
         const active = restored.has(seam.fragmentId);
         return (
-          <g key={seam.id} className={active ? "remember-kintsugi__seam is-active" : "remember-kintsugi__seam"}>
+          <g
+            key={seam.id}
+            className={active ? "remember-kintsugi__seam is-active" : "remember-kintsugi__seam"}
+          >
             <path
               d={seam.path}
               pathLength="1"
