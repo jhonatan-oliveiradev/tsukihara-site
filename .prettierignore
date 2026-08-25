@@ -2,6 +2,7 @@ public/secret-pathways-assets/**
 public/models/**
 public/audio/**
 public/favicon/site.webmanifest
+src/vendor/react-bits/**
 tsconfig.json
 docs/superpowers/specs/2026-08-24-tsukihara-remember-design.md
 docs/superpowers/plans/2026-08-24-tsukihara-remember-foundation.md
