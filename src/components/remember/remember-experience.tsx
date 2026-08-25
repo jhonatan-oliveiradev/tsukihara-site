@@ -114,7 +114,13 @@ export function RememberExperience() {
         totalFragments: activeMemory.fragments.length,
       });
     },
-    [activeMemory.fragments.length, audio, state.restorationPhase, state.restoredFragmentIds, state.scene],
+    [
+      activeMemory.fragments.length,
+      audio,
+      state.restorationPhase,
+      state.restoredFragmentIds,
+      state.scene,
+    ],
   );
 
   const menuVisible = state.scene === "boot" || state.scene === "menu";
