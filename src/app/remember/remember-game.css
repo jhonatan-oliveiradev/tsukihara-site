@@ -438,8 +438,7 @@
   justify-items: center;
   padding: 2rem;
   background:
-    radial-gradient(circle at 50% 46%, rgb(113 44 53 / 0.12), transparent 26%),
-    rgb(3 3 5 / 0.94);
+    radial-gradient(circle at 50% 46%, rgb(113 44 53 / 0.12), transparent 26%), rgb(3 3 5 / 0.94);
   backdrop-filter: blur(16px);
   text-align: center;
 }
@@ -524,8 +523,7 @@
   z-index: -1;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 44%, rgb(111 52 61 / 0.1), transparent 32%),
-    rgb(2 2 4 / 0.82);
+    radial-gradient(circle at 50% 44%, rgb(111 52 61 / 0.1), transparent 32%), rgb(2 2 4 / 0.82);
   backdrop-filter: blur(18px) saturate(0.7);
 }
 
