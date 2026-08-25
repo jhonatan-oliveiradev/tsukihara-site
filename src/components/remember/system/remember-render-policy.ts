@@ -2,6 +2,9 @@ import type { RestorationPhase } from "@/components/remember/state/remember-stat
 
 export const shouldMountRestorationEffect = (phase: RestorationPhase) => phase !== "idle";
 
+export const shouldMountKintsugiSeams = (phase: RestorationPhase) =>
+  phase !== "idle" && phase !== "last-piece";
+
 export const shouldUseMenuLiquidEther = ({
   reducedMotion,
   coarsePointer,

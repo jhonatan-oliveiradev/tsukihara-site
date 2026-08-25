@@ -13,6 +13,7 @@ async function loadPolicy() {
     ) {
       return {
         shouldMountRestorationEffect: undefined,
+        shouldMountKintsugiSeams: undefined,
         shouldUseMenuLiquidEther: undefined,
       };
     }
@@ -31,6 +32,19 @@ test("restoration overlays do not exist while a memory is idle", async () => {
   assert.equal(shouldMountRestorationEffect("restoring"), true);
   assert.equal(shouldMountRestorationEffect("revealing"), true);
   assert.equal(shouldMountRestorationEffect("restored"), true);
+});
+
+test("Kintsugi seams stay out of normal gameplay until the ritual reaches kintsugi", async () => {
+  const { shouldMountKintsugiSeams } = await loadPolicy();
+  assert.equal(typeof shouldMountKintsugiSeams, "function");
+
+  assert.equal(shouldMountKintsugiSeams("idle"), false);
+  assert.equal(shouldMountKintsugiSeams("last-piece"), false);
+  assert.equal(shouldMountKintsugiSeams("kintsugi"), true);
+  assert.equal(shouldMountKintsugiSeams("pulse"), true);
+  assert.equal(shouldMountKintsugiSeams("restoring"), true);
+  assert.equal(shouldMountKintsugiSeams("revealing"), true);
+  assert.equal(shouldMountKintsugiSeams("restored"), true);
 });
 
 test("Liquid Ether is restricted to motion-capable fine-pointer WebGL sessions", async () => {

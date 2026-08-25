@@ -4,7 +4,10 @@ import Image from "next/image";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
 import type { RestorationPhase } from "@/components/remember/state/remember-state";
-import { shouldMountRestorationEffect } from "@/components/remember/system/remember-render-policy";
+import {
+  shouldMountKintsugiSeams,
+  shouldMountRestorationEffect,
+} from "@/components/remember/system/remember-render-policy";
 import { KintsugiSeams } from "./kintsugi-seams";
 import { MemoryFragment } from "./memory-fragment";
 import { MemoryRestorationEffect } from "./memory-restoration-effect";
@@ -43,6 +46,7 @@ export function MemoryPuzzle({
   const restored = new Set(restoredFragmentIds);
   const allFragmentsPlaced = restoredFragmentIds.length === memory.fragments.length;
   const visuallyRestored = restorationPhase === "restored";
+  const showKintsugiSeams = shouldMountKintsugiSeams(restorationPhase);
   const showRestorationEffect = shouldMountRestorationEffect(restorationPhase);
   const lastFragmentId = restoredFragmentIds.at(-1);
   const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
@@ -129,12 +133,14 @@ export function MemoryPuzzle({
           ))}
         </div>
 
-        <KintsugiSeams
-          viewBox={memory.viewBox}
-          seams={memory.seams}
-          restoredFragmentIds={restoredFragmentIds}
-          complete={visuallyRestored}
-        />
+        {showKintsugiSeams && (
+          <KintsugiSeams
+            viewBox={memory.viewBox}
+            seams={memory.seams}
+            restoredFragmentIds={restoredFragmentIds}
+            complete={visuallyRestored}
+          />
+        )}
 
         <div className="remember-memory__restored" aria-hidden="true">
           <Image

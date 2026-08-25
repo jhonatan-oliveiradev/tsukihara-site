@@ -21,6 +21,10 @@
   will-change: opacity, transform, filter;
 }
 
+.remember-kintsugi__path {
+  opacity: 0;
+}
+
 .remember-restoration__particles {
   z-index: 1;
   object-fit: cover;
