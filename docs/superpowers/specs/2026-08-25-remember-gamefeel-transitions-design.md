@@ -61,7 +61,7 @@ Conceptual responsibilities:
 - mount the new scene behind the cover;
 - run the incoming reveal;
 - unlock interaction only after the incoming beat reaches its safe point;
-- ignore or queue duplicate transition requests while one transition is active.
+- reject duplicate transition requests while one transition is active.
 
 The director must also treat a memory-index change as a visual scene change even though the reducer remains in `scene: "memory"`. A transition identity therefore includes both `scene` and the active memory id/index.
 
@@ -72,6 +72,8 @@ Scene-changing actions should be invoked through a single transition request bou
 Actions that do not replace a visual scene — restoring a fragment, changing locale, toggling mute, restoration phase updates — continue to dispatch directly.
 
 The transition director must not duplicate narrative progression rules from the reducer.
+
+While a transition is active, scene-changing controls are interaction-locked. Repeated clicks/keypresses are ignored rather than queued so a stale user action can never execute after a later scene has mounted.
 
 ### 4.2 Transition variants
 
@@ -100,7 +102,7 @@ Critical visual assets for entering Boot/Menu/Hanamori must be decoded before th
 - Hanamori broken/restored images;
 - persistent decorative assets required by the first playable screen.
 
-Mizukyo, Kurogane, Akari and ending media may continue preloading after Boot becomes available, provided their required assets are guaranteed before their corresponding transition commits.
+Mizukyo, Kurogane, Akari and ending media may continue preloading after Boot becomes available. Each destination declares its required asset group. If a later scene is requested before its group is ready, `SceneTransitionDirector` reaches the covered state and holds there with the same small memory-recovery sigil until that group resolves or fails; it never hard-cuts to a partially loaded scene.
 
 Progress changes only when a tracked asset actually reaches ready/error resolution. A short completed-state hold is allowed for visual polish, but the percentage/count itself must never advance from a fake timer.
 
@@ -168,13 +170,14 @@ Boot should behave like a game title gate, not a static web CTA.
 Requirements:
 
 - whole-screen pointer activation remains available;
-- keyboard activation accepts any meaningful non-modifier key when focus is not inside an unrelated interactive control;
+- keyboard activation accepts Enter, Space, arrow keys and alphanumeric keys when focus is not inside another interactive control;
+- modifier-only keys, Tab, Escape and function keys never trigger entry;
 - the main prompt uses a subtle blink/breathe loop comparable to traditional `PRESS ANY BUTTON` feedback;
 - the lunar sigil receives a very slow glow/rotation-orbit accent, not a continuously spinning loader;
 - successful activation transitions through the director instead of instantly replacing Boot with Menu;
 - all loops are suppressed or converted to static states under reduced motion.
 
-The prompt may be localized as an equivalent of `APERTE QUALQUER BOTÃO PARA LEMBRAR` / `PRESS ANY BUTTON TO REMEMBER`, while pointer/touch users can still activate by clicking/tapping the full gate.
+The prompt is localized as an equivalent of `APERTE QUALQUER BOTÃO PARA LEMBRAR` / `PRESS ANY BUTTON TO REMEMBER`, while pointer/touch users can still activate by clicking/tapping the full gate.
 
 ## 8. Menu redesign
 
@@ -187,7 +190,7 @@ Primary hierarchy:
 3. Japanese glyph scrambling resolves into the localized title `REMEMBER`;
 4. restrained ritual line/sigil accent;
 5. primary `INICIAR` / `BEGIN` CTA;
-6. thesis line beneath, optionally using the same Japanese-to-localized reveal language.
+6. thesis line beneath, also resolving once from Japanese glyphs into the selected locale.
 
 The existing Japanese reveal behavior should be shared rather than duplicated. `JpRevealText` should move to a neutral/shared component boundary so the landing page and REMEMBER consume the same implementation without importing feature-specific `experience` internals.
 
@@ -206,7 +209,7 @@ Extract a shared presentational audio-control component that accepts:
 
 The landing page keeps its existing audio element/state. REMEMBER keeps `useRememberAudio`, including soundtrack ducking during restoration. Only the control presentation and interaction affordance are shared.
 
-Visual parity with the current landing-page three-bar icon is a regression requirement.
+Visual parity with the current landing-page three-bar icon is a regression requirement. The LP must remain pixel-equivalent after extraction.
 
 ## 10. Hanamori onboarding
 
@@ -228,14 +231,14 @@ Mizukyo and Kurogane never replay this onboarding once the first successful Hana
 
 ### 10.2 Inactivity hint
 
-If Hanamori has zero restored fragments and no active drag for approximately 5 seconds after onboarding becomes interactive, fire one restrained contextual hint:
+If Hanamori has zero restored fragments and no active drag for 5 seconds after onboarding becomes interactive, fire one restrained contextual hint:
 
 - move the highlighted loose fragment only 2–4 px toward its target and return;
 - briefly raise the matching ghost seam opacity.
 
 No hand pointer, arrow, flashing target marker or automatic movement into the solution.
 
-The hint may repeat only at a low cadence if the player remains inactive; it must stop permanently after the first successful snap.
+If the player remains completely inactive, the hint may repeat at most twice, no more frequently than every 8 seconds. It stops immediately and permanently for the run after the first successful snap.
 
 ## 11. Puzzle scatter and difficulty
 
@@ -259,7 +262,9 @@ The generator must enforce:
 - target accuracy and snap semantics remain unchanged;
 - the scatter result is independent from narrative state.
 
-Loose pieces may use a modest temporary scale below 1 when necessary to fit peripheral spawn regions, but they must interpolate back to exact scale 1 as they magnetize/snap into the assembly.
+Spawn candidates should come from peripheral lanes around the reconstruction area rather than from small offsets around the fragment's own target. As a starting calibration, target-centroid distance should be at least about 28% of the playable-stage diagonal for Hanamori, 34% for Mizukyo and 40% for Kurogane whenever the viewport has enough room; responsive layouts may lower those floors only as necessary to keep every fragment fully discoverable.
+
+Loose pieces may use a temporary scale in the approximate 0.82–0.96 range when necessary to fit peripheral spawn regions, but they must interpolate back to exact scale 1 as they magnetize/snap into the assembly.
 
 ### 11.3 Difficulty calibration
 
@@ -288,7 +293,7 @@ Visual rules:
 - no restoration particles;
 - no Kintsugi bloom;
 - related seam may brighten slightly while its fragment is actively dragged;
-- Hanamori may show the strongest baseline guidance, Mizukyo less, Kurogane minimal.
+- Hanamori has the strongest baseline guidance, Mizukyo less, Kurogane minimal.
 
 Suggested starting opacity ranges are approximately 10–15% for Hanamori, 6–10% for Mizukyo and 3–7% for Kurogane, subject to visual calibration.
 
@@ -314,13 +319,13 @@ Add explicit scene renderers for:
 
 Existing older reveal-scene code may provide motion primitives, but hardcoded Hanamori-specific semantics must not be reused unchanged for the Akari state.
 
-Every final-scene continuation must go through `SceneTransitionDirector`.
+Every final-scene continuation must go through `SceneTransitionDirector`. The credits CTA exits through the `exit` transition variant and routes to `/` only after the stage is fully covered.
 
 ## 14. Failure and fallback behavior
 
 - Asset preload failure: resolve the manifest item as failed, log in development, use the best available CSS/static fallback, and never leave the player permanently on the loader.
 - Transition interruption/unmount: kill GSAP timelines and leave the director in a recoverable state; never retain `pointer-events: none` after cleanup.
-- Duplicate user activation during transition: ignore duplicate requests until the current transition reaches idle.
+- Duplicate user activation during transition: reject it until the current transition reaches idle.
 - Video failure in epilogue/credits: render static visual + copy and preserve progression controls.
 - Audio autoplay failure: keep REMEMBER muted and leave the shared control usable.
 - Reduced motion: preserve progression and interaction timing semantics while removing nonessential movement.
@@ -328,7 +333,7 @@ Every final-scene continuation must go through `SceneTransitionDirector`.
 ## 15. Accessibility
 
 - All primary controls remain keyboard accessible.
-- Boot's any-key handler must not hijack modifier-only events or inputs that should keep native interaction.
+- Boot's any-key handler follows the explicit key whitelist/exclusions defined in section 7 and never hijacks Tab/Escape navigation.
 - Transition covers must not move focus into hidden outgoing content.
 - Focus should move to the primary semantic target of the incoming scene only after the scene becomes interactive.
 - Decorative prompts, particles and seams remain `aria-hidden`.
@@ -343,7 +348,7 @@ Required automated coverage:
 
 1. **Transition director contracts**
    - reducer commit occurs at covered phase, not before exit;
-   - duplicate requests are rejected/queued deterministically;
+   - duplicate requests are rejected deterministically;
    - memory index changes create transitions even when `scene` remains `memory`;
    - cleanup cannot leave interaction locked.
 
@@ -351,12 +356,13 @@ Required automated coverage:
    - progress derives from actual resolved manifest items;
    - completion requires critical items;
    - failures cannot deadlock completion;
-   - later memory assets can remain secondary.
+   - later memory assets can remain secondary;
+   - requesting a scene whose asset group is still pending holds safely at the covered transition state.
 
 3. **Puzzle scatter invariants**
    - deterministic for a fixed seed;
    - different seed changes layout;
-   - minimum target distance respected;
+   - minimum target distance respected within responsive constraints;
    - bounds/safe-zone rules respected;
    - overlap constraint respected;
    - difficulty config increases Hanamori → Mizukyo → Kurogane.
@@ -364,7 +370,8 @@ Required automated coverage:
 4. **Guidance policy**
    - onboarding appears only for Hanamori before mechanic learned;
    - first successful snap permanently dismisses it for the run;
-   - inactivity hint cannot fire during drag or after first snap.
+   - inactivity hint cannot fire during drag or after first snap;
+   - inactivity hint repeats no more than twice and no faster than the defined cadence.
 
 5. **Seam policy**
    - ghost seams are available during gameplay according to memory difficulty;
@@ -377,7 +384,8 @@ Required automated coverage:
 7. **Shared sound control**
    - landing page and REMEMBER consume the shared presentational control;
    - REMEMBER mute state remains independent of LP state;
-   - existing restoration duck behavior remains covered.
+   - existing restoration duck behavior remains covered;
+   - LP control DOM/visual contract remains equivalent after extraction.
 
 8. **Reduced motion**
    - semantic scene order preserved;
@@ -394,6 +402,7 @@ The implementation is not considered complete until manual validation confirms:
 - Boot feels alive while idle without becoming noisy;
 - Boot → Menu is visibly transitioned;
 - Menu is centered and `記憶` visibly resolves into `REMEMBER`;
+- the thesis line also performs one Japanese-to-localized reveal;
 - only the main Menu CTA floats continuously;
 - REMEMBER's sound control visually matches the landing page's three-bar control;
 - Hanamori teaches the first drag/snap without a traditional tutorial modal;
