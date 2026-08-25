@@ -40,6 +40,19 @@ test("REMEMBER composition routes scene changes through the transition director 
   assert.match(experience, /requestTransition/);
 });
 
+test("restored memories hand off organically through preload plus the transition veil", () => {
+  const experience = read("../remember-experience.tsx");
+  const handleContinue =
+    experience.match(/const handleContinue = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/)?.[0] ?? "";
+
+  assert.match(handleContinue, /const nextMemory = memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/);
+  assert.match(handleContinue, /getStageAssetManifest\(nextMemory\.id\)/);
+  assert.match(handleContinue, /await requestTransition/);
+  assert.match(handleContinue, /dispatch\(\{ type: "CONTINUE" \}\)/);
+  assert.match(handleContinue, /preloadRememberAssets\(manifest\.critical\)/);
+  assert.match(handleContinue, /preloadRememberAssetsInBackground\(manifest\.next\)/);
+});
+
 test("game preloader exposes loaded and total counts instead of synthetic percentage", () => {
   const preloader = read("../scenes/game-preloader.tsx");
   assert.match(preloader, /progress\.loaded/);
