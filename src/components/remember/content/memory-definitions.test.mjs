@@ -67,9 +67,7 @@ test("Yumegakure completes with seven true fragments and no stabilized false fra
 
   const withFalse = [...required, "yumegakure-false-01"];
   assert.equal(isMemoryReadyForRestoration(yumegakure, withFalse), false);
-  assert.deepEqual(getStabilizedFalseFragmentIds(yumegakure, withFalse), [
-    "yumegakure-false-01",
-  ]);
+  assert.deepEqual(getStabilizedFalseFragmentIds(yumegakure, withFalse), ["yumegakure-false-01"]);
 });
 
 test("Yumegakure false fragments render from their dedicated source assets", () => {
