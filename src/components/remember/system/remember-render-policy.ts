@@ -5,7 +5,9 @@ export const shouldMountRestorationEffect = (phase: RestorationPhase) => phase !
 export const shouldUseMenuLiquidEther = ({
   reducedMotion,
   coarsePointer,
+  webglAvailable,
 }: {
   reducedMotion: boolean;
   coarsePointer: boolean;
-}) => !reducedMotion && !coarsePointer;
+  webglAvailable: boolean;
+}) => !reducedMotion && !coarsePointer && webglAvailable;
