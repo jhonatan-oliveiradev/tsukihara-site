@@ -2,7 +2,16 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 
-const read = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
+const read = (path) => {
+  try {
+    return fs.readFileSync(new URL(path, import.meta.url), "utf8");
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return "";
+    }
+    throw error;
+  }
+};
 
 test("Boot accepts game-style keyboard input in addition to pointer activation", () => {
   const boot = read("../scenes/boot-scene.tsx");
