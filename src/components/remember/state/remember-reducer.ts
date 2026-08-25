@@ -35,9 +35,7 @@ const enterNarrativeStage = (state: RememberState, stage: RememberStageId): Reme
     ...state,
     scene: sceneForStage(stage),
     currentStage: stage,
-    activeMemoryIndex: isMemoryStage(stage)
-      ? memoryIndexForStage(stage)
-      : state.activeMemoryIndex,
+    activeMemoryIndex: isMemoryStage(stage) ? memoryIndexForStage(stage) : state.activeMemoryIndex,
     paused: false,
     archiveOpen: false,
   });
