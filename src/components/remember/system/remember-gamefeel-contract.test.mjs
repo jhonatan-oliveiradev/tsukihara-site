@@ -118,8 +118,9 @@ test("pause and archive overlays render outside the gameplay stage stacking cont
 test("Interlude I unlock CTA gains a gold fill and luminous hover treatment", () => {
   const interlude = read("../interludes/interlude-01-scene.tsx");
 
+  assert.match(interlude, /const continueUnlocked = complete && interactive/);
   assert.match(interlude, /className="remember-interlude__continue"/);
-  assert.match(interlude, /data-unlocked=\{complete && interactive\}/);
+  assert.match(interlude, /data-unlocked=\{continueUnlocked\}/);
   assert.match(interlude, /background: complete && interactive/);
   assert.match(interlude, /continueHovered/);
   assert.match(interlude, /boxShadow:/);
