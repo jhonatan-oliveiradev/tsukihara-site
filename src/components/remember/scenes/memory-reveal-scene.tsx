@@ -49,12 +49,7 @@ export function MemoryRevealScene({ reducedMotion, onReveal }: MemoryRevealScene
           { opacity: 1, y: 0, letterSpacing: "0.24em", duration: 0.9 },
           0.42,
         )
-        .fromTo(
-          guardian,
-          { opacity: 0, y: 16 },
-          { opacity: 0.72, y: 0, duration: 0.75 },
-          0.88,
-        )
+        .fromTo(guardian, { opacity: 0, y: 16 }, { opacity: 0.72, y: 0, duration: 0.75 }, 0.88)
         .fromTo(
           name,
           { opacity: 0, y: 20, filter: "blur(8px)" },
