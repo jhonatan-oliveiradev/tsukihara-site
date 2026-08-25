@@ -123,6 +123,10 @@ export function RememberExperience() {
     ],
   );
 
+  const handleContinue = useCallback(() => {
+    dispatch({ type: "CONTINUE" });
+  }, []);
+
   const menuVisible = state.scene === "boot" || state.scene === "menu";
 
   return (
@@ -142,10 +146,14 @@ export function RememberExperience() {
 
       {state.scene === "memory" && (
         <RestoreScene
+          memory={activeMemory}
+          copy={copy.memory}
           restoredFragmentIds={state.restoredFragmentIds}
+          restorationPhase={state.restorationPhase}
           reducedMotion={reducedMotion}
           interactive={state.restorationPhase === "idle"}
           onRestore={handleRestore}
+          onContinue={handleContinue}
         />
       )}
     </RememberShell>
