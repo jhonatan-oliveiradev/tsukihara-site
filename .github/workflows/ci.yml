@@ -23,7 +23,21 @@ jobs:
       - name: REMEMBER regression
         run: npm run test:remember
       - name: Check formatting
+        id: formatting
+        continue-on-error: true
         run: npm run format:check
+      - name: Print REMEMBER formatting diff
+        if: steps.formatting.outcome == 'failure'
+        run: |
+          npx prettier --write \
+            src/components/remember/scenes/boot-scene.tsx \
+            src/components/remember/system/remember-asset-manifest.test.mjs \
+            src/components/remember/system/remember-asset-manifest.ts
+          git diff -- \
+            src/components/remember/scenes/boot-scene.tsx \
+            src/components/remember/system/remember-asset-manifest.test.mjs \
+            src/components/remember/system/remember-asset-manifest.ts
+          exit 1
       - name: Lint
         run: npm run lint
       - name: Build
