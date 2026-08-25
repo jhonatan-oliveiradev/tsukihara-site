@@ -67,11 +67,7 @@ export function RestoreScene({
   return (
     <section
       ref={rootRef}
-      className={[
-        "remember-restore",
-        climax && "is-climax",
-        restored && "is-restored",
-      ]
+      className={["remember-restore", climax && "is-climax", restored && "is-restored"]
         .filter(Boolean)
         .join(" ")}
       aria-labelledby="remember-restore-title"
