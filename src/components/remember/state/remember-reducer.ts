@@ -9,7 +9,6 @@ import {
 } from "./remember-state.ts";
 
 const memoryOrder: MemoryId[] = ["hanamori", "mizukyo", "kurogane", "yumegakure", "gekkai"];
-const legacyMemoryOrder: MemoryId[] = ["hanamori", "mizukyo", "kurogane"];
 
 const sceneForStage = (stage: RememberStageId): RememberScene => {
   if (isMemoryStage(stage)) return "memory";
@@ -156,7 +155,7 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
 
     case "CONTINUE": {
       if (state.scene === "memory") {
-        const activeMemoryId = legacyMemoryOrder[state.activeMemoryIndex];
+        const activeMemoryId = memoryOrder[state.activeMemoryIndex];
         if (
           state.restorationPhase !== "restored" ||
           !activeMemoryId ||
@@ -165,11 +164,12 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
           return state;
         }
 
-        if (state.activeMemoryIndex < legacyMemoryOrder.length - 1) {
+        if (state.activeMemoryIndex < memoryOrder.length - 1) {
           const nextIndex = state.activeMemoryIndex + 1;
           return {
             ...state,
-            currentStage: legacyMemoryOrder[nextIndex],
+            scene: "memory",
+            currentStage: memoryOrder[nextIndex],
             activeMemoryIndex: nextIndex,
             restoredFragmentIds: [],
             restorationPhase: "idle",
