@@ -22,7 +22,8 @@ export function PauseMenu({
   const resumeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     resumeRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
