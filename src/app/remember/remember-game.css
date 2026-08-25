@@ -1,0 +1,434 @@
+/* REMEMBER full-experience shell — loaded after the validated vertical-slice styles. */
+
+.remember-menu-backdrop {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  background: #050507;
+}
+
+.remember-menu-backdrop__image,
+.remember-menu-backdrop__shader {
+  position: absolute;
+  inset: -1.5%;
+  width: 103%;
+  height: 103%;
+  animation: remember-menu-drift 14s ease-in-out infinite alternate;
+}
+
+.remember-menu-backdrop__image {
+  object-fit: cover;
+  filter: saturate(0.82) brightness(0.62) contrast(1.05);
+  transform: scale(1.018);
+}
+
+.remember-menu-backdrop__shader {
+  opacity: 0.34;
+  mix-blend-mode: screen;
+}
+
+.remember-menu-backdrop__shader > * {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.remember-menu-backdrop__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(3 3 5 / 0.82) 0%, rgb(3 3 5 / 0.38) 46%, rgb(3 3 5 / 0.66) 100%),
+    radial-gradient(circle at 62% 38%, transparent 0 24%, rgb(2 2 4 / 0.18) 48%, rgb(2 2 4 / 0.7) 100%);
+}
+
+[data-remember-scene="boot"] .remember-root__moon,
+[data-remember-scene="menu"] .remember-root__moon {
+  opacity: 0;
+}
+
+.remember-boot,
+.remember-menu {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+}
+
+.remember-boot {
+  display: grid;
+  place-items: center;
+}
+
+.remember-boot__hit {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding:
+    max(4rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right))
+    max(3rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
+  background: transparent;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.remember-boot__hit:focus-visible {
+  outline: 1px solid rgb(224 198 151 / 0.5);
+  outline-offset: -1rem;
+}
+
+.remember-boot__sigil {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(4.75rem, 7vw, 7rem);
+  aspect-ratio: 1;
+  margin-bottom: clamp(1.8rem, 4vh, 3.4rem);
+  border: 1px solid rgb(231 213 184 / 0.2);
+  border-radius: 50%;
+  color: rgb(238 224 200 / 0.74);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+  box-shadow: 0 0 4rem rgb(181 128 72 / 0.08);
+}
+
+.remember-boot__sigil::before,
+.remember-boot__sigil::after,
+.remember-boot__sigil i {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.remember-boot__sigil::before {
+  inset: 15%;
+  border: 1px solid rgb(231 213 184 / 0.14);
+}
+
+.remember-boot__sigil::after {
+  inset: 39%;
+  background: rgb(196 153 93 / 0.5);
+  filter: blur(0.5px);
+  box-shadow: 0 0 1.8rem rgb(196 153 93 / 0.34);
+}
+
+.remember-boot__sigil i {
+  top: 50%;
+  right: -4px;
+  width: 7px;
+  height: 7px;
+  background: #a33243;
+  box-shadow: 0 0 1.4rem rgb(163 50 67 / 0.65);
+  transform: translateY(-50%);
+}
+
+.remember-boot__title {
+  color: rgb(244 237 228 / 0.96);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(3.2rem, 7.8vw, 8rem);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: -0.055em;
+  text-shadow: 0 1.3rem 4rem rgb(0 0 0 / 0.52);
+}
+
+.remember-boot__prompt {
+  position: relative;
+  margin-top: clamp(2.25rem, 5vh, 4.25rem);
+  color: rgb(242 231 216 / 0.72);
+  font-size: 0.61rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  animation: remember-prompt-breathe 2.2s ease-in-out infinite;
+}
+
+.remember-boot__hit small {
+  margin-top: 0.9rem;
+  color: rgb(242 231 216 / 0.34);
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+}
+
+.remember-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding:
+    max(6.5rem, calc(env(safe-area-inset-top) + 4.8rem))
+    max(5vw, calc(env(safe-area-inset-right) + 2rem))
+    max(4rem, calc(env(safe-area-inset-bottom) + 2rem))
+    max(6vw, calc(env(safe-area-inset-left) + 2rem));
+}
+
+.remember-menu__brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: rgb(242 231 216 / 0.48);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.remember-menu__brand::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background: #a33243;
+}
+
+.remember-menu__brand small {
+  color: rgb(242 231 216 / 0.24);
+  font-family: var(--display, Georgia, serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+}
+
+.remember-menu__title-wrap {
+  width: min(58rem, 76vw);
+  margin-top: clamp(1.5rem, 3.5vh, 2.8rem);
+}
+
+.remember-menu__title-wrap p {
+  margin: 0 0 0.25rem;
+  color: rgb(242 231 216 / 0.45);
+  font-size: clamp(0.66rem, 0.8vw, 0.8rem);
+  letter-spacing: 0.43em;
+}
+
+.remember-menu__title-wrap h1 {
+  margin: 0;
+  color: #f0e7dc;
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(5rem, 12.4vw, 13rem);
+  font-weight: 400;
+  line-height: 0.72;
+  letter-spacing: -0.075em;
+  text-shadow: 0 2rem 5rem rgb(0 0 0 / 0.52);
+}
+
+.remember-menu__title-wrap > i {
+  display: block;
+  width: min(19rem, 38vw);
+  height: 1px;
+  margin-top: clamp(1.6rem, 3vh, 2.5rem);
+  background: linear-gradient(90deg, rgb(210 181 130 / 0.75), transparent);
+}
+
+.remember-menu__begin {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  width: fit-content;
+  margin-top: clamp(2.2rem, 5vh, 4.2rem);
+  border: 0;
+  padding: 0.8rem 0;
+  background: transparent;
+  color: rgb(245 237 227 / 0.9);
+  font: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.remember-menu__begin i {
+  display: block;
+  width: 4.5rem;
+  height: 1px;
+  overflow: hidden;
+  background: rgb(245 237 227 / 0.18);
+}
+
+.remember-menu__begin i::after {
+  content: "";
+  display: block;
+  width: 45%;
+  height: 100%;
+  background: #d1ad75;
+  transition: width 350ms ease;
+}
+
+.remember-menu__begin:hover i::after,
+.remember-menu__begin:focus-visible i::after {
+  width: 100%;
+}
+
+.remember-menu__begin:focus-visible {
+  outline: 1px solid rgb(210 181 130 / 0.58);
+  outline-offset: 0.55rem;
+}
+
+.remember-menu__thesis {
+  position: absolute;
+  right: max(5vw, calc(env(safe-area-inset-right) + 2rem));
+  bottom: max(2.2rem, calc(env(safe-area-inset-bottom) + 1rem));
+  margin: 0;
+  color: rgb(242 231 216 / 0.28);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(0.62rem, 0.85vw, 0.82rem);
+  letter-spacing: 0.12em;
+}
+
+.remember-game-controls {
+  position: absolute;
+  z-index: 110;
+  top: max(1.2rem, env(safe-area-inset-top));
+  right: max(1.2rem, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  gap: clamp(0.9rem, 1.5vw, 1.5rem);
+}
+
+.remember-language {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.remember-language button,
+.remember-sound-toggle,
+.remember-exit-toggle {
+  border: 0;
+  background: transparent;
+  color: rgb(238 229 217 / 0.48);
+  font: inherit;
+  font-size: 0.54rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 220ms ease;
+}
+
+.remember-language button {
+  padding: 0.6rem 0.25rem;
+}
+
+.remember-language button + button::before {
+  content: "/";
+  margin-right: 0.35rem;
+  color: rgb(238 229 217 / 0.18);
+}
+
+.remember-language button.is-active,
+.remember-language button:hover,
+.remember-sound-toggle:hover,
+.remember-exit-toggle:hover,
+.remember-language button:focus-visible,
+.remember-sound-toggle:focus-visible,
+.remember-exit-toggle:focus-visible {
+  color: rgb(244 237 228 / 0.95);
+}
+
+.remember-sound-toggle,
+.remember-exit-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.5rem;
+}
+
+.remember-sound-toggle i {
+  display: block;
+  width: 1rem;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left;
+  transition: transform 260ms ease;
+}
+
+.remember-sound-toggle[aria-pressed="false"] i {
+  transform: scaleX(0.35);
+}
+
+.remember-exit-toggle > span:first-child {
+  color: #a33243;
+  font-size: 1rem;
+}
+
+.remember-language button:focus-visible,
+.remember-sound-toggle:focus-visible,
+.remember-exit-toggle:focus-visible {
+  outline: 1px solid rgb(210 181 130 / 0.58);
+  outline-offset: 4px;
+}
+
+@keyframes remember-menu-drift {
+  from {
+    transform: scale(1.012) translate3d(-0.25%, -0.2%, 0);
+  }
+  to {
+    transform: scale(1.026) translate3d(0.3%, 0.22%, 0);
+  }
+}
+
+@keyframes remember-prompt-breathe {
+  0%,
+  100% {
+    opacity: 0.46;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .remember-menu-backdrop__shader {
+    display: none;
+  }
+
+  .remember-menu {
+    justify-content: flex-end;
+    padding:
+      max(7rem, calc(env(safe-area-inset-top) + 5rem))
+      max(1.4rem, calc(env(safe-area-inset-right) + 1rem))
+      max(5.5rem, calc(env(safe-area-inset-bottom) + 3rem))
+      max(1.4rem, calc(env(safe-area-inset-left) + 1rem));
+  }
+
+  .remember-menu__title-wrap {
+    width: 100%;
+  }
+
+  .remember-menu__title-wrap h1 {
+    font-size: clamp(4.2rem, 22vw, 7.2rem);
+  }
+
+  .remember-menu__thesis {
+    display: none;
+  }
+
+  .remember-game-controls {
+    right: max(0.85rem, env(safe-area-inset-right));
+    left: max(0.85rem, env(safe-area-inset-left));
+    justify-content: flex-end;
+    gap: 0.65rem;
+  }
+
+  .remember-sound-toggle span,
+  .remember-exit-toggle > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .remember-exit-toggle {
+    min-width: 2.2rem;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-menu-backdrop__image,
+  .remember-menu-backdrop__shader,
+  .remember-boot__prompt {
+    animation: none;
+  }
+}
