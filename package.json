@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --write . && git diff --exit-code -- .",
+    "format:check": "prettier --check .",
     "test:hero": "node --experimental-strip-types --test src/components/experience/hero/hero-timeline-math.test.mjs",
     "test:remember": "node --experimental-strip-types --test src/components/remember/state/remember-reducer.test.mjs src/components/remember/restore/restore-math.test.mjs src/components/remember/restore/restoration-timeline.test.mjs src/components/remember/restore/memory-intro-timeline.test.mjs src/components/remember/restore/memory-restoration-lifecycle.test.mjs src/components/remember/audio/remember-audio.test.mjs src/components/remember/content/memory-definitions.test.mjs src/components/remember/system/remember-render-policy.test.mjs"
   },
