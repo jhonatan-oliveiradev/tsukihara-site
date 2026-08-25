@@ -3,7 +3,10 @@
     radial-gradient(circle at 20% 30%, rgb(255 255 255 / 0.22) 0 0.45px, transparent 0.7px),
     radial-gradient(circle at 70% 62%, rgb(255 255 255 / 0.16) 0 0.4px, transparent 0.65px),
     radial-gradient(circle at 42% 84%, rgb(0 0 0 / 0.35) 0 0.55px, transparent 0.8px);
-  background-size: 7px 7px, 11px 11px, 13px 13px;
+  background-size:
+    7px 7px,
+    11px 11px,
+    13px 13px;
 }
 
 @media (max-width: 900px) {
