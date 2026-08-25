@@ -114,8 +114,7 @@ const repairPrematureFinaleStage = (
   if (gameCompleted || !prematureFinaleStages.has(currentStage)) return currentStage;
 
   const firstIncompleteMemory = memoryOrder.find(
-    (memoryId) =>
-      !completedStages.includes(memoryId) && memories[memoryId]?.completed !== true,
+    (memoryId) => !completedStages.includes(memoryId) && memories[memoryId]?.completed !== true,
   );
 
   return firstIncompleteMemory ?? currentStage;
