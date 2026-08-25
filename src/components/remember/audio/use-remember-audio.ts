@@ -170,7 +170,13 @@ export function useRememberAudio(): RememberAudioController {
         const controller = new AbortController();
         fadeAbortRef.current = controller;
         playHarp();
-        await fadeAudio(phase, phase.volume, rememberAudioTracks.phase.volume * 0.5, 1500, controller.signal);
+        await fadeAudio(
+          phase,
+          phase.volume,
+          rememberAudioTracks.phase.volume * 0.5,
+          1500,
+          controller.signal,
+        );
       },
       enterCredits: async () => {
         const menu = getTrack("menu");
