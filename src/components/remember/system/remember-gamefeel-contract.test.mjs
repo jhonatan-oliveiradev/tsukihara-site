@@ -33,29 +33,34 @@ test("Menu resolves Japanese memory glyphs into localized cinematic copy", () =>
   assert.match(menu, /text=\{copy\.thesis\}/);
 });
 
-test("REMEMBER composition routes scene changes through the transition director and truthful preloader", () => {
-  const experience = read("../remember-experience.tsx");
-  assert.match(experience, /SceneTransitionDirector/);
-  assert.match(experience, /GamePreloader/);
-  assert.match(experience, /requestTransition/);
-});
+test(
+  "REMEMBER composition routes scene changes through the transition director and truthful preloader",
+  () => {
+    const experience = read("../remember-experience.tsx");
+    assert.match(experience, /SceneTransitionDirector/);
+    assert.match(experience, /GamePreloader/);
+    assert.match(experience, /requestTransition/);
+  },
+);
 
-test("restored memories hand off organically through preload plus the transition veil", () => {
-  const experience = read("../remember-experience.tsx");
-  const handleContinue =
-    experience.match(/const handleContinue = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/)?.[0] ??
-    "";
+test(
+  "restored memories hand off organically through the canonical stage graph and transition veil",
+  () => {
+    const experience = read("../remember-experience.tsx");
+    const transitionToNextStage =
+      experience.match(
+        /const transitionToNextStage = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/,
+      )?.[0] ?? "";
 
-  assert.match(
-    handleContinue,
-    /const nextMemory = memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/,
-  );
-  assert.match(handleContinue, /getStageAssetManifest\(nextMemory\.id\)/);
-  assert.match(handleContinue, /await requestTransition/);
-  assert.match(handleContinue, /dispatch\(\{ type: "CONTINUE" \}\)/);
-  assert.match(handleContinue, /preloadRememberAssets\(manifest\.critical\)/);
-  assert.match(handleContinue, /preloadRememberAssetsInBackground\(manifest\.next\)/);
-});
+    assert.match(transitionToNextStage, /getNextStage\(state\.currentStage\)/);
+    assert.match(transitionToNextStage, /getStageAssetManifest\(nextStage\)/);
+    assert.match(transitionToNextStage, /await requestTransition/);
+    assert.match(transitionToNextStage, /dispatch\(\{ type: "CONTINUE" \}\)/);
+    assert.match(transitionToNextStage, /preloadRememberAssets\(manifest\.critical\)/);
+    assert.match(transitionToNextStage, /preloadRememberAssetsInBackground\(manifest\.next\)/);
+    assert.doesNotMatch(experience, /memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/);
+  },
+);
 
 test("Yumegakure wires false assets, instability, and reversible stabilized fragments", () => {
   const puzzle = read("../restore/memory-puzzle.tsx");
@@ -87,16 +92,19 @@ test("game preloader exposes loaded and total counts instead of synthetic percen
   assert.doesNotMatch(preloader, /%/);
 });
 
-test("pause control switches between pause and resume copy while preserving header typography", () => {
-  const shell = read("../remember-shell.tsx");
-  const locales = read("../content/remember-locales.ts");
-  const styles = read("../../../app/remember/remember-game.css");
+test(
+  "pause control switches between pause and resume copy while preserving header typography",
+  () => {
+    const shell = read("../remember-shell.tsx");
+    const locales = read("../content/remember-locales.ts");
+    const styles = read("../../../app/remember/remember-game.css");
 
-  assert.match(shell, /paused \? copy\.controls\.resume : copy\.controls\.pause/);
-  assert.match(locales, /resume: "Retomar memória"/);
-  assert.match(locales, /resume: "Resume memory"/);
-  assert.match(styles, /\.remember-pause-toggle[\s\S]*font: inherit/);
-});
+    assert.match(shell, /paused \? copy\.controls\.resume : copy\.controls\.pause/);
+    assert.match(locales, /resume: "Retomar memória"/);
+    assert.match(locales, /resume: "Resume memory"/);
+    assert.match(styles, /\.remember-pause-toggle[\s\S]*font: inherit/);
+  },
+);
 
 test("pause and archive overlays render outside the gameplay stage stacking context", () => {
   const shell = read("../remember-shell.tsx");

@@ -211,7 +211,9 @@ export function Interlude01Scene({
               textTransform: "uppercase",
             }}
           >
-            {complete ? copy.complete : `${copy.trace} ${String(discovered.length).padStart(2, "0")} / 04`}
+            {complete
+              ? copy.complete
+              : `${copy.trace} ${String(discovered.length).padStart(2, "0")} / 04`}
           </small>
 
           <button

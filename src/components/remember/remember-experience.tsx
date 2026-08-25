@@ -8,10 +8,15 @@ import { MemoryArchive } from "@/components/remember/archive/memory-archive";
 import { useRememberAudio } from "@/components/remember/audio/use-remember-audio";
 import { memoryDefinitions } from "@/components/remember/content/memory-definitions";
 import { getRememberCopy } from "@/components/remember/content/remember-locales";
+import { Interlude01Scene } from "@/components/remember/interludes/interlude-01-scene";
+import { Interlude02Scene } from "@/components/remember/interludes/interlude-02-scene";
 import { RememberShell } from "@/components/remember/remember-shell";
 import { isMemoryReadyForRestoration } from "@/components/remember/restore/memory-mechanic-policy";
 import { BootScene } from "@/components/remember/scenes/boot-scene";
+import { CreditsScene } from "@/components/remember/scenes/credits-scene";
+import { EpilogueScene } from "@/components/remember/scenes/epilogue-scene";
 import { GamePreloader } from "@/components/remember/scenes/game-preloader";
+import { MemoryRevealScene } from "@/components/remember/scenes/memory-reveal-scene";
 import { RememberMenuBackdrop } from "@/components/remember/scenes/menu-backdrop";
 import { MenuScene } from "@/components/remember/scenes/menu-scene";
 import { PauseMenu } from "@/components/remember/scenes/pause-menu";
@@ -20,7 +25,7 @@ import {
   SceneTransitionDirector,
   type SceneTransitionDirectorHandle,
 } from "@/components/remember/scenes/scene-transition-director";
-import { isMemoryStage } from "@/components/remember/state/remember-progression";
+import { getNextStage, isMemoryStage } from "@/components/remember/state/remember-progression";
 import { rememberReducer } from "@/components/remember/state/remember-reducer";
 import {
   createNewRememberSave,
@@ -34,6 +39,7 @@ import {
   initialRememberState,
   type MemoryId,
   type RememberLocale,
+  type RememberStageId,
   type RestorationPhase,
 } from "@/components/remember/state/remember-state";
 import { trackRememberEvent } from "@/components/remember/system/remember-analytics";
@@ -166,6 +172,27 @@ export function RememberExperience() {
     [],
   );
 
+  const enterAudioForStage = useCallback(
+    (stage: RememberStageId) => {
+      if (isMemoryStage(stage)) {
+        void audio.startMemory();
+        return;
+      }
+      if (stage === "akari-reveal") {
+        void audio.enterAkariReveal();
+        return;
+      }
+      if (stage === "credits") {
+        void audio.enterCredits();
+        return;
+      }
+      if (stage === "interlude-01" || stage === "interlude-02") {
+        void audio.restoreMemoryLevel();
+      }
+    },
+    [audio],
+  );
+
   const saveBeforeLeaving = useCallback(() => {
     const save = saveRef.current;
     if (!save) return;
@@ -221,7 +248,7 @@ export function RememberExperience() {
     const transitioned = await requestTransition(
       () => {
         dispatch({ type: "HYDRATE_SAVE", save });
-        void audio.startMemory();
+        enterAudioForStage(save.currentStage);
       },
       async () => {
         await preloadRememberAssets(manifest.critical);
@@ -229,7 +256,7 @@ export function RememberExperience() {
     ).catch(() => false);
 
     if (transitioned) void preloadRememberAssetsInBackground(manifest.next);
-  }, [audio, requestTransition]);
+  }, [enterAudioForStage, requestTransition]);
 
   const handleMenuPrimary = useCallback(async () => {
     const policy = getTitleMenuPolicy(saveRef.current);
@@ -361,18 +388,27 @@ export function RememberExperience() {
 
   const handleKintsugi = useCallback(() => audio.playKintsugi(), [audio]);
   const handleRestored = useCallback(() => audio.playRestored(), [audio]);
-  const handleContinue = useCallback(async () => {
-    const nextMemory = memoryDefinitions[state.activeMemoryIndex + 1];
-    if (!nextMemory) {
-      dispatch({ type: "CONTINUE" });
-      return;
-    }
 
-    const manifest = getStageAssetManifest(nextMemory.id);
+  const transitionToNextStage = useCallback(async () => {
+    const nextStage = getNextStage(state.currentStage);
+    if (!nextStage) return false;
+
+    const manifest = getStageAssetManifest(nextStage);
     const transitioned = await requestTransition(
       () => {
         dispatch({ type: "CONTINUE" });
-        void audio.restoreMemoryLevel();
+        if (nextStage === "credits") {
+          mutateSave((save) => ({
+            ...save,
+            currentStage: "credits",
+            gameCompleted: true,
+            completedStages: save.completedStages.includes("credits")
+              ? save.completedStages
+              : [...save.completedStages, "credits"],
+            updatedAt: new Date().toISOString(),
+          }));
+        }
+        enterAudioForStage(nextStage);
       },
       async () => {
         await preloadRememberAssets(manifest.critical);
@@ -380,7 +416,41 @@ export function RememberExperience() {
     ).catch(() => false);
 
     if (transitioned) void preloadRememberAssetsInBackground(manifest.next);
-  }, [audio, requestTransition, state.activeMemoryIndex]);
+    return transitioned;
+  }, [enterAudioForStage, mutateSave, requestTransition, state.currentStage]);
+
+  const handleContinue = useCallback(async () => {
+    await transitionToNextStage();
+  }, [transitionToNextStage]);
+
+  const completeInterludeAndContinue = useCallback(
+    async (stage: "interlude-01" | "interlude-02") => {
+      if (state.currentStage !== stage || state.scene !== "interlude") return;
+
+      mutateSave((save) => ({
+        ...save,
+        completedStages: save.completedStages.includes(stage)
+          ? save.completedStages
+          : [...save.completedStages, stage],
+        updatedAt: new Date().toISOString(),
+      }));
+      dispatch({ type: "COMPLETE_STAGE", stage });
+      await transitionToNextStage();
+    },
+    [mutateSave, state.currentStage, state.scene, transitionToNextStage],
+  );
+
+  const handleAkariRecordDiscovered = useCallback(() => {
+    mutateSave((save) =>
+      save.discoveredAkariRecord
+        ? save
+        : {
+            ...save,
+            discoveredAkariRecord: true,
+            updatedAt: new Date().toISOString(),
+          },
+    );
+  }, [mutateSave]);
 
   const closePause = useCallback(() => {
     dispatch({ type: "CLOSE_PAUSE" });
@@ -590,6 +660,52 @@ export function RememberExperience() {
             onKintsugi={handleKintsugi}
             onRestored={handleRestored}
             onContinue={() => void handleContinue()}
+          />
+        )}
+
+        {state.scene === "interlude" && state.currentStage === "interlude-01" && (
+          <Interlude01Scene
+            copy={copy.interlude01}
+            interactive={gameplayInteractive}
+            reducedMotion={reducedMotion}
+            onContinue={() => void completeInterludeAndContinue("interlude-01")}
+          />
+        )}
+
+        {state.scene === "interlude" && state.currentStage === "interlude-02" && (
+          <Interlude02Scene
+            copy={copy.interlude02}
+            interactive={gameplayInteractive}
+            reducedMotion={reducedMotion}
+            onDiscovered={handleAkariRecordDiscovered}
+            onContinue={() => void completeInterludeAndContinue("interlude-02")}
+          />
+        )}
+
+        {state.scene === "akari-reveal" && (
+          <MemoryRevealScene
+            copy={copy.akari}
+            interactive={gameplayInteractive}
+            reducedMotion={reducedMotion}
+            onContinue={() => void handleContinue()}
+          />
+        )}
+
+        {state.scene === "epilogue" && (
+          <EpilogueScene
+            copy={copy.epilogue}
+            interactive={gameplayInteractive}
+            reducedMotion={reducedMotion}
+            onContinue={() => void handleContinue()}
+          />
+        )}
+
+        {state.scene === "credits" && (
+          <CreditsScene
+            copy={copy.credits}
+            interactive={gameplayInteractive}
+            reducedMotion={reducedMotion}
+            onReturn={handleExit}
           />
         )}
       </RememberShell>
