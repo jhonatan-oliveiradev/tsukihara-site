@@ -63,6 +63,8 @@ export type RememberLocaleCopy = {
     keyboardAction: string;
     restored: string;
     continue: string;
+    guidanceTitle: string;
+    guidanceBody: string;
   };
   akari: {
     eyebrow: string;
@@ -147,6 +149,8 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       keyboardAction: "Restaurar fragmento",
       restored: "RESTAURADA",
       continue: "CONTINUAR",
+      guidanceTitle: "RECONSTRUA A MEMÓRIA",
+      guidanceBody: "Arraste os fragmentos e devolva-os ao lugar ao qual pertencem.",
     },
     akari: {
       eyebrow: "A GUARDIÃ QUE O MUNDO ESQUECEU",
@@ -228,6 +232,8 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       keyboardAction: "Restore fragment",
       restored: "RESTORED",
       continue: "CONTINUE",
+      guidanceTitle: "RECONSTRUCT THE MEMORY",
+      guidanceBody: "Drag the fragments and return them to the place where they belong.",
     },
     akari: {
       eyebrow: "THE GUARDIAN THE WORLD FORGOT",
