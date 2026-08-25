@@ -48,7 +48,13 @@ export type RememberAction =
   | { type: "OPEN_ARCHIVE" }
   | { type: "CLOSE_ARCHIVE" }
   | { type: "RESTART_MEMORY" }
-  | { type: "RESTORE_FRAGMENT"; fragmentId: string; totalFragments: number }
+  | {
+      type: "RESTORE_FRAGMENT";
+      fragmentId: string;
+      totalFragments: number;
+      completesMemory?: boolean;
+    }
+  | { type: "UNRESTORE_FRAGMENT"; fragmentId: string; completesMemory?: boolean }
   | { type: "SET_RESTORATION_PHASE"; phase: RestorationPhase }
   | { type: "MARK_MEMORY_RESTORED"; memoryId: MemoryId }
   | { type: "CONTINUE" }
