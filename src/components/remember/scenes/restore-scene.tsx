@@ -48,7 +48,6 @@ export function RestoreScene({
     const root = rootRef.current;
     if (!root) return;
 
-    setIntroComplete(false);
     const schedule = getMemoryIntroSchedule(reducedMotion);
     const intro = root.querySelector("[data-memory-intro]");
     const introLabel = root.querySelector("[data-memory-intro-label]");
@@ -58,10 +57,7 @@ export function RestoreScene({
     const instruction = root.querySelector("[data-restore-instruction]");
     const memorySurface = root.querySelector(".remember-memory__surface");
 
-    if (!intro || !introLabel || !introTitle || !introJp || !label || !instruction || !memorySurface) {
-      setIntroComplete(true);
-      return;
-    }
+    if (!intro || !introLabel || !introTitle || !introJp || !label || !instruction || !memorySurface) return;
 
     const ctx = gsap.context(() => {
       gsap.set(intro, { opacity: 1 });
