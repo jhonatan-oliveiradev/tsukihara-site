@@ -20,7 +20,6 @@ type RestoreSceneProps = {
   restorationPhase: RestorationPhase;
   reducedMotion: boolean;
   interactive: boolean;
-  scatterSeed: number;
   onRestore: (fragmentId: string) => void;
   onUnrestore: (fragmentId: string) => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
@@ -38,7 +37,6 @@ export function RestoreScene({
   restorationPhase,
   reducedMotion,
   interactive,
-  scatterSeed,
   onRestore,
   onUnrestore,
   onRestorationPhaseChange,
@@ -49,6 +47,7 @@ export function RestoreScene({
 }: RestoreSceneProps) {
   const rootRef = useRef<HTMLElement>(null);
   const [introComplete, setIntroComplete] = useState(false);
+  const [scatterSeed] = useState(() => Date.now() >>> 0);
   const restored = restorationPhase === "restored";
   const climax = restorationPhase !== "idle" && !restored;
   const requiredFragmentCount = getRequiredFragmentIds(memory).length;
