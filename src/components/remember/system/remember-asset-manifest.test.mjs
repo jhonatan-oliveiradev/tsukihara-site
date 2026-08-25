@@ -24,13 +24,9 @@ test("initial preload is truthful and excludes late prologue media", async () =>
   const manifest = getInitialAssetManifest();
   const all = [...manifest.critical, ...manifest.next];
 
-  assert.ok(
-    manifest.critical.some((src) => src.includes("remember-menu-background")),
-  );
+  assert.ok(manifest.critical.some((src) => src.includes("remember-menu-background")));
   assert.ok(manifest.critical.some((src) => src.includes("templo-hanamori_2")));
-  assert.ok(
-    manifest.critical.some((src) => src.includes("mr01-kintsugi-crack-overlay")),
-  );
+  assert.ok(manifest.critical.some((src) => src.includes("mr01-kintsugi-crack-overlay")));
   assert.ok(!all.some((src) => src.includes("yumegakure")));
   assert.ok(!all.some((src) => src.includes("gekkai")));
   assert.ok(!all.some((src) => src.includes("remember-epilogue-eclipse")));
@@ -42,12 +38,8 @@ test("Hanamori preloads Mizukyo next without jumping ahead", async () => {
   assert.equal(typeof getStageAssetManifest, "function");
 
   const manifest = getStageAssetManifest("hanamori");
-  assert.ok(
-    manifest.next.some((src) => src.includes("remember-mizukyo-broken")),
-  );
-  assert.ok(
-    manifest.next.some((src) => src.includes("remember-mizukyo-restored")),
-  );
+  assert.ok(manifest.next.some((src) => src.includes("remember-mizukyo-broken")));
+  assert.ok(manifest.next.some((src) => src.includes("remember-mizukyo-restored")));
   assert.ok(!manifest.next.some((src) => src.includes("kurogane")));
   assert.ok(!manifest.next.some((src) => src.includes("yumegakure")));
 });
@@ -60,13 +52,9 @@ test("epilogue video stays lazy until the Akari/finale boundary", async () => {
   const akari = getStageAssetManifest("akari-reveal");
 
   assert.ok(
-    ![...beforeFinale.critical, ...beforeFinale.next].some((src) =>
-      src.includes("epilogue"),
-    ),
+    ![...beforeFinale.critical, ...beforeFinale.next].some((src) => src.includes("epilogue")),
   );
-  assert.ok(
-    akari.next.some((src) => src.includes("remember-epilogue-eclipse")),
-  );
+  assert.ok(akari.next.some((src) => src.includes("remember-epilogue-eclipse")));
 });
 
 test("preload progress is direct loaded-over-total truth", async () => {
