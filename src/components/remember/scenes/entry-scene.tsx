@@ -24,13 +24,21 @@ export function EntryScene({ reducedMotion, onEnter }: EntrySceneProps) {
       const moon = root.querySelector("[data-entry-moon]");
 
       if (reducedMotion) {
-        gsap.fromTo([primary, secondary, action], { opacity: 0 }, { opacity: 1, duration: 0.35, stagger: 0.12 });
+        gsap.fromTo(
+          [primary, secondary, action],
+          { opacity: 0 },
+          { opacity: 1, duration: 0.35, stagger: 0.12 },
+        );
         return;
       }
 
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
-        .fromTo(primary, { opacity: 0, y: 16, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.1 })
+        .fromTo(
+          primary,
+          { opacity: 0, y: 16, filter: "blur(8px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.1 },
+        )
         .fromTo(secondary, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.95 }, "+=0.55")
         .fromTo(action, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.8 }, "+=0.35");
 
