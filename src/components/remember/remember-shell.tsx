@@ -27,7 +27,7 @@ export function RememberShell({ children, muted, onExit, onToggleMute }: Remembe
         <button
           type="button"
           className="remember-control remember-control--sound"
-          aria-pressed={!muted}
+          aria-pressed={muted}
           onClick={onToggleMute}
         >
           <span className="remember-control__signal" aria-hidden="true">
