@@ -63,6 +63,18 @@ export type RememberLocaleCopy = {
     keyboardAction: string;
     restored: string;
     continue: string;
+    guidanceTitle: string;
+    guidanceBody: string;
+  };
+  interlude01: {
+    eyebrow: string;
+    title: string;
+    lineOne: string;
+    lineTwo: string;
+    trace: string;
+    complete: string;
+    continue: string;
+    traceLabels: readonly [string, string, string, string];
   };
   akari: {
     eyebrow: string;
@@ -147,6 +159,18 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       keyboardAction: "Restaurar fragmento",
       restored: "RESTAURADA",
       continue: "CONTINUAR",
+      guidanceTitle: "RECONSTRUA A MEMÓRIA",
+      guidanceBody: "Arraste os fragmentos e devolva-os ao lugar ao qual pertencem.",
+    },
+    interlude01: {
+      eyebrow: "ASSINATURA DE MEMÓRIA DESCONHECIDA",
+      title: "ALGO PERMANECE ENTRE AS MEMÓRIAS",
+      lineOne: "Você não está restaurando lugares.",
+      lineTwo: "Está seguindo alguém.",
+      trace: "RASTRO",
+      complete: "ASSINATURA PARCIAL RECONSTRUÍDA",
+      continue: "SEGUIR O RASTRO",
+      traceLabels: ["Resíduo lunar", "Caminho quebrado", "Pulso de memória", "Eco distante"],
     },
     akari: {
       eyebrow: "A GUARDIÃ QUE O MUNDO ESQUECEU",
@@ -228,6 +252,18 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       keyboardAction: "Restore fragment",
       restored: "RESTORED",
       continue: "CONTINUE",
+      guidanceTitle: "RECONSTRUCT THE MEMORY",
+      guidanceBody: "Drag the fragments and return them to the place where they belong.",
+    },
+    interlude01: {
+      eyebrow: "UNKNOWN MEMORY SIGNATURE",
+      title: "SOMETHING REMAINS BETWEEN THE MEMORIES",
+      lineOne: "You are not restoring places.",
+      lineTwo: "You are following someone.",
+      trace: "TRACE",
+      complete: "PARTIAL SIGNATURE RECONSTRUCTED",
+      continue: "FOLLOW THE TRACE",
+      traceLabels: ["Lunar residue", "Broken path", "Memory pulse", "Distant echo"],
     },
     akari: {
       eyebrow: "THE GUARDIAN THE WORLD FORGOT",

@@ -47,6 +47,7 @@ export function RestoreScene({
 }: RestoreSceneProps) {
   const rootRef = useRef<HTMLElement>(null);
   const [introComplete, setIntroComplete] = useState(false);
+  const [scatterSeed] = useState(() => Date.now() >>> 0);
   const restored = restorationPhase === "restored";
   const climax = restorationPhase !== "idle" && !restored;
   const requiredFragmentCount = getRequiredFragmentIds(memory).length;
@@ -187,6 +188,9 @@ export function RestoreScene({
         keyboardLabel={copy.keyboardAction}
         restoredLabel={copy.restored}
         completionLine={completionLine}
+        guidanceTitle={copy.guidanceTitle}
+        guidanceBody={copy.guidanceBody}
+        scatterSeed={scatterSeed}
         onRestore={onRestore}
         onUnrestore={onUnrestore}
         onRestorationPhaseChange={onRestorationPhaseChange}
