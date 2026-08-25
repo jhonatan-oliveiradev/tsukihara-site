@@ -107,7 +107,10 @@ export function MemoryPuzzle({
   const reversible = isFragmentReversible(memory) && restorationPhase === "idle";
   const showGhostSeams = memory.mechanic === "standard" && restorationPhase === "idle";
   const showHanamoriGuidance =
-    memory.id === "hanamori" && restorationPhase === "idle" && restoredRequiredCount === 0;
+    interactive &&
+    memory.id === "hanamori" &&
+    restorationPhase === "idle" &&
+    restoredRequiredCount === 0;
   const [activeFragmentId, setActiveFragmentId] = useState<string | null>(null);
   const [hintPulse, setHintPulse] = useState(0);
   const guidanceStateRef = useRef(createHanamoriGuidanceState());
