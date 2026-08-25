@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   configureAudioElement,
   fadeAudio,
+  getRestorationDuckVolume,
   rememberAudioTracks,
   type RememberAudioTrack,
 } from "@/components/remember/audio/remember-audio";
@@ -14,6 +15,8 @@ type BaseTracks = Partial<Record<TrackKey, HTMLAudioElement>>;
 export type RememberAudioController = {
   unlockMenu: () => Promise<void>;
   startMemory: () => Promise<void>;
+  duckMemoryForRestoration: () => Promise<void>;
+  restoreMemoryLevel: () => Promise<void>;
   playPieceComplete: () => void;
   playKintsugi: () => void;
   playRestored: () => void;
@@ -160,6 +163,36 @@ export function useRememberAudio(): RememberAudioController {
         ]);
 
         if (!controller.signal.aborted) menu.pause();
+      },
+      duckMemoryForRestoration: async () => {
+        const phase = getTrack("phase");
+        abortFades();
+        const controller = new AbortController();
+        fadeAbortRef.current = controller;
+
+        await fadeAudio(
+          phase,
+          phase.volume,
+          getRestorationDuckVolume(rememberAudioTracks.phase.volume),
+          700,
+          controller.signal,
+        );
+      },
+      restoreMemoryLevel: async () => {
+        const phase = getTrack("phase");
+        abortFades();
+        const controller = new AbortController();
+        fadeAbortRef.current = controller;
+
+        phase.muted = mutedRef.current;
+        if (phase.paused) await phase.play().catch(() => undefined);
+        await fadeAudio(
+          phase,
+          phase.volume,
+          rememberAudioTracks.phase.volume,
+          1600,
+          controller.signal,
+        );
       },
       playPieceComplete: playKintsugiTransient,
       playKintsugi: playKintsugiTransient,

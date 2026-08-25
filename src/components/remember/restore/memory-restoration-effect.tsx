@@ -34,7 +34,6 @@ export function MemoryRestorationEffect({
   onRestored,
 }: MemoryRestorationEffectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const ranMemoryRef = useRef<string | null>(null);
   const callbacksRef = useRef({ onPhaseChange, onComplete, onKintsugi, onRestored });
 
   useLayoutEffect(() => {
@@ -42,14 +41,12 @@ export function MemoryRestorationEffect({
   }, [onComplete, onKintsugi, onPhaseChange, onRestored]);
 
   useLayoutEffect(() => {
-    if (ranMemoryRef.current !== memory.id) ranMemoryRef.current = null;
-    if (!active || ranMemoryRef.current === memory.id) return;
+    if (!active) return;
 
     const root = rootRef.current;
     const surface = root?.parentElement;
     if (!root || !surface) return;
 
-    ranMemoryRef.current = memory.id;
     const schedule = getRestorationSchedule(reducedMotion);
     const at = Object.fromEntries(schedule.map((beat) => [beat.phase, beat.at])) as Record<
       Exclude<RestorationPhase, "idle">,

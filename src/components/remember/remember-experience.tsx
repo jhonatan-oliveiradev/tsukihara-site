@@ -108,6 +108,9 @@ export function RememberExperience() {
         return;
       }
 
+      const completesMemory = state.restoredFragmentIds.length + 1 >= activeMemory.fragments.length;
+      if (completesMemory) void audio.duckMemoryForRestoration();
+
       audio.playPieceComplete();
       dispatch({
         type: "RESTORE_FRAGMENT",
@@ -135,7 +138,12 @@ export function RememberExperience() {
 
   const handleKintsugi = useCallback(() => audio.playKintsugi(), [audio]);
   const handleRestored = useCallback(() => audio.playRestored(), [audio]);
-  const handleContinue = useCallback(() => dispatch({ type: "CONTINUE" }), []);
+  const handleContinue = useCallback(() => {
+    if (state.activeMemoryIndex < memoryDefinitions.length - 1) {
+      void audio.restoreMemoryLevel();
+    }
+    dispatch({ type: "CONTINUE" });
+  }, [audio, state.activeMemoryIndex]);
   const menuVisible = state.scene === "boot" || state.scene === "menu";
 
   return (
@@ -154,6 +162,7 @@ export function RememberExperience() {
 
       {state.scene === "memory" && (
         <RestoreScene
+          key={activeMemory.id}
           memory={activeMemory}
           copy={copy.memory}
           completionLine={activeMemory.completionCopy[state.locale]}

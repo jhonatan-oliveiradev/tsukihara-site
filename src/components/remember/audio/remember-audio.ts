@@ -27,6 +27,12 @@ export const rememberAudioTracks = {
   },
 } as const satisfies Record<string, RememberAudioTrack>;
 
+export const RESTORATION_DUCK_RATIO = 0.12;
+
+export function getRestorationDuckVolume(baseVolume: number) {
+  return Math.min(1, Math.max(0, baseVolume * RESTORATION_DUCK_RATIO));
+}
+
 export function configureAudioElement(audio: HTMLAudioElement, track: RememberAudioTrack) {
   audio.src = track.src;
   audio.loop = track.loop;
