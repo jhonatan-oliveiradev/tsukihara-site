@@ -36,7 +36,8 @@ test("START_NEW_GAME resets progression but preserves locale and mute", () => {
 });
 
 test("pause and archive are orthogonal to narrative progression", () => {
-  let state = rememberReducer(initialRememberState, { type: "OPEN_PAUSE" });
+  let state = { ...initialRememberState, scene: "memory" };
+  state = rememberReducer(state, { type: "OPEN_PAUSE" });
   assert.equal(state.paused, true);
   assert.equal(state.currentStage, "hanamori");
 
