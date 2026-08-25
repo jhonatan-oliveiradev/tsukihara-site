@@ -1,0 +1,57 @@
+.remember-menu-backdrop__image {
+  z-index: 0;
+}
+
+.remember-menu-backdrop__ether {
+  position: absolute;
+  z-index: 1;
+  inset: -4%;
+  opacity: 0.58;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  filter: saturate(0.88) brightness(0.92) contrast(1.08);
+  -webkit-mask-image: radial-gradient(
+    ellipse 76% 72% at 42% 48%,
+    #000 0%,
+    rgb(0 0 0 / 0.94) 38%,
+    rgb(0 0 0 / 0.58) 68%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 76% 72% at 42% 48%,
+    #000 0%,
+    rgb(0 0 0 / 0.94) 38%,
+    rgb(0 0 0 / 0.58) 68%,
+    transparent 100%
+  );
+}
+
+.remember-menu-backdrop__ether > div,
+.remember-menu-backdrop__ether canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.remember-menu-backdrop__veil {
+  z-index: 2;
+}
+
+[data-remember-scene="boot"] .remember-menu-backdrop__ether {
+  opacity: 0.48;
+}
+
+[data-remember-scene="menu"] .remember-menu-backdrop__ether {
+  opacity: 0.62;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .remember-menu-backdrop__ether {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-menu-backdrop__ether {
+    display: none;
+  }
+}
