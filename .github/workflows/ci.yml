@@ -22,14 +22,6 @@ jobs:
         run: npm run test:hero
       - name: REMEMBER regression
         run: npm run test:remember
-      - name: Canonical hotfix formatting diagnostic
-        run: |
-          npx prettier --write \
-            src/components/remember/content/memory-definitions.test.mjs \
-            src/components/remember/system/remember-gamefeel-contract.test.mjs
-          git diff --no-color -- \
-            src/components/remember/content/memory-definitions.test.mjs \
-            src/components/remember/system/remember-gamefeel-contract.test.mjs
       - name: Check formatting
         run: npm run format:check
       - name: Lint
