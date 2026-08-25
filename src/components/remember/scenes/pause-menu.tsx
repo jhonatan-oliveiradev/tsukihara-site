@@ -26,11 +26,6 @@ export function PauseMenu({
     resumeRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onResume();
-        return;
-      }
       if (event.key !== "Tab") return;
 
       const root = rootRef.current;
@@ -54,20 +49,36 @@ export function PauseMenu({
       window.removeEventListener("keydown", onKeyDown);
       previousFocus?.focus();
     };
-  }, [onResume]);
+  }, []);
 
   return (
-    <div ref={rootRef} className="remember-pause" role="dialog" aria-modal="true" aria-labelledby="remember-pause-title">
+    <div
+      ref={rootRef}
+      className="remember-pause"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="remember-pause-title"
+    >
       <div className="remember-pause__veil" aria-hidden="true" />
       <div className="remember-pause__panel">
         <span>{copy.eyebrow}</span>
-        <div className="remember-pause__sigil" aria-hidden="true">月</div>
+        <div className="remember-pause__sigil" aria-hidden="true">
+          月
+        </div>
         <h2 id="remember-pause-title">{copy.title}</h2>
         <nav aria-label={copy.title}>
-          <button ref={resumeRef} type="button" onClick={onResume}>{copy.resume}</button>
-          <button type="button" onClick={onRestartMemory}>{copy.restart}</button>
-          <button type="button" onClick={onOpenArchive}>{copy.archive}</button>
-          <button type="button" onClick={onReturnTitle}>{copy.returnTitle}</button>
+          <button ref={resumeRef} type="button" onClick={onResume}>
+            {copy.resume}
+          </button>
+          <button type="button" onClick={onRestartMemory}>
+            {copy.restart}
+          </button>
+          <button type="button" onClick={onOpenArchive}>
+            {copy.archive}
+          </button>
+          <button type="button" onClick={onReturnTitle}>
+            {copy.returnTitle}
+          </button>
         </nav>
       </div>
     </div>
