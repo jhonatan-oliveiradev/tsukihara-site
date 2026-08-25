@@ -1,0 +1,113 @@
+.remember-memory-intro {
+  position: absolute;
+  z-index: 64;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 47%, rgb(119 66 67 / 0.11), transparent 28%),
+    radial-gradient(circle at 50% 50%, rgb(230 210 177 / 0.025), transparent 42%),
+    linear-gradient(180deg, rgb(4 4 6 / 0.995), rgb(2 2 4 / 0.99));
+  pointer-events: auto;
+}
+
+.remember-memory-intro::before {
+  content: "";
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgb(224 199 157 / 0.08) 32%,
+    rgb(224 199 157 / 0.16) 50%,
+    rgb(224 199 157 / 0.08) 68%,
+    transparent
+  );
+  transform: translateX(-50%);
+}
+
+.remember-memory-intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 35%, rgb(0 0 0 / 0.48) 100%);
+  pointer-events: none;
+}
+
+.remember-memory-intro.is-finished {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.remember-memory-intro__copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  width: min(90vw, 68rem);
+  text-align: center;
+  text-shadow: 0 1.2rem 4rem rgb(0 0 0 / 0.7);
+}
+
+.remember-memory-intro__copy > span {
+  color: rgb(221 198 162 / 0.72);
+  font-size: clamp(0.5rem, 0.7vw, 0.68rem);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.remember-memory-intro__copy > strong {
+  margin-top: clamp(0.75rem, 1.8vh, 1.35rem);
+  color: rgb(243 234 221 / 0.98);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(3.9rem, 8vw, 8.8rem);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.remember-memory-intro__copy > small {
+  margin-top: clamp(1.05rem, 2.2vh, 1.8rem);
+  color: rgb(222 196 153 / 0.5);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+}
+
+.remember-restore[data-memory-intro-state="playing"] .remember-memory__surface {
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .remember-memory-intro__copy {
+    width: min(88vw, 34rem);
+  }
+
+  .remember-memory-intro__copy > span {
+    font-size: 0.48rem;
+  }
+
+  .remember-memory-intro__copy > strong {
+    font-size: clamp(3rem, 16vw, 5.2rem);
+  }
+
+  .remember-memory-intro__copy > small {
+    font-size: clamp(1rem, 5vw, 1.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-memory-intro__copy > span,
+  .remember-memory-intro__copy > strong,
+  .remember-memory-intro__copy > small {
+    filter: none !important;
+    transform: none !important;
+  }
+}
