@@ -76,11 +76,7 @@ export function RememberExperience() {
   );
 
   return (
-    <RememberShell
-      muted={state.muted}
-      onExit={handleExit}
-      onToggleMute={handleToggleMute}
-    >
+    <RememberShell muted={state.muted} onExit={handleExit} onToggleMute={handleToggleMute}>
       {state.scene === "entry" && (
         <EntryScene reducedMotion={reducedMotion} onEnter={handleEnter} />
       )}
