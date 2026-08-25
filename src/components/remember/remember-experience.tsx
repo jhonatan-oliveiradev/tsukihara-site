@@ -212,7 +212,12 @@ export function RememberExperience() {
 
         {state.scene === "boot" && <BootScene copy={copy.boot} onUnlock={handleUnlockMenu} />}
         {state.scene === "menu" && (
-          <MenuScene copy={copy.menu} locale={state.locale} onBegin={handleBegin} />
+          <MenuScene
+            copy={copy.menu}
+            locale={state.locale}
+            revealReady={transitionState === "idle"}
+            onBegin={handleBegin}
+          />
         )}
 
         {state.scene === "memory" && (
