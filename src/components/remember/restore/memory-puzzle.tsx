@@ -141,6 +141,14 @@ export function MemoryPuzzle({
             fill
             sizes="(max-width: 900px) 94vw, 76vw"
             className="remember-memory__distortion"
+            style={{
+              zIndex: 5,
+              objectFit: "cover",
+              opacity: reducedMotion ? 0.28 : 0.42,
+              mixBlendMode: "screen",
+              filter: "contrast(1.08) saturate(0.82)",
+              pointerEvents: "none",
+            }}
             aria-hidden="true"
           />
         ) : null}
