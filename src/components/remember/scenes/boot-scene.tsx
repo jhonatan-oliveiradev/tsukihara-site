@@ -55,7 +55,9 @@ export function BootScene({ copy, onUnlock }: BootSceneProps) {
         <span id="remember-boot-title" className="remember-boot__title">
           REMEMBER
         </span>
-        <span className="remember-boot__prompt">{unlocking ? "…" : copy.prompt}</span>
+        <span className="remember-boot__prompt">
+          {unlocking ? "…" : copy.prompt}
+        </span>
         <small>{copy.headphones}</small>
       </button>
     </section>
