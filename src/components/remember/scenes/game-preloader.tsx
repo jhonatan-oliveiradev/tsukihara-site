@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import type { PreloadProgress } from "@/components/remember/system/remember-asset-manifest";
 
@@ -27,7 +27,10 @@ export function GamePreloader({
 }: GamePreloaderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const finishRef = useRef(onFinished);
-  finishRef.current = onFinished;
+
+  useEffect(() => {
+    finishRef.current = onFinished;
+  }, [onFinished]);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
