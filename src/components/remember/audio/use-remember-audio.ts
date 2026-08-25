@@ -17,6 +17,8 @@ export type RememberAudioController = {
   startMemory: () => Promise<void>;
   duckMemoryForRestoration: () => Promise<void>;
   restoreMemoryLevel: () => Promise<void>;
+  pauseGameplay: () => void;
+  resumeGameplay: () => Promise<void>;
   playPieceComplete: () => void;
   playKintsugi: () => void;
   playRestored: () => void;
@@ -39,6 +41,7 @@ export function useRememberAudio(): RememberAudioController {
   const mutedRef = useRef(false);
   const unlockedRef = useRef(false);
   const fadeAbortRef = useRef<AbortController | null>(null);
+  const pausedPhaseVolumeRef = useRef<number>(rememberAudioTracks.phase.volume);
 
   const getTrack = useCallback((key: TrackKey) => {
     const existing = tracksRef.current[key];
@@ -193,6 +196,22 @@ export function useRememberAudio(): RememberAudioController {
           1600,
           controller.signal,
         );
+      },
+      pauseGameplay: () => {
+        abortFades();
+        const phase = tracksRef.current.phase;
+        if (phase) {
+          pausedPhaseVolumeRef.current = phase.volume;
+          phase.pause();
+        }
+        transientsRef.current.forEach((audio) => audio.pause());
+      },
+      resumeGameplay: async () => {
+        const phase = tracksRef.current.phase;
+        if (!phase) return;
+        phase.volume = pausedPhaseVolumeRef.current;
+        phase.muted = mutedRef.current;
+        if (phase.paused) await phase.play().catch(() => undefined);
       },
       playPieceComplete: playKintsugiTransient,
       playKintsugi: playKintsugiTransient,

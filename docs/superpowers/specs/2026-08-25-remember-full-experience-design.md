@@ -1,746 +1,1071 @@
-# TSUKIHARA — REMEMBER Full Experience Design
+# TSUKIHARA — REMEMBER Full Prologue Experience Design
 
 ## Status
 
-Approved direction: hybrid ritualistic presentation + premium game UI.
+Authoritative v2 design for the REMEMBER expansion.
 
-Implementation branch: `feat/remember-full-experience`, created from `main` commit `e7642d98881fdaf37947686fea59aee6421de150`.
+Baseline: `main@fda8cd44f48182abc71ff12c6008fdb30ea9358d`.
 
-This design expands the already-functional `/remember` vertical slice. It must preserve the current Hanamori drag/snap interaction and build outward from it rather than replace it.
+This document supersedes the previous three-memory-only design and its old implementation assumptions. REMEMBER is now a complete interactive prologue with persistence, archive, pause, five memories, two interludes, AKR-001 discovery, Akari reveal, epilogue and credits.
 
----
-
-## Product Goal
-
-REMEMBER should feel like a small downloadable game embedded inside the Tsukihara site rather than a promotional web interaction.
-
-The experience must retain Tsukihara's ritualistic, editorial and Kintsugi-driven identity while adding enough game-language to communicate state, progression, objectives, completion and chapter transitions.
-
-The official player-facing flow is:
-
-`Menu → Hanamori → Mizukyo → Kurogane → Akari Reveal → Eclipse Epilogue → Credits / CTA`
-
-A technical `boot` state precedes the menu only to satisfy browser audio-unlock requirements.
-
-The core restoration loop for each memory is:
-
-`Broken → last shard → Kintsugi → particles → pulse → completion burst → Restored → residual scar`
-
-The restoration should communicate: completing the puzzle did not merely solve a UI; the player brought something back into the world.
+This remains an expansion of the existing `/remember` codebase, not a rewrite. Hanamori, Mizukyo, Kurogane, drag/snap, restoration VFX, audio behavior, keyboard parity and reduced-motion behavior are existing assets to preserve.
 
 ---
 
-## Existing Baseline To Preserve
+## 1. Product Goal
 
-The current implementation already provides:
+REMEMBER should feel like a small standalone game embedded inside the Tsukihara site rather than a promotional web interaction.
 
-- isolated fullscreen `/remember` route;
-- reducer-controlled experience state;
-- Hanamori puzzle with five irregular draggable fragments;
-- Pointer Events + pointer capture;
-- keyboard restoration parity;
-- magnetic snap;
-- per-fragment Kintsugi seam feedback;
-- dedicated menu/gameplay/Kintsugi/harp audio controller;
-- reduced-motion handling;
-- scroll locking and route cleanup;
-- focused Node regression tests.
+Target playtime: roughly 10–20 minutes.
 
-This expansion should generalize that implementation into a reusable memory system rather than creating three separate bespoke puzzle components.
+Narrative progression should create three questions in order:
 
----
+1. Why am I restoring these memories?
+2. Who am I following?
+3. Akari.
 
-## Confirmed Asset Inventory
+The final feeling is intentionally incomplete: one thread of memory returned, but Tsukihara is still disappearing.
 
-### Images
+Core closing idea:
 
-Base path: `/remember-experience/assets/images/`
+> Uma memória voltou. Tsukihara ainda precisa ser lembrada.
 
-- `remember-menu-background.png`
-- `remember-mizukyo-broken.png`
-- `remember-mizukyo-restored.png`
-- `remember-kurogane-broken.png`
-- `remember-kurogane-restored.png`
-- `remember-completion-burst.png`
-- `mr01-kintsugi-crack-overlay.png`
-- `mr02-memory-particles.png`
-- `mr03-memory-pulse-ring.png`
-- `remember-akari-reveal.png`
+### Non-negotiable principles
 
-### Videos
-
-Base path: `/remember-experience/assets/videos/`
-
-- `remember-epilogue-eclipse.mp4`
-- `remember-credits-loop.mp4`
-- `remember-mobile-sakura-transition.mp4`
-
-### Audio
-
-Existing base path: `/remember-experience/sound-effects/`
-
-- menu / credits theme
-- phase gameplay theme
-- Kintsugi SFX
-- harp SFX
-
-### Known Asset Gap
-
-The requested `mr06-restored-scar-overlay.png` is not present in the current `main` asset tree.
-
-The code must support an optional `scarOverlay` asset. Until that file is added, the final scar state will be derived from the memory's Kintsugi crack paths / `mr01` visual texture at very low opacity. No fake file path should be referenced.
+- Expand, do not rewrite.
+- Preserve the original three memories and restoration ritual.
+- No abrupt scene swaps.
+- No generic SaaS modals or card dashboards.
+- Difficulty comes from observation and memory mechanics, not punishment.
+- Progress is local, resilient and versioned.
+- No fake loading percentages or fake audio assets.
+- Do not keep all scenes mounted simultaneously.
+- Touch, keyboard and reduced-motion paths are first-class.
 
 ---
 
-# 1. Experience State Model
+## 2. Official Experience Flow
 
-The existing scene model should be simplified into the official game flow rather than keeping unused experimental states.
+```text
+Preloader
+↓
+Boot / first intentional gesture
+↓
+Main Menu
+↓
+Hanamori
+↓
+Mizukyo
+↓
+Interlude I
+↓
+Kurogane
+↓
+Yumegakure
+↓
+Gekkai
+↓
+Interlude II
+↓
+AKR-001 discovery
+↓
+Akari Reveal
+↓
+Eclipse Epilogue
+↓
+Credits / CTA
+```
+
+`Memory Archive` is accessible from title/pause according to progression rules.
+
+`Pause` is orthogonal UI state and never becomes a narrative stage.
+
+After `gameCompleted === true`, the Archive becomes a replay selector for the five memories.
+
+---
+
+## 3. Architecture
+
+Keep the existing `audio`, `content`, `restore`, `scenes`, `state` and `system` foundations.
+
+Target responsibility boundaries:
+
+```text
+RememberExperience
+├── RememberState / reducer
+├── RememberSaveStore
+├── RememberAssetPreloader
+├── SceneTransitionDirector
+├── RememberShell
+├── RememberMenu
+├── PauseMenu
+├── MemoryArchive
+├── StageRouter
+│   ├── StandardMemoryStage
+│   ├── FalseMemoryStage
+│   ├── OverlappingMemoryStage
+│   ├── InterludeStage
+│   ├── AkariReveal
+│   ├── Epilogue
+│   └── Credits
+└── RememberAudio
+```
+
+`RememberExperience` remains the composition root but must not become the implementation site for every mechanic.
+
+The existing `MemoryPuzzle` and `MemoryRestorationEffect` remain the shared reconstruction engine. Yumegakure and Gekkai extend that engine through mechanic-specific state/render policies instead of creating unrelated pointer systems.
+
+### State domains
+
+Keep four concerns explicit:
+
+- **progression** — current narrative stage and completed stages;
+- **session** — locale, muted, pause/archive visibility and transition lock;
+- **puzzle runtime** — restored fragments, restoration phase and mechanic runtime;
+- **persistent save** — durable stage/memory progress and results.
+
+Never persist pointer coordinates, GSAP progress, DOM geometry or animation refs.
+
+---
+
+## 4. Explicit Progression Model
 
 ```ts
-type RememberScene =
-  | "boot"
-  | "menu"
-  | "memory"
+type RememberStageId =
+  | "hanamori"
+  | "mizukyo"
+  | "interlude-01"
+  | "kurogane"
+  | "yumegakure"
+  | "gekkai"
+  | "interlude-02"
   | "akari-reveal"
   | "epilogue"
   | "credits";
 ```
 
-The game state becomes progression-centric:
+Title/menu and Boot are not stages. Pause is not a stage.
+
+Before game completion, progression follows this ordered graph only. No direct stage skip is exposed to the player.
+
+Narrative advancement is reducer/event driven. `setTimeout` may schedule visual beats but cannot be the source of truth for stage progression.
+
+---
+
+## 5. Persistence
+
+Save key:
+
+```text
+tsukihara:remember:save:v1
+```
+
+The project does not currently use Zod, so v1 uses a small explicit runtime parser instead of adding a validation dependency only for this feature.
+
+### Save model
 
 ```ts
-type RememberState = {
-  scene: RememberScene;
-  locale: "pt" | "en";
-  muted: boolean;
-  activeMemoryIndex: number;
-  completedMemoryIds: MemoryId[];
+type MemoryProgress = {
+  completed: boolean;
+  completedAt?: string;
   restoredFragmentIds: string[];
-  restorationPhase: RestorationPhase;
+  completionTime?: number;
+  mistakes: number;
+  falseFragments: number;
+  integrity?: number;
+  resonance?: "S" | "A" | "B" | "C";
+};
+
+type RememberSaveV1 = {
+  version: 1;
+  startedAt: string;
+  updatedAt: string;
+  currentStage: RememberStageId;
+  completedStages: RememberStageId[];
+  memories: Partial<Record<MemoryId, MemoryProgress>>;
+  discoveredAkariRecord: boolean;
+  gameCompleted: boolean;
 };
 ```
 
-`activeMemoryIndex` is the single source of truth for Hanamori → Mizukyo → Kurogane.
+`archiveProgress` is **not persisted**. It is derived from completed memory records: each of the five memories contributes exactly 20%.
 
-The player remains in the `memory` scene during the complete restoration ritual; `restorationPhase` owns `last-piece → kintsugi → pulse → restoring → revealing → restored`. This avoids a redundant scene transition during the most sensitive animation.
-
-No scene progression should depend on scattered `setTimeout` calls.
-
----
-
-# 2. Boot + Menu
-
-## Why a Boot State Exists
-
-The current menu music does not have a meaningful audible menu phase because browser audio is only unlocked when the current `ENTER THE MEMORY` action is used, immediately before the phase-track crossfade.
-
-A dedicated first-gesture state fixes that browser-autoplay constraint.
-
-## Boot
-
-Visual:
-
-- fullscreen `remember-menu-background.png`;
-- very restrained water/ripple distortion derived from the existing Nine Realms ripple implementation;
-- no strong cursor wake; this is atmospheric, not a water demo;
-- title mark / lunar sigil;
-- `PRESS ANYWHERE TO REMEMBER` / `CLIQUE PARA LEMBRAR`.
-
-The first pointer/key gesture:
-
-1. unlocks audio;
-2. starts the menu theme at the configured menu gain;
-3. transitions to `menu` without starting gameplay.
-
-## Menu
-
-Premium game-like but restrained:
-
-- `TSUKIHARA` small brand line;
-- `REMEMBER` primary title;
-- one primary action: `BEGIN` / `INICIAR`;
-- `PT / EN` control;
-- sound control using the same animated bars/icon language as the landing page;
-- `EXIT` as secondary action.
-
-No full settings screen, save slots or fake Continue system in this version.
-
-When BEGIN is activated, the menu theme crossfades into the gameplay phase theme and memory 01 begins.
-
----
-
-# 3. Localization
-
-REMEMBER becomes fully bilingual.
+`MemoryId` becomes:
 
 ```ts
-type RememberLocale = "pt" | "en";
+type MemoryId =
+  | "hanamori"
+  | "mizukyo"
+  | "kurogane"
+  | "yumegakure"
+  | "gekkai";
 ```
 
-All player-visible strings move to locale-aware content:
+### Safe load pipeline
 
-- boot prompt;
-- menu labels;
-- controls;
-- HUD;
-- memory titles / instructions;
-- `MEMORY RESTORED` confirmation;
-- Akari reveal text;
-- epilogue line;
-- credits CTA.
+```text
+localStorage string
+→ guarded JSON.parse
+→ inspect version
+→ migrate supported version
+→ validate normalized object
+→ hydrate or return null
+```
 
-Default:
+Validation checks recognized ids, enum values, arrays, finite/non-negative numeric values and known memory keys.
 
-- use persisted REMEMBER locale when available;
-- otherwise default to `pt` to match the site's current primary locale.
+Invalid/corrupted saves never throw into React and are ignored safely.
 
-Changing language must not reset puzzle progress.
+### Migration boundary
+
+Expose `migrateRememberSave(raw)` even though only version 1 exists. Future versions must not require callers to understand migration details.
+
+### Autosave events
+
+Write only after meaningful events:
+
+- new game creation;
+- stage entry;
+- successful fragment restoration when deterministic resume is supported;
+- puzzle completion;
+- interlude completion;
+- result/resonance calculation;
+- AKR-001 discovery;
+- epilogue entry;
+- game completion;
+- restart-memory reset;
+- return to title.
+
+Never write on pointer move, animation frame, hover or every timer tick.
+
+### Resume
+
+`CONTINUE` resumes `currentStage`.
+
+For standard memories, known `restoredFragmentIds` are restored to snapped state and unresolved pieces are scattered again. Free-floating pixel positions are never serialized.
+
+Yumegakure/Gekkai may initially restart their current puzzle if partial mechanic serialization cannot be made deterministic without complicating the engine. Prior completed stages/results remain preserved.
 
 ---
 
-# 4. Game Shell / HUD
+## 6. Title Menu States
 
-During active memories, the shell should communicate game state without looking like a generic HUD.
+### No save
 
-Desktop layout:
+Primary CTA:
 
-- top-left: `MEMORY 01 / HANAMORI`;
-- top-right: language, sound, exit;
-- lower/side micro-HUD: `FRAGMENTS 03 / 05`;
-- optional thin lunar progress line for the three memories.
+- PT: `NOVA MEMÓRIA`
+- EN: `NEW MEMORY`
 
-The HUD should fade/recede during the restoration climax and Akari reveal.
+### Incomplete save
 
-On mobile, controls collapse into a compact top strip with safe-area padding.
+Primary CTA:
 
-The mute/unmute icon should reuse the same three-bar visual language as the landing page instead of the current REMEMBER-specific signal treatment.
+- PT: `CONTINUAR`
+- EN: `CONTINUE`
+
+Below it, show actual macro progress such as:
+
+```text
+MEMORY 03 / 05
+KUROGANE
+60% RESTORED
+```
+
+The percentage is derived from completed memories plus deterministic fragment completion in the current memory; never hard-code it.
+
+`NEW GAME` is secondary.
+
+Selecting New Game while a save exists opens an in-world confirmation:
+
+```text
+BEGIN AGAIN?
+Your restored memories will be forgotten.
+```
+
+Only explicit confirmation replaces the save.
+
+### Completed game
+
+Primary route becomes `REVISIT MEMORIES` / localized equivalent and opens Archive in replay mode.
+
+`NEW GAME` remains available with destructive confirmation.
+
+Do not show Continue once the narrative is complete.
 
 ---
 
-# 5. Data-Driven Memory System
+## 7. Gameified Preloader + Boot
 
-Introduce one memory definition model.
+The route starts with a real asset preloader.
 
-```ts
-type MemoryDefinition = {
-  id: "hanamori" | "mizukyo" | "kurogane";
-  index: 1 | 2 | 3;
-  title: string;
-  titleJp: string;
-  brokenAsset: string;
-  restoredAsset: string;
-  fragments: MemoryFragmentDefinition[];
-  crackPaths: CrackPathDefinition[];
-  snapRatio: number;
-  completionCopy: LocalizedCopy;
-  palette: MemoryPalette;
-};
-```
+Visual language:
 
-A single generic `MemoryPuzzle` consumes the definition.
+- lunar black field;
+- central `月` / sigil;
+- restrained Kintsugi fissures;
+- `RECOVERING MEMORIES` / localized equivalent;
+- truthful loaded/required state expressed through sigil/fragments rather than an invented percentage.
 
-Hanamori's existing geometry is migrated first and must retain the current validated behavior.
+Initial preload includes only menu/Boot, Hanamori and shared restoration assets required to start play.
 
-## Difficulty Curve
+Later stages load incrementally.
 
-### Memory 01 — Hanamori
+Preloader resolves into Boot without a hard cut.
 
-Tutorial memory.
+Boot exists for the first intentional audio-unlock gesture. The prompt uses a subtle `PRESS ANY BUTTON`-style opacity breathe.
 
-- 5 fragments;
-- widest magnetic threshold;
-- modest initial displacement;
-- current interaction language preserved.
-
-### Memory 02 — Mizukyo
-
-Intermediate.
-
-- 7 fragments;
-- slightly smaller snap threshold;
-- more organic fragment silhouettes;
-- wider starting dispersion;
-- water/reflection composition makes visual matching less obvious.
-
-### Memory 03 — Kurogane
-
-Hardest memory in this minigame.
-
-- 9 fragments;
-- smallest but still forgiving threshold;
-- harder geometric boundaries;
-- wider initial offsets;
-- stronger visual overlap/ambiguity;
-- no timers and no punitive resets.
-
-Difficulty must come from visual reconstruction and spatial reading, not frustration.
-
-Keyboard users retain a deterministic restore action for the currently focused fragment.
+Accepted Boot input: pointer/touch, Enter, Space and non-modifier printable keys.
 
 ---
 
-# 6. Memory Restoration Effect
+## 8. SceneTransitionDirector
 
-The completion sequence must be separated from the puzzle itself as a reusable `MemoryRestorationEffect`.
-
-It receives state and memory-specific geometry/assets rather than owning puzzle progress.
-
-Suggested interface:
-
-```ts
-type MemoryRestorationEffectProps = {
-  active: boolean;
-  memory: MemoryDefinition;
-  originPoint: { x: number; y: number };
-  reducedMotion: boolean;
-  onPhaseChange?: (phase: RestorationPhase) => void;
-  onComplete: () => void;
-};
-```
-
-## Restoration State Machine
+Every major screen/stage change uses one director.
 
 ```text
-idle
-↓
-last-piece
-↓
-kintsugi
-↓
-pulse
-↓
-restoring
-↓
-revealing
-↓
-restored
+current scene exit
+→ transition veil fully covers stage
+→ destination is committed
+→ destination assets confirmed
+→ destination enters
+→ interaction unlocks
 ```
 
-A single GSAP timeline owns visual timing and is cancelable on unmount/restart.
+Duplicate transition requests while locked are rejected, not queued.
 
-Reducer/application state stores the high-level phase. The component owns only animation implementation details.
+If destination assets are not ready, the fully covered veil becomes a small ritual loading state. Never expose a blank shell.
 
-## Target Timing
+Full-motion target:
 
-Approximate desktop timing, based on the supplied VFX direction:
+- exit: 350–500ms;
+- covered handoff: 100–300ms when ready;
+- enter: 600–800ms.
 
-```text
-0.00  last shard snap
-0.08  micro-impact / settle
-0.15  Kintsugi propagation begins
-0.80  cracks fully illuminated
-0.90  memory pulse
-1.00  image presence begins restoring
-1.35  fragments consolidate
-1.50  MEMORY / XX
-1.65  RESTORED
-1.90  memory-specific reveal copy
-2.60  residual atmosphere declines
-2.80  stable restored state
-```
+Reduced motion uses short opacity-only handoffs with identical interaction locking.
 
-This sequence is intentionally a microclimax, not a fullscreen explosion.
-
-## VFX Asset Roles
-
-### `mr02-memory-particles.png`
-
-- low-opacity dormant dust while a puzzle is incomplete;
-- converges visually toward the crack network when the last shard snaps;
-- reduced density on mobile.
-
-### Crack network
-
-Per-memory SVG `crackPaths` remain the geometrically authoritative seams.
-
-`mr01-kintsugi-crack-overlay.png` supplies organic crack texture / glow character within or above that network. It should not replace exact per-memory path alignment.
-
-Propagation must begin near the final shard origin and progress through the network rather than enabling every crack simultaneously.
-
-### `mr03-memory-pulse-ring.png`
-
-- one thin expanding pulse around ~0.9s;
-- small radial refraction of the memory stage for ~300–400ms;
-- no glitch language.
-
-### `remember-completion-burst.png`
-
-- peak reward layer;
-- short opacity/scale bloom;
-- never a white fullscreen flash.
-
-### Restored image
-
-During pulse/restoration:
+Memory intro format:
 
 ```text
-saturate(.55) brightness(.75) blur(2px)
-→
-saturate(1) brightness(1) blur(0)
-```
-
-Fragment depth/rotation is resolved and the continuous restored image replaces the broken composition.
-
-### Residual scar
-
-After reconstruction, thin Kintsugi scars remain for roughly 700–1200ms and then recede.
-
-If `mr06-restored-scar-overlay.png` becomes available it is used here. Until then the crack network / mr01 texture provides the residual scar at restrained opacity.
-
-## Completion Copy
-
-Not a modal.
-
-The copy grows from the restored composition itself:
-
-```text
-MEMORY / 01
-RESTORED
+MEMÓRIA 01
 HANAMORI
-Someone still remembers this place.
+花守
 ```
 
-For later memories, realm-specific copy is used. `AKARI` is reserved for the final reveal after all three memories, rather than being repeated after every realm.
-
-The next-memory action is disabled only during the first ~1.5s of the climax and becomes available once the restoration is visually understandable.
+Intro text resolves, holds, exits, and only then unlocks the puzzle.
 
 ---
 
-# 7. Memory-to-Memory Flow
+## 9. Main Menu Gamefeel
 
-After the restoration effect reaches stable state:
+The main information block is centered.
 
-- reveal a restrained `CONTINUE` / `CONTINUAR` action;
-- transition to the next memory with a short dark/lunar handoff;
-- clear only per-memory fragment state;
-- preserve locale, muted state and completed memory history.
+Primary title treatment:
 
-Desktop transitions are generated with DOM/SVG/GSAP; no new video is needed between each desktop memory.
+```text
+記憶
+↓
+REMEMBER
+```
 
-On mobile, `remember-mobile-sakura-transition.mp4` may replace/enrich this transition, but only when motion is allowed and data-saving is not requested.
+Reuse shared `JpRevealText` for the Japanese → final-language effect.
 
-After Kurogane completes, CONTINUE advances to `akari-reveal`.
+Motion hierarchy:
+
+- idle prompts breathe in opacity;
+- primary CTA floats only 2–4px on Y over a slow loop;
+- sigils/glow breathe more slowly;
+- hover/focus feedback is immediate;
+- event motion is stronger than idle motion.
+
+Do not animate every label.
+
+The sound control uses the shared three-bar component already aligned with the landing page.
 
 ---
 
-# 8. Akari Reveal
+## 10. Pause
+
+`ESC` opens Pause during puzzle memories and both interactive interludes. Touch/pointer has a discrete Pause control.
+
+```ts
+paused: boolean
+```
+
+Opening Pause never changes `currentStage`.
+
+While paused:
+
+- drag/snap is disabled;
+- memory completion timer stops accumulating;
+- Gekkai active/cooldown timers stop;
+- gameplay-critical timelines pause safely;
+- audio is heavily ducked/paused through the controller;
+- decorative background motion may freeze or continue only at a negligible rate.
+
+Menu:
+
+```text
+PAUSED
+
+CONTINUE
+MEMORY ARCHIVE
+SETTINGS
+RESTART MEMORY
+RETURN TO TITLE
+```
+
+`SETTINGS` v1 contains only language and sound. Reduced-motion continues to respect the platform preference rather than introducing a second conflicting motion preference.
+
+`RESTART MEMORY` resets only the active memory after confirmation.
+
+`RETURN TO TITLE` autosaves first.
+
+Akari Reveal, Epilogue and Credits use their own continue/skip affordances instead of gameplay Pause.
+
+---
+
+## 11. Memory Archive
+
+Archive is a ritual record interface, not a generic card grid.
+
+Assets:
+
+- `archive/remember-memory-archive-background.png`
+- `archive/remember-memory-archive-sigil.png`
+- `archive/remember-akr001-signature.png`
+
+Records:
+
+```text
+01 HANAMORI
+02 MIZUKYO
+03 KUROGANE
+04 YUMEGAKURE
+05 GEKKAI
+```
+
+Status derivation:
+
+- `RESTORED` — memory completed;
+- `UNSTABLE` — current memory has started but is incomplete;
+- `UNKNOWN` — next memory is narratively unlocked but has not started;
+- `LOCKED` — not yet reachable in progression.
+
+The dominant progress element is the archive sigil. Each restored memory illuminates exactly one fifth.
+
+Before Gekkai completion, Archive may imply a latent signature but cannot show `AKR-001`.
+
+Only Interlude II sets `discoveredAkariRecord = true`. After that, AKR-001 remains visible in Archive.
+
+Before game completion, Archive is read-only for progression. After completion, every restored memory becomes a replay entry.
+
+---
+
+## 12. Shared Memory Definition
+
+Extend the existing data-driven memory model.
+
+```ts
+type MemoryMechanic = "standard" | "false-memory" | "overlapping";
+```
+
+All five memory definitions include id, index, mechanic, title/titleJp, viewbox, assets, fragments, seams, snap ratio, `parSeconds`, localized completion copy and palette.
+
+Initial par values for non-punitive resonance calculation:
+
+- Hanamori: 150s;
+- Mizukyo: 210s;
+- Kurogane: 270s;
+- Yumegakure: 360s;
+- Gekkai: 420s.
+
+These values affect result grade only and never block progression.
+
+---
+
+## 13. Scatter Difficulty
+
+Replace near-destination initial placements with seeded scatter.
+
+Rules:
+
+- no piece starts close enough to look pre-solved;
+- pieces use peripheral zones;
+- all pieces remain reachable and visible;
+- initial overlap is limited;
+- HUD/control safe zones are excluded;
+- desktop uses all four edges where practical;
+- mobile uses dedicated safe scatter zones.
+
+Difficulty:
+
+- Hanamori: moderate scatter, 8–15° visual rotation;
+- Mizukyo: wider scatter, 12–20°;
+- Kurogane: high scatter, 16–28°;
+- Yumegakure/Gekkai rely primarily on their mechanics rather than arbitrary extra displacement.
+
+The seed stays stable during one active puzzle session. Rerenders never teleport pieces.
+
+Restart Memory creates a new valid scatter seed.
+
+---
+
+## 14. Ghost Seams vs Kintsugi
+
+Puzzle guidance and restoration payoff are distinct systems.
+
+### Ghost seams
+
+Low-opacity structural scars during play:
+
+- Hanamori: roughly 10–15% opacity;
+- Mizukyo: weaker;
+- Kurogane: mostly revealed by drag/idle guidance.
+
+Dragging a piece may make only its related ghost seam breathe subtly.
+
+Ghost seams are not bright gold and never look restored.
+
+### Kintsugi
+
+The existing bright Kintsugi network remains exclusive to the valid final restoration ritual.
+
+---
+
+## 15. Hanamori — Tutorial / Standard
+
+Preserve five-piece identity and current drag/snap behavior.
+
+After the cinematic chapter intro:
+
+```text
+RECONSTRUA A MEMÓRIA
+Arraste os fragmentos e devolva-os ao lugar ao qual pertencem.
+```
+
+Teaching behavior:
+
+- one piece gets a restrained microglow;
+- one matching ghost seam breathes once;
+- while dragging, guidance becomes `Encontre a cicatriz à qual este fragmento pertence.`;
+- first snap receives audio + micro-pulse + `FRAGMENTO RESTAURADO 01 / 05`;
+- onboarding disappears after that first snap and does not return in the run.
+
+Idle hint:
+
+- first after 5s without meaningful input;
+- maximum two repetitions;
+- at least 8s between repeats;
+- hint is a reversible 2–4px piece drift, never an arrow/hand.
+
+Keyboard parity remains deterministic.
+
+---
+
+## 16. Mizukyo — Reflection / Standard
+
+Preserve the existing seven-piece memory.
+
+Identity: `REFLECTION`.
+
+Use wider scatter and water/reflection ambiguity. A mirrored visual cue may be rendered as presentation only; it does not create another solver or another input model.
+
+---
+
+## 17. Interlude I — Unknown Signature
 
 Asset:
 
-`/remember-experience/assets/images/remember-akari-reveal.png`
+`interludes/remember-interlude-01-unknown-memory.png`
 
-This is the primary narrative payoff of the puzzle arc.
+Use exactly four focusable memory traces/hotspots.
 
-Composition:
+Pointer hover/tap and keyboard focus reveal the same content.
 
-- HUD fades away;
-- background darkens into a lunar void;
-- Akari enters with controlled scale/opacity/depth, not a sudden image swap;
-- fine Kintsugi light traces connect the restored memories to her reveal;
-- title/identity copy appears in PT/EN;
-- menu/phase soundtrack transitions into a more spacious final mix using the available audio layers rather than adding generic SFX.
+Target duration: 30–60 seconds.
 
-No interaction is required during the first reveal beat. A continue affordance appears after the presentation settles.
+Final copy:
+
+```text
+UNKNOWN MEMORY SIGNATURE
+
+Você não está restaurando lugares.
+
+Está seguindo alguém.
+```
+
+Do not name Akari.
+
+Completing the fourth trace unlocks the final copy, then Continue advances to Kurogane and autosaves.
 
 ---
 
-# 9. Eclipse Epilogue
+## 18. Kurogane — Structure / Standard
+
+Preserve the existing nine-piece memory.
+
+Identity: `STRUCTURE`.
+
+Use the hardest standard-memory scatter profile. Snap remains forgiving enough to avoid pixel hunting.
+
+Do not add a bespoke rotation control in v1. Existing visual rotation plus shared snap behavior is sufficient.
+
+---
+
+## 19. Yumegakure — False Memory
+
+Assets:
+
+- `yumegakure/remember-yumegakure-broken.png`
+- `yumegakure/remember-yumegakure-restored.png`
+- `yumegakure/remember-yumegakure-false-fragment-01.png`
+- `yumegakure/remember-yumegakure-false-fragment-02.png`
+- `yumegakure/remember-yumegakure-distortion-overlay.png`
+
+Identity: `FALSE MEMORY`.
+
+The puzzle has exactly **nine visible fragments: seven true + two false**.
+
+False-memory fragments extend the shared fragment definition with truth/source metadata.
+
+Both false fragments are plausible and have designated compatible target regions. They can snap and initially appear accepted.
+
+A composition with any stabilized false fragment cannot start Kintsugi. Instead it enters `UNSTABLE` feedback:
+
+- distortion overlay rises;
+- lighting/presence becomes subtly wrong;
+- no failure modal or reset;
+- the player is taught that an accepted fragment may be false.
+
+Yumegakure allows snapped pieces to be removed. Reversibility is implemented through the shared fragment-state API and is enabled only for this mechanic.
+
+`falseFragments` increments only the first time each false fragment is stabilized during the run, so the maximum false-fragment penalty is 2.
+
+Completion requires all seven true fragments in valid targets and zero false fragments occupying targets.
+
+Then the normal Kintsugi ritual runs.
+
+---
+
+## 20. Gekkai — Overlapping Realities
+
+Assets:
+
+- `gekkai/remember-gekkai-state-a.png`
+- `gekkai/remember-gekkai-state-b.png`
+- `gekkai/remember-gekkai-restored.png`
+- `gekkai/remember-gekkai-lunar-focus-overlay.png`
+
+Identity: `OVERLAPPING REALITIES`.
+
+Use eight fragments. Each definition declares an authentic state: `a` or `b`.
+
+Outside Lunar Focus, each piece crossfades between State A and B on a staggered slow cycle. Geometry never moves because of the reality oscillation.
+
+A piece can finalize a snap only while its authentic reality is the visible state. Wrong-reality snap attempts softly reject to the previous draggable position and increment `mistakes` once.
+
+### Lunar Focus
+
+- desktop shortcut: Space;
+- touch: explicit button;
+- active: 3s;
+- cooldown: 6s after active window ends.
+
+During Focus:
+
+- each fragment resolves to its authentic state;
+- oscillation freezes;
+- lunar-focus overlay appears;
+- particles slow/freeze;
+- chroma reduces slightly;
+- audio becomes muffled/spacious;
+- drag remains enabled.
+
+Pause freezes active duration and cooldown.
+
+Reduced motion replaces continuous crossfade with slow discrete opacity state changes. Focus still resolves authenticity immediately.
+
+No combat timer, meter grind or action-game subsystem is introduced.
+
+---
+
+## 21. Restoration Result and Resonance
+
+Every puzzle memory keeps the existing completion ritual:
+
+```text
+last valid shard
+→ micro-impact
+→ Kintsugi
+→ particles
+→ pulse
+→ broken-to-restored reveal
+→ burst
+→ residual scar
+→ result
+```
+
+The phase soundtrack ducks heavily when final restoration begins.
+
+Result UI:
+
+```text
+MEMORY INTEGRITY
+96%
+
+RESTORATION TIME
+02:41
+
+FALSE FRAGMENTS
+1
+
+LUNAR RESONANCE
+A
+```
+
+Fields that do not apply are omitted.
+
+Integrity policy:
+
+```text
+integrity = 100
+  - (mistakes × 3)
+  - (falseFragments × 8)
+  - (2 × each completed 30s interval beyond parSeconds)
+```
+
+Clamp 0–100.
+
+```text
+S = 95–100  PERFECT RESONANCE
+A = 85–94   STABLE MEMORY
+B = 70–84   FRAGMENTED RECOVERY
+C = 0–69    UNSTABLE RECOVERY
+```
+
+Any grade advances the story.
+
+---
+
+## 22. Interlude II — Signature Found
+
+Assets:
+
+- `interludes/remember-interlude-02-memory-network.png`
+- `archive/remember-memory-archive-sigil.png`
+- `archive/remember-akr001-signature.png`
+- `fx/remember-signature-found-burst.png`
+
+All five records appear connected by Kintsugi through the archive sigil.
+
+Sequence:
+
+```text
+SIGNATURE RECOVERY 100%
+↓
+MEMORY SIGNATURE FOUND
+↓
+AKR-001
+↓
+ACCESSING RECORD...
+```
+
+This scene alone sets `discoveredAkariRecord = true`.
+
+AKR-001 becomes a persistent Archive identity only after this event.
+
+Continue advances to Akari Reveal after the cinematic settles.
+
+---
+
+## 23. Akari Reveal
 
 Asset:
+
+`remember-akari-reveal.png`
+
+Sequence:
+
+1. dark covered stage;
+2. prior-memory particles converge;
+3. Kintsugi fissure forms;
+4. silhouette/presence emerges;
+5. Akari resolves;
+6. record metadata appears;
+7. name/final line resolves.
+
+Copy:
+
+```text
+MEMORY RECORD
+AKR-001
+
+STATUS
+RESTORED
+
+AKARI
+
+Então você se lembrou.
+```
+
+EN: `So you remembered.`
+
+No input is required during the first reveal beat. Continue appears only after readability is established.
+
+---
+
+## 24. Epilogue and Credits
+
+Epilogue video:
 
 `/remember-experience/assets/videos/remember-epilogue-eclipse.mp4`
 
-The epilogue follows Akari immediately.
+Copy:
 
-Narrative function:
+```text
+Uma memória voltou.
 
-> Memories returned, but Tsukihara is still forgetting.
+Os Nove Reinos ainda estão desaparecendo.
+```
 
-Localized copy should preserve this meaning in PT/EN rather than referring to only one recovered memory.
+The epilogue is not eagerly loaded at Boot. Reduced-motion/Save-Data may use a stable still instead of video playback.
 
-The video:
+The player can continue after a minimum readable interval and is not forced through a long unskippable cinematic.
 
-- plays inline;
-- is treated as visual media, not as the audio master;
-- uses a subtle overlay for localized narrative copy;
-- is not eagerly preloaded on initial `/remember` load.
-
-After the video reaches its endpoint (or the user continues after the minimum readable interval), transition to credits.
-
-Reduced-motion may use the first stable frame / static treatment rather than forcing cinematic motion.
-
----
-
-# 10. Credits / CTA
-
-Asset:
+Credits video:
 
 `/remember-experience/assets/videos/remember-credits-loop.mp4`
 
-Because this file is large, do not preload it at boot. Begin loading only near Akari/Epilogue.
+Final composition:
 
-Desktop:
+```text
+REMEMBER WHAT REMAINS.
 
-- looping video background;
-- dark readability veil;
-- `REMEMBER WHAT REMAINS.` as the final major phrase;
-- primary CTA: `CONTINUE TO TSUKIHARA` / `CONTINUAR PARA TSUKIHARA` → `/`;
-- sound and language controls remain available.
+TSUKIHARA
+ECLIPSE OF THE NINE REALMS
 
-Mobile / Save-Data fallback:
-
-- prefer the static menu background or a lightweight still rather than forcing the ~56MB loop.
-
-The menu/credits theme may return here via crossfade so the same motif bookends the experience.
-
----
-
-# 11. Audio Architecture
-
-The existing `useRememberAudio` remains the base but gains explicit high-level transitions:
-
-```ts
-unlockMenu()
-startMemory()
-playPieceComplete()
-playKintsugi()
-playRestored()
-enterAkariReveal()
-enterCredits()
-setMuted()
-stopAll()
+CONTINUE THE JOURNEY
 ```
 
-## Menu Fix
+Primary CTA returns to the main Tsukihara experience.
 
-Audio is unlocked during Boot's first intentional gesture and the menu theme begins there.
+A Steam Wishlist CTA exists only when a real functional destination exists.
 
-BEGIN no longer performs the first-ever audio unlock; it only crossfades menu → phase.
-
-This fixes the current behavior where the menu track starts immediately before being faded away.
-
-## Completion SFX
-
-- existing Kintsugi effect: shard / crack energy accent;
-- existing harp: restoration / reveal accent;
-- no generic web click sounds.
-
-SFX must be pooled/capped as in the current implementation.
+Entering Credits persists `gameCompleted: true`.
 
 ---
 
-# 12. Visual Language
+## 25. Audio
 
-The hybrid game direction is deliberate:
+Keep `useRememberAudio` as the single controller.
 
-## Ritualistic layer
+Semantic hooks:
 
-- black / bone / lunar gold / vermilion;
-- Japanese inscriptions;
-- Kintsugi seams;
-- restrained particles;
-- cinematic negative space.
+```text
+menu-theme
+memory-start
+piece-snap
+memory-kintsugi
+memory-restored
+archive-update
+lunar-focus
+false-memory
+signature-found
+akari-reveal
+epilogue
+```
 
-## Game layer
+Missing dedicated sound assets result in no-op or reuse of an explicitly suitable existing layer. Do not add generic stock UI sounds.
 
-- memory/chapter index;
-- fragment progress;
-- language/audio/exit controls;
-- completion state;
-- continue affordance;
-- clear chapter progression.
+Pause and Lunar Focus operate through audio gain/bus behavior, not direct `<audio>` manipulation in scene components.
 
-Avoid:
-
-- generic fantasy HUD frames;
-- health bars;
-- XP language;
-- loot/reward UI;
-- neon cyberpunk treatment;
-- excessive glassmorphism.
+The shared landing-page three-bar component remains the mute control.
 
 ---
 
-# 13. Ripple Menu Background
+## 26. Keyboard, Focus, Mobile
 
-The menu should reuse the water-distortion language already implemented for the Nine Realms, but with a specific quiet preset.
+Keyboard:
 
-Differences from realm interaction:
+```text
+ESC       Pause during playable stages
+SPACE     Lunar Focus in Gekkai
+ENTER     Confirm primary actions
+TAB       Navigate controls/hotspots
+ARROWS    Menu/archive navigation where implemented
+```
 
-- lower displacement amplitude;
-- slower wake decay;
-- fewer active ripple sources;
-- cursor influence is atmospheric rather than obvious;
-- disabled on touch / reduced-motion;
-- menu content remains perfectly stable and undistorted.
+Fragments retain keyboard parity. Interlude traces are focusable. Pause traps focus and restores prior focus when closed.
 
-Only the background layer is affected.
+Touch/mobile requires:
 
----
+- pointer-compatible shards;
+- explicit Pause;
+- explicit Lunar Focus;
+- safe-area-aware UI;
+- mobile scatter zones;
+- reduced particles/distortion;
+- large enough hit targets;
+- static heavy-video fallbacks under Save-Data/reduced-motion.
 
-# 14. Reduced Motion
-
-The full game remains playable and narratively complete.
-
-Reduced-motion behavior:
-
-- no camera shake;
-- no long crack propagation;
-- no radial refraction;
-- pulse becomes a short opacity/scale cue;
-- broken → restored uses short crossfade;
-- completion text remains;
-- Akari reveal uses restrained fades;
-- epilogue may render a static poster-like state;
-- video loops are not required for understanding.
+`remember-mobile-sakura-transition.mp4` may enrich transitions when motion/data preferences allow; it is never required for correctness.
 
 ---
 
-# 15. Mobile
+## 27. Asset Loading and Performance
 
-Mobile is not a desktop shrink.
+Use stage-oriented asset manifests.
 
-- puzzle stage maximizes touch target size;
-- minimum effective snap distance remains generous;
-- fragment count remains the same, but starting offsets are compressed;
-- expensive blur/refraction is removed;
-- particles are reduced;
-- restoration sequence targets ~1.5–2.0s;
-- `remember-mobile-sakura-transition.mp4` can be used only as a lightweight chapter transition enhancement;
-- credits loop receives static fallback when bandwidth/performance is unfavorable.
+Initial load:
 
----
+- menu/Boot;
+- Hanamori;
+- shared restoration VFX;
+- essential audio load path.
 
-# 16. Performance / Loading
+During a stage, preload only the next likely stage and transition dependencies.
 
-Boot initial load should include only:
+Videos:
 
-- menu background;
-- UI code;
-- menu audio metadata/source as needed after interaction.
+- epilogue loads near Akari;
+- credits loads near Epilogue;
+- mobile transition is conditional;
+- never preload all videos on route entry.
 
-After BEGIN:
+Unmount/release listeners, timers and heavy references from prior stages. Never keep all five puzzles mounted.
 
-1. load current memory broken/restored assets;
-2. preload completion overlays;
-3. preload next memory after the player begins interacting;
-4. preload Akari reveal after Mizukyo completion;
-5. preload epilogue after Kurogane begins;
-6. load the large credits loop only close to credits.
-
-Do not preload all videos on route entry.
-
-Animations should favor transform, opacity, SVG path animation and compositor-friendly layers.
+Prefer transform/opacity. Bound blur/distortion and reduce them on lower-power/mobile paths.
 
 ---
 
-# 17. Debugging
+## 28. Real Asset Inventory
 
-In development only, `?memoryDebug=true` may expose a compact debug panel for:
+Base image path:
 
-- jump to memory;
-- restore all shards;
-- replay restoration effect;
-- visualize crack paths / snap targets;
-- jump to Akari / Epilogue / Credits.
+`/remember-experience/assets/images/`
 
-It must not render in production.
+Confirmed expansion groups in current `main`:
 
-`Shift+R` may continue to reset the active experience during development.
+### Archive
 
----
+- `archive/remember-memory-archive-background.png`
+- `archive/remember-memory-archive-sigil.png`
+- `archive/remember-akr001-signature.png`
 
-# 18. Analytics Contract
+### Interludes
 
-Keep analytics implementation provider-agnostic / no-op if no analytics provider is connected.
+- `interludes/remember-interlude-01-unknown-memory.png`
+- `interludes/remember-interlude-02-memory-network.png`
 
-Events:
+### Yumegakure
 
-- `remember_boot_started`
-- `remember_menu_started`
-- `remember_game_started`
-- `remember_memory_started`
-- `remember_fragment_restored`
-- `remember_memory_restored`
-- `remember_akari_revealed`
-- `remember_epilogue_started`
-- `remember_completed`
-- `remember_exit`
+- `yumegakure/remember-yumegakure-broken.png`
+- `yumegakure/remember-yumegakure-restored.png`
+- `yumegakure/remember-yumegakure-false-fragment-01.png`
+- `yumegakure/remember-yumegakure-false-fragment-02.png`
+- `yumegakure/remember-yumegakure-distortion-overlay.png`
 
----
+### Gekkai
 
-# 19. Test Strategy
+- `gekkai/remember-gekkai-state-a.png`
+- `gekkai/remember-gekkai-state-b.png`
+- `gekkai/remember-gekkai-restored.png`
+- `gekkai/remember-gekkai-lunar-focus-overlay.png`
 
-Add focused deterministic tests only where they protect game behavior.
+### FX
 
-## State
+- `fx/remember-signature-found-burst.png`
+- `fx/remember-stage-lock-overlay.png`
 
-- boot → menu after audio-unlock action;
-- menu → memory 01;
-- memory completion does not advance twice;
-- CONTINUE advances Hanamori → Mizukyo → Kurogane;
-- Kurogane completion advances to Akari reveal only after continue;
-- Akari → epilogue → credits progression;
-- locale/mute persist across memory transitions;
-- restart resets progression without corrupting static definitions.
+Existing shared assets continue through `remember-assets.ts`, including menu background, Mizukyo/Kurogane broken/restored, completion VFX and Akari reveal.
 
-## Memory definitions
+The current registry references `mr06-restored-scar-overlay.png`; the first asset-registry implementation slice must verify the physical file. If it is absent, residual scar falls back to the SVG/seam network rather than referencing a fake asset.
 
-- IDs/order are unique;
-- Hanamori has 5 fragments;
-- Mizukyo has 7 fragments;
-- Kurogane has 9 fragments;
-- crack paths exist for each memory;
-- snap ratios decrease but remain within allowed accessibility bounds.
+Videos:
 
-## Restoration phase helper
-
-If timing/progression math is extracted into pure helpers, test phase boundaries rather than GSAP internals.
-
-## Gates
-
-Existing project gates remain authoritative:
-
-`test:hero → test:remember → format:check → lint → build`
-
-Visual validation remains required for desktop and mobile before merge.
+- `/remember-experience/assets/videos/remember-epilogue-eclipse.mp4`
+- `/remember-experience/assets/videos/remember-credits-loop.mp4`
+- `/remember-experience/assets/videos/remember-mobile-sakura-transition.mp4`
 
 ---
 
-# 20. Out of Scope
+## 29. Testing
 
-This expansion does not introduce:
+Every implementation slice follows RED → GREEN.
 
-- authentication;
-- cloud saves;
-- leaderboards;
-- scoring/rank system;
-- timers;
-- failure states;
-- inventory;
-- achievements;
-- gamepad support;
-- additional realms beyond Hanamori, Mizukyo and Kurogane;
-- WebGL scene rendering for the puzzle itself.
+Existing Hanamori/Mizukyo/Kurogane regressions remain mandatory.
 
-Those should only be considered after the full narrative minigame is visually validated.
+Add focused Node tests for:
+
+- stage progression graph;
+- save parser/corrupted JSON fallback;
+- migration boundary;
+- Continue/New Game/completed-game policy;
+- autosave policy;
+- archive 20% derivation/status/replay lock;
+- deterministic scatter constraints;
+- ghost-seam guidance;
+- pause timer semantics;
+- Yumegakure false-fragment/unstable/completion policy;
+- false-fragment counting max of two;
+- Gekkai authentic-state/focus/cooldown policy;
+- integrity/resonance calculation;
+- transition locking/handoff;
+- asset manifest paths.
+
+Required slice gate:
+
+```text
+npm run test:hero
+npm run test:remember
+npm run format:check
+npm run lint
+npm run build
+```
+
+Manual localhost validation must cover the full route, including no hard cuts, preload continuity, menu gamefeel, save/resume, Pause, Archive, harder scatter, Hanamori guidance, ghost seams, Yumegakure, Gekkai, both interludes, AKR-001 timing, Akari/Epilogue/Credits, replay, mobile and reduced motion.
 
 ---
 
-# Acceptance Criteria
+## 30. Delivery Slices
 
-The feature is ready for visual approval when:
+Implementation order:
 
-1. `/remember` opens on a premium title/boot screen using the new background.
-2. The first deliberate gesture starts the menu theme and reveals the menu instead of immediately starting gameplay.
-3. PT/EN and the landing-style sound icon work without resetting progress.
-4. Hanamori's existing interaction quality is preserved.
-5. Mizukyo and Kurogane are playable with increasing but fair difficulty.
-6. Every memory uses the same reusable 2–3s Memory Restored microclimax.
-7. The new VFX assets visibly participate in that completion sequence.
-8. A thin Kintsugi scar remains after restoration rather than the cracks simply vanishing.
-9. Completing Kurogane leads to the Akari Kintsugi reveal.
-10. Akari leads into the Eclipse epilogue video and then the credits loop/CTA.
-11. Mobile/reduced-motion fallbacks remain complete and usable.
-12. No heavy credit/epilogue media is eagerly loaded on initial route entry.
-13. Existing automated gates are green before the PR is marked ready.
+1. state graph + save v1 + asset registry + progression tests;
+2. Transition Director + real preloader + centered menu gamefeel;
+3. Continue/New Game + Pause + Archive;
+4. seeded scatter + ghost seams + Hanamori onboarding + 01–03 regression;
+5. Interlude I;
+6. Yumegakure False Memory;
+7. Gekkai Overlapping Realities + Lunar Focus;
+8. resonance results + Interlude II + AKR-001;
+9. Akari Reveal + Epilogue + Credits + game complete + replay;
+10. responsive/reduced-motion/performance/full regression hardening.
+
+Each slice must leave the branch coherent and testable.
+
+---
+
+## 31. Definition of Done
+
+REMEMBER is done when it plays as a coherent Tsukihara prologue rather than three promotional puzzle screens.
+
+Required outcome:
+
+- truthful gameified loading;
+- cinematic transitions between all major screens;
+- balanced game-like idle/interaction feedback;
+- centered cinematic REMEMBER identity;
+- clear Hanamori onboarding;
+- five distinct memory experiences;
+- resilient Continue/New Game persistence;
+- native-feeling Pause and Archive;
+- non-punitive resonance results;
+- AKR-001 only after the five-memory network is restored;
+- Akari as narrative payoff;
+- functional Epilogue/Credits ending;
+- replay after completion;
+- no regression in Hanamori, Mizukyo or Kurogane;
+- viable touch, keyboard and reduced-motion paths;
+- green regression, format, lint and build gates.

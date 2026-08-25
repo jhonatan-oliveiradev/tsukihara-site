@@ -1,11 +1,41 @@
+import { isMemoryStage } from "./remember-progression.ts";
 import {
   initialRememberState,
   type MemoryId,
   type RememberAction,
+  type RememberScene,
+  type RememberStageId,
   type RememberState,
 } from "./remember-state.ts";
 
-const memoryOrder: MemoryId[] = ["hanamori", "mizukyo", "kurogane"];
+const memoryOrder: MemoryId[] = ["hanamori", "mizukyo", "kurogane", "yumegakure", "gekkai"];
+
+const sceneForStage = (stage: RememberStageId): RememberScene => {
+  if (isMemoryStage(stage)) return "memory";
+  if (stage === "interlude-01" || stage === "interlude-02") return "interlude";
+  if (stage === "akari-reveal") return "akari-reveal";
+  if (stage === "epilogue") return "epilogue";
+  return "credits";
+};
+
+const memoryIndexForStage = (stage: RememberStageId) => {
+  if (!isMemoryStage(stage)) return 0;
+  const index = memoryOrder.indexOf(stage);
+  return index >= 0 ? index : 0;
+};
+
+const resetPuzzleRuntime = (state: RememberState): RememberState => ({
+  ...state,
+  restoredFragmentIds: [],
+  restorationPhase: "idle",
+});
+
+const startFreshGame = (state: RememberState): RememberState => ({
+  ...initialRememberState,
+  scene: "memory",
+  locale: state.locale,
+  muted: state.muted,
+});
 
 export function rememberReducer(state: RememberState, action: RememberAction): RememberState {
   switch (action.type) {
@@ -15,17 +45,77 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
 
     case "BEGIN_GAME":
       if (state.scene !== "menu") return state;
+      return startFreshGame(state);
+
+    case "START_NEW_GAME":
+      return startFreshGame(state);
+
+    case "HYDRATE_SAVE": {
+      const completedMemoryIds = memoryOrder.filter(
+        (memoryId) =>
+          action.save.completedStages.includes(memoryId) ||
+          action.save.memories[memoryId]?.completed === true,
+      );
+      const restoredFragmentIds = isMemoryStage(action.save.currentStage)
+        ? (action.save.memoryProgress[action.save.currentStage]?.restoredFragmentIds ?? [])
+        : [];
+
       return {
         ...state,
-        scene: "memory",
-        activeMemoryIndex: 0,
-        completedMemoryIds: [],
-        restoredFragmentIds: [],
+        scene: sceneForStage(action.save.currentStage),
+        currentStage: action.save.currentStage,
+        completedStages: [...action.save.completedStages],
+        completedMemoryIds,
+        activeMemoryIndex: memoryIndexForStage(action.save.currentStage),
+        restoredFragmentIds: [...restoredFragmentIds],
         restorationPhase: "idle",
+        paused: false,
+        archiveOpen: false,
       };
+    }
+
+    case "ENTER_STAGE":
+      return resetPuzzleRuntime({
+        ...state,
+        scene: sceneForStage(action.stage),
+        currentStage: action.stage,
+        activeMemoryIndex: memoryIndexForStage(action.stage),
+        paused: false,
+        archiveOpen: false,
+      });
+
+    case "COMPLETE_STAGE": {
+      const completedStages = state.completedStages.includes(action.stage)
+        ? state.completedStages
+        : [...state.completedStages, action.stage];
+      const completedMemoryIds = isMemoryStage(action.stage)
+        ? state.completedMemoryIds.includes(action.stage)
+          ? state.completedMemoryIds
+          : [...state.completedMemoryIds, action.stage]
+        : state.completedMemoryIds;
+
+      return { ...state, completedStages, completedMemoryIds };
+    }
+
+    case "OPEN_PAUSE":
+      if (state.scene !== "memory" && state.scene !== "interlude") return state;
+      return state.paused ? state : { ...state, paused: true };
+
+    case "CLOSE_PAUSE":
+      return state.paused ? { ...state, paused: false } : state;
+
+    case "OPEN_ARCHIVE":
+      return state.archiveOpen ? state : { ...state, archiveOpen: true };
+
+    case "CLOSE_ARCHIVE":
+      return state.archiveOpen ? { ...state, archiveOpen: false } : state;
+
+    case "RESTART_MEMORY":
+      return resetPuzzleRuntime({ ...state, paused: false, archiveOpen: false });
 
     case "RESTORE_FRAGMENT": {
-      if (state.scene !== "memory" || state.restorationPhase !== "idle") return state;
+      if (state.scene !== "memory" || state.restorationPhase !== "idle" || state.paused)
+        return state;
       if (state.restoredFragmentIds.includes(action.fragmentId)) return state;
 
       const restoredFragmentIds = [...state.restoredFragmentIds, action.fragmentId];
@@ -51,10 +141,14 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
       const completedMemoryIds = state.completedMemoryIds.includes(action.memoryId)
         ? state.completedMemoryIds
         : [...state.completedMemoryIds, action.memoryId];
+      const completedStages = state.completedStages.includes(action.memoryId)
+        ? state.completedStages
+        : [...state.completedStages, action.memoryId];
 
       return {
         ...state,
         completedMemoryIds,
+        completedStages,
         restorationPhase: "restored",
       };
     }
@@ -71,9 +165,12 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
         }
 
         if (state.activeMemoryIndex < memoryOrder.length - 1) {
+          const nextIndex = state.activeMemoryIndex + 1;
           return {
             ...state,
-            activeMemoryIndex: state.activeMemoryIndex + 1,
+            scene: "memory",
+            currentStage: memoryOrder[nextIndex],
+            activeMemoryIndex: nextIndex,
             restoredFragmentIds: [],
             restorationPhase: "idle",
           };
@@ -82,13 +179,18 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
         return {
           ...state,
           scene: "akari-reveal",
+          currentStage: "akari-reveal",
           restoredFragmentIds: [],
           restorationPhase: "idle",
         };
       }
 
-      if (state.scene === "akari-reveal") return { ...state, scene: "epilogue" };
-      if (state.scene === "epilogue") return { ...state, scene: "credits" };
+      if (state.scene === "akari-reveal") {
+        return { ...state, scene: "epilogue", currentStage: "epilogue" };
+      }
+      if (state.scene === "epilogue") {
+        return { ...state, scene: "credits", currentStage: "credits" };
+      }
       return state;
     }
 

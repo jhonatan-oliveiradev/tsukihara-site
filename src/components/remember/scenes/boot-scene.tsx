@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { RememberLocaleCopy } from "@/components/remember/content/remember-locales";
 
 type BootSceneProps = {
@@ -10,16 +10,34 @@ type BootSceneProps = {
 
 export function BootScene({ copy, onUnlock }: BootSceneProps) {
   const [unlocking, setUnlocking] = useState(false);
+  const unlockingRef = useRef(false);
 
-  const handleUnlock = async () => {
-    if (unlocking) return;
+  const handleUnlock = useCallback(async () => {
+    if (unlockingRef.current) return;
+    unlockingRef.current = true;
     setUnlocking(true);
     try {
       await onUnlock();
     } finally {
+      unlockingRef.current = false;
       setUnlocking(false);
     }
-  };
+  }, [onUnlock]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+
+      const validKey = event.key === "Enter" || event.key === " " || event.key.length === 1;
+      if (!validKey) return;
+
+      event.preventDefault();
+      void handleUnlock();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleUnlock]);
 
   return (
     <section className="remember-boot" aria-labelledby="remember-boot-title">

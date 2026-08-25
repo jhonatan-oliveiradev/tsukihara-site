@@ -7,28 +7,42 @@ import { SoundToggle } from "@/components/shared/sound-toggle";
 
 type RememberShellProps = {
   children: ReactNode;
+  overlay?: ReactNode;
   scene: RememberScene;
   locale: RememberLocale;
   muted: boolean;
+  paused?: boolean;
+  pauseAvailable?: boolean;
   onExit: () => void;
   onToggleMute: () => void;
+  onTogglePause?: () => void;
   onLocaleChange: (locale: RememberLocale) => void;
 };
 
 export function RememberShell({
   children,
+  overlay,
   scene,
   locale,
   muted,
+  paused = false,
+  pauseAvailable = false,
   onExit,
   onToggleMute,
+  onTogglePause,
   onLocaleChange,
 }: RememberShellProps) {
   const copy = getRememberCopy(locale);
   const showControls = scene !== "boot";
+  const pauseLabel = paused ? copy.controls.resume : copy.controls.pause;
 
   return (
-    <main className="remember-root" data-remember-root data-remember-scene={scene}>
+    <main
+      className="remember-root"
+      data-remember-root
+      data-remember-scene={scene}
+      data-remember-paused={paused || undefined}
+    >
       <div className="remember-root__grain" aria-hidden="true" />
       <div className="remember-root__vignette" aria-hidden="true" />
       <span className="remember-root__moon" aria-hidden="true">
@@ -58,6 +72,19 @@ export function RememberShell({
             className="remember-sound-toggle"
           />
 
+          {pauseAvailable && onTogglePause ? (
+            <button
+              type="button"
+              className="remember-pause-toggle"
+              aria-pressed={paused}
+              aria-label={pauseLabel}
+              onClick={onTogglePause}
+            >
+              <span aria-hidden="true">{paused ? "▶" : "Ⅱ"}</span>
+              <span>{pauseLabel}</span>
+            </button>
+          ) : null}
+
           <button type="button" className="remember-exit-toggle" onClick={onExit}>
             <span aria-hidden="true">×</span>
             <span>{copy.controls.exit}</span>
@@ -66,6 +93,7 @@ export function RememberShell({
       )}
 
       <div className="remember-stage">{children}</div>
+      {overlay}
     </main>
   );
 }

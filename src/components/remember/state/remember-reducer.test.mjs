@@ -2,25 +2,115 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { rememberReducer } from "./remember-reducer.ts";
 import { initialRememberState } from "./remember-state.ts";
+import { createNewRememberSave } from "./remember-save.ts";
 
-test("REMEMBER starts at boot and unlock enters menu without starting gameplay", () => {
+test("REMEMBER starts at boot with Hanamori as the logical first stage", () => {
   assert.equal(initialRememberState.scene, "boot");
-  const next = rememberReducer(initialRememberState, { type: "UNLOCK_MENU" });
-  assert.equal(next.scene, "menu");
-  assert.equal(next.activeMemoryIndex, 0);
+  assert.equal(initialRememberState.currentStage, "hanamori");
+  assert.equal(initialRememberState.paused, false);
+  assert.equal(initialRememberState.archiveOpen, false);
 });
 
-test("BEGIN_GAME enters memory 01 with clean restoration state", () => {
-  const menu = rememberReducer(initialRememberState, { type: "UNLOCK_MENU" });
-  const next = rememberReducer(menu, { type: "BEGIN_GAME" });
+test("boot unlock enters menu without starting gameplay", () => {
+  const next = rememberReducer(initialRememberState, { type: "UNLOCK_MENU" });
+  assert.equal(next.scene, "menu");
+  assert.equal(next.currentStage, "hanamori");
+});
 
+test("START_NEW_GAME resets progression but preserves locale and mute", () => {
+  let state = rememberReducer(initialRememberState, { type: "SET_LOCALE", locale: "en" });
+  state = rememberReducer(state, { type: "SET_MUTED", muted: true });
+  state = {
+    ...state,
+    completedStages: ["hanamori", "mizukyo"],
+    completedMemoryIds: ["hanamori", "mizukyo"],
+  };
+
+  const next = rememberReducer(state, { type: "START_NEW_GAME" });
   assert.equal(next.scene, "memory");
-  assert.equal(next.activeMemoryIndex, 0);
+  assert.equal(next.currentStage, "hanamori");
+  assert.deepEqual(next.completedStages, []);
+  assert.deepEqual(next.completedMemoryIds, []);
+  assert.equal(next.locale, "en");
+  assert.equal(next.muted, true);
+});
+
+test("pause and archive are orthogonal to narrative progression", () => {
+  let state = { ...initialRememberState, scene: "memory" };
+  state = rememberReducer(state, { type: "OPEN_PAUSE" });
+  assert.equal(state.paused, true);
+  assert.equal(state.currentStage, "hanamori");
+
+  state = rememberReducer(state, { type: "OPEN_ARCHIVE" });
+  assert.equal(state.archiveOpen, true);
+  assert.equal(state.currentStage, "hanamori");
+
+  state = rememberReducer(state, { type: "CLOSE_ARCHIVE" });
+  state = rememberReducer(state, { type: "CLOSE_PAUSE" });
+  assert.equal(state.archiveOpen, false);
+  assert.equal(state.paused, false);
+});
+
+test("ENTER_STAGE changes the logical stage and resets puzzle runtime", () => {
+  const playing = {
+    ...initialRememberState,
+    scene: "memory",
+    restoredFragmentIds: ["fragment-a"],
+    restorationPhase: "kintsugi",
+  };
+
+  const next = rememberReducer(playing, { type: "ENTER_STAGE", stage: "yumegakure" });
+  assert.equal(next.scene, "memory");
+  assert.equal(next.currentStage, "yumegakure");
+  assert.equal(next.activeMemoryIndex, 3);
   assert.deepEqual(next.restoredFragmentIds, []);
   assert.equal(next.restorationPhase, "idle");
 });
 
-test("fragment restoration is idempotent and the final unique fragment starts the climax", () => {
+test("COMPLETE_STAGE records completion without automatically skipping the next transition", () => {
+  const state = { ...initialRememberState, scene: "memory" };
+  const next = rememberReducer(state, { type: "COMPLETE_STAGE", stage: "hanamori" });
+  assert.deepEqual(next.completedStages, ["hanamori"]);
+  assert.deepEqual(next.completedMemoryIds, ["hanamori"]);
+  assert.equal(next.currentStage, "hanamori");
+});
+
+test("HYDRATE_SAVE restores durable progress without opening pause or archive", () => {
+  const save = {
+    ...createNewRememberSave("2026-08-25T16:00:00.000Z"),
+    currentStage: "kurogane",
+    completedStages: ["hanamori", "mizukyo", "interlude-01"],
+    memories: {
+      hanamori: {
+        completed: true,
+        completedAt: "2026-08-25T16:02:00.000Z",
+        completionTime: 120,
+        mistakes: 0,
+        falseFragments: 0,
+        integrity: 96,
+        resonance: "S",
+      },
+      mizukyo: {
+        completed: true,
+        completedAt: "2026-08-25T16:05:00.000Z",
+        completionTime: 150,
+        mistakes: 1,
+        falseFragments: 0,
+        integrity: 91,
+        resonance: "A",
+      },
+    },
+  };
+
+  const next = rememberReducer(initialRememberState, { type: "HYDRATE_SAVE", save });
+  assert.equal(next.currentStage, "kurogane");
+  assert.deepEqual(next.completedStages, save.completedStages);
+  assert.deepEqual(next.completedMemoryIds, ["hanamori", "mizukyo"]);
+  assert.equal(next.paused, false);
+  assert.equal(next.archiveOpen, false);
+});
+
+test("legacy fragment restoration remains idempotent for the existing puzzles", () => {
   let state = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
     type: "BEGIN_GAME",
   });
@@ -38,99 +128,54 @@ test("fragment restoration is idempotent and the final unique fragment starts th
 
   assert.deepEqual(duplicate.restoredFragmentIds, ["fragment-a"]);
   assert.equal(duplicate.restorationPhase, "idle");
-
-  for (const fragmentId of ["fragment-b", "fragment-c", "fragment-d", "fragment-e"]) {
-    state = rememberReducer(state, { type: "RESTORE_FRAGMENT", fragmentId, totalFragments: 5 });
-  }
-
-  assert.equal(state.scene, "memory");
-  assert.equal(state.restoredFragmentIds.length, 5);
-  assert.equal(state.restorationPhase, "last-piece");
 });
 
-test("CONTINUE does not advance a memory before restoration is stable", () => {
-  const playing = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
-    type: "BEGIN_GAME",
-  });
-  const attempted = rememberReducer(playing, { type: "CONTINUE" });
-  assert.deepEqual(attempted, playing);
+test("Kurogane completion continues into Yumegakure instead of revealing Akari early", () => {
+  const kuroganeComplete = {
+    ...initialRememberState,
+    scene: "memory",
+    currentStage: "kurogane",
+    activeMemoryIndex: 2,
+    completedMemoryIds: ["hanamori", "mizukyo", "kurogane"],
+    completedStages: ["hanamori", "mizukyo", "kurogane"],
+    restorationPhase: "restored",
+  };
+
+  const next = rememberReducer(kuroganeComplete, { type: "CONTINUE" });
+  assert.equal(next.scene, "memory");
+  assert.equal(next.currentStage, "yumegakure");
+  assert.equal(next.activeMemoryIndex, 3);
+  assert.deepEqual(next.restoredFragmentIds, []);
+  assert.equal(next.restorationPhase, "idle");
 });
 
-test("three restored memories advance Hanamori to Mizukyo to Kurogane to Akari", () => {
-  let state = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
-    type: "BEGIN_GAME",
-  });
+test("Yumegakure completion continues into Gekkai while memories remain", () => {
+  const yumegakureComplete = {
+    ...initialRememberState,
+    scene: "memory",
+    currentStage: "yumegakure",
+    activeMemoryIndex: 3,
+    completedMemoryIds: ["hanamori", "mizukyo", "kurogane", "yumegakure"],
+    completedStages: ["hanamori", "mizukyo", "kurogane", "yumegakure"],
+    restorationPhase: "restored",
+  };
 
-  state = rememberReducer(state, { type: "MARK_MEMORY_RESTORED", memoryId: "hanamori" });
-  state = rememberReducer(state, { type: "CONTINUE" });
-  assert.equal(state.scene, "memory");
-  assert.equal(state.activeMemoryIndex, 1);
-  assert.deepEqual(state.completedMemoryIds, ["hanamori"]);
-  assert.deepEqual(state.restoredFragmentIds, []);
-  assert.equal(state.restorationPhase, "idle");
-
-  state = rememberReducer(state, { type: "MARK_MEMORY_RESTORED", memoryId: "mizukyo" });
-  state = rememberReducer(state, { type: "CONTINUE" });
-  assert.equal(state.activeMemoryIndex, 2);
-  assert.deepEqual(state.completedMemoryIds, ["hanamori", "mizukyo"]);
-
-  state = rememberReducer(state, { type: "MARK_MEMORY_RESTORED", memoryId: "kurogane" });
-  state = rememberReducer(state, { type: "CONTINUE" });
-  assert.equal(state.scene, "akari-reveal");
-  assert.deepEqual(state.completedMemoryIds, ["hanamori", "mizukyo", "kurogane"]);
+  const next = rememberReducer(yumegakureComplete, { type: "CONTINUE" });
+  assert.equal(next.scene, "memory");
+  assert.equal(next.currentStage, "gekkai");
+  assert.equal(next.activeMemoryIndex, 4);
 });
 
-test("marking a restored memory twice is idempotent", () => {
-  const playing = rememberReducer(rememberReducer(initialRememberState, { type: "UNLOCK_MENU" }), {
-    type: "BEGIN_GAME",
-  });
-  const restored = rememberReducer(playing, {
-    type: "MARK_MEMORY_RESTORED",
-    memoryId: "hanamori",
-  });
-  const duplicate = rememberReducer(restored, {
-    type: "MARK_MEMORY_RESTORED",
-    memoryId: "hanamori",
-  });
-
-  assert.deepEqual(duplicate.completedMemoryIds, ["hanamori"]);
-  assert.equal(duplicate.restorationPhase, "restored");
-});
-
-test("locale and mute survive scene and memory transitions", () => {
+test("RESTART clears runtime progress while preserving locale and mute preference", () => {
   let state = rememberReducer(initialRememberState, { type: "SET_LOCALE", locale: "en" });
   state = rememberReducer(state, { type: "SET_MUTED", muted: true });
-  state = rememberReducer(state, { type: "UNLOCK_MENU" });
-  state = rememberReducer(state, { type: "BEGIN_GAME" });
-  state = rememberReducer(state, { type: "MARK_MEMORY_RESTORED", memoryId: "hanamori" });
-  state = rememberReducer(state, { type: "CONTINUE" });
-
-  assert.equal(state.locale, "en");
-  assert.equal(state.muted, true);
-  assert.equal(state.activeMemoryIndex, 1);
-});
-
-test("final narrative progresses Akari to epilogue to credits", () => {
-  let state = { ...initialRememberState, scene: "akari-reveal" };
-  state = rememberReducer(state, { type: "CONTINUE" });
-  assert.equal(state.scene, "epilogue");
-  state = rememberReducer(state, { type: "CONTINUE" });
-  assert.equal(state.scene, "credits");
-});
-
-test("RESTART clears narrative progress while preserving locale and mute preference", () => {
-  let state = rememberReducer(initialRememberState, { type: "SET_LOCALE", locale: "en" });
-  state = rememberReducer(state, { type: "SET_MUTED", muted: true });
-  state = rememberReducer(state, { type: "UNLOCK_MENU" });
-  state = rememberReducer(state, { type: "BEGIN_GAME" });
-  state = rememberReducer(state, { type: "MARK_MEMORY_RESTORED", memoryId: "hanamori" });
+  state = { ...state, paused: true, archiveOpen: true, currentStage: "gekkai" };
 
   const restarted = rememberReducer(state, { type: "RESTART" });
   assert.equal(restarted.scene, "boot");
+  assert.equal(restarted.currentStage, "hanamori");
   assert.equal(restarted.locale, "en");
   assert.equal(restarted.muted, true);
-  assert.equal(restarted.activeMemoryIndex, 0);
-  assert.deepEqual(restarted.completedMemoryIds, []);
-  assert.deepEqual(restarted.restoredFragmentIds, []);
-  assert.equal(restarted.restorationPhase, "idle");
+  assert.equal(restarted.paused, false);
+  assert.equal(restarted.archiveOpen, false);
 });
