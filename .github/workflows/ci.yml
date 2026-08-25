@@ -22,6 +22,34 @@ jobs:
         run: npm run test:hero
       - name: REMEMBER regression
         run: npm run test:remember
+      - name: Canonical Task 3 formatting
+        run: |
+          npx prettier --write \
+            package.json \
+            src/app/remember/remember-game.css \
+            src/components/remember/archive/archive-policy.ts \
+            src/components/remember/archive/archive-policy.test.mjs \
+            src/components/remember/archive/memory-archive.tsx \
+            src/components/remember/audio/use-remember-audio.ts \
+            src/components/remember/content/remember-locales.ts \
+            src/components/remember/remember-experience.tsx \
+            src/components/remember/remember-shell.tsx \
+            src/components/remember/scenes/menu-scene.tsx \
+            src/components/remember/scenes/pause-menu.tsx \
+            src/components/remember/state/remember-reducer.ts
+          git diff --no-color -- \
+            package.json \
+            src/app/remember/remember-game.css \
+            src/components/remember/archive/archive-policy.ts \
+            src/components/remember/archive/archive-policy.test.mjs \
+            src/components/remember/archive/memory-archive.tsx \
+            src/components/remember/audio/use-remember-audio.ts \
+            src/components/remember/content/remember-locales.ts \
+            src/components/remember/remember-experience.tsx \
+            src/components/remember/remember-shell.tsx \
+            src/components/remember/scenes/menu-scene.tsx \
+            src/components/remember/scenes/pause-menu.tsx \
+            src/components/remember/state/remember-reducer.ts
       - name: Check formatting
         run: npm run format:check
       - name: Lint
