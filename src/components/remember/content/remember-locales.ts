@@ -76,6 +76,15 @@ export type RememberLocaleCopy = {
     continue: string;
     traceLabels: readonly [string, string, string, string];
   };
+  interlude02: {
+    eyebrow: string;
+    title: string;
+    lines: readonly [string, string, string, string];
+    record: string;
+    status: string;
+    restored: string;
+    continue: string;
+  };
   akari: {
     eyebrow: string;
     title: string;
@@ -172,10 +181,24 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       continue: "SEGUIR O RASTRO",
       traceLabels: ["Resíduo lunar", "Caminho quebrado", "Pulso de memória", "Eco distante"],
     },
+    interlude02: {
+      eyebrow: "CONVERGÊNCIA DE MEMÓRIAS",
+      title: "EXISTE UMA SEXTA PRESENÇA",
+      lines: [
+        "Cinco memórias restauradas.",
+        "Cinco Reinos.",
+        "Cinco versões de mim mesmo.",
+        "Mas existe uma sexta presença.",
+      ],
+      record: "REGISTRO DE MEMÓRIA",
+      status: "STATUS",
+      restored: "RESTAURADO",
+      continue: "ABRIR O REGISTRO",
+    },
     akari: {
       eyebrow: "A GUARDIÃ QUE O MUNDO ESQUECEU",
       title: "AKARI",
-      line: "Se até a Lua pode esquecer, alguém precisa lembrar por ela.",
+      line: "Então você se lembrou.",
       continue: "SEGUIR",
     },
     epilogue: {
@@ -265,10 +288,24 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       continue: "FOLLOW THE TRACE",
       traceLabels: ["Lunar residue", "Broken path", "Memory pulse", "Distant echo"],
     },
+    interlude02: {
+      eyebrow: "MEMORY CONVERGENCE",
+      title: "THERE IS A SIXTH PRESENCE",
+      lines: [
+        "Five memories restored.",
+        "Five Realms.",
+        "Five versions of myself.",
+        "But there is a sixth presence.",
+      ],
+      record: "MEMORY RECORD",
+      status: "STATUS",
+      restored: "RESTORED",
+      continue: "OPEN THE RECORD",
+    },
     akari: {
       eyebrow: "THE GUARDIAN THE WORLD FORGOT",
       title: "AKARI",
-      line: "If even the Moon can forget, someone has to remember for her.",
+      line: "So you remembered.",
       continue: "CONTINUE",
     },
     epilogue: {
