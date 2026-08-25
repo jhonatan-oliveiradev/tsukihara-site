@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
+import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
 import type { RestorationPhase } from "@/components/remember/state/remember-state";
 import { KintsugiSeams } from "./kintsugi-seams";
 import { MemoryFragment } from "./memory-fragment";
+import { MemoryRestorationEffect } from "./memory-restoration-effect";
 
 type MemoryPuzzleProps = {
   memory: MemoryDefinition;
@@ -14,7 +15,13 @@ type MemoryPuzzleProps = {
   interactive: boolean;
   restorationPhase: RestorationPhase;
   keyboardLabel: string;
+  restoredLabel: string;
+  completionLine: string;
   onRestore: (fragmentId: string) => void;
+  onRestorationPhaseChange: (phase: RestorationPhase) => void;
+  onRestorationComplete: () => void;
+  onKintsugi: () => void;
+  onRestored: () => void;
 };
 
 export function MemoryPuzzle({
@@ -24,11 +31,25 @@ export function MemoryPuzzle({
   interactive,
   restorationPhase,
   keyboardLabel,
+  restoredLabel,
+  completionLine,
   onRestore,
+  onRestorationPhaseChange,
+  onRestorationComplete,
+  onKintsugi,
+  onRestored,
 }: MemoryPuzzleProps) {
   const restored = new Set(restoredFragmentIds);
   const allFragmentsPlaced = restoredFragmentIds.length === memory.fragments.length;
   const visuallyRestored = restorationPhase === "restored";
+  const lastFragmentId = restoredFragmentIds.at(-1);
+  const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
+  const originPoint = lastFragment
+    ? {
+        x: 50 + lastFragment.initial.x * 85,
+        y: 50 + lastFragment.initial.y * 85,
+      }
+    : { x: 50, y: 50 };
 
   return (
     <div
@@ -122,6 +143,19 @@ export function MemoryPuzzle({
             className="remember-memory__restored-image"
           />
         </div>
+
+        <MemoryRestorationEffect
+          active={restorationPhase !== "idle"}
+          memory={memory}
+          originPoint={originPoint}
+          reducedMotion={reducedMotion}
+          restoredLabel={restoredLabel}
+          completionLine={completionLine}
+          onPhaseChange={onRestorationPhaseChange}
+          onComplete={onRestorationComplete}
+          onKintsugi={onKintsugi}
+          onRestored={onRestored}
+        />
 
         <span className="remember-memory__edge" aria-hidden="true" />
       </div>
