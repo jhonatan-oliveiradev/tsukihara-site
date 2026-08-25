@@ -2,10 +2,7 @@
 
 import type { ReactNode } from "react";
 import { getRememberCopy } from "@/components/remember/content/remember-locales";
-import type {
-  RememberLocale,
-  RememberScene,
-} from "@/components/remember/state/remember-state";
+import type { RememberLocale, RememberScene } from "@/components/remember/state/remember-state";
 
 type RememberShellProps = {
   children: ReactNode;
