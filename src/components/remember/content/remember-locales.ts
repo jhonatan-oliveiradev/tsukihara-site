@@ -9,6 +9,15 @@ export type RememberLocaleCopy = {
     eyebrow: string;
     title: string;
     begin: string;
+    continue: string;
+    revisit: string;
+    newGame: string;
+    archive: string;
+    beginAgain: string;
+    beginAgainBody: string;
+    confirm: string;
+    cancel: string;
+    progress: string;
     language: string;
     thesis: string;
   };
@@ -24,6 +33,27 @@ export type RememberLocaleCopy = {
     unmute: string;
     soundOn: string;
     soundOff: string;
+    pause: string;
+  };
+  pause: {
+    eyebrow: string;
+    title: string;
+    resume: string;
+    restart: string;
+    archive: string;
+    returnTitle: string;
+  };
+  archive: {
+    eyebrow: string;
+    title: string;
+    recovered: string;
+    restored: string;
+    unstable: string;
+    unknown: string;
+    locked: string;
+    close: string;
+    akariUnknown: string;
+    replay: string;
   };
   memory: {
     label: string;
@@ -61,6 +91,15 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       eyebrow: "UMA EXPERIÊNCIA DE TSUKIHARA",
       title: "REMEMBER",
       begin: "INICIAR",
+      continue: "CONTINUAR MEMÓRIA",
+      revisit: "REVISITAR MEMÓRIAS",
+      newGame: "NOVA MEMÓRIA",
+      archive: "ARQUIVO DE MEMÓRIAS",
+      beginAgain: "LEMBRAR NOVAMENTE?",
+      beginAgainBody: "A memória atual será substituída. As cicatrizes registradas não poderão ser recuperadas.",
+      confirm: "COMEÇAR NOVAMENTE",
+      cancel: "CANCELAR",
+      progress: "MEMÓRIA ATUAL",
       language: "Idioma",
       thesis: "RESTAURE A MEMÓRIA. CARREGUE A CICATRIZ.",
     },
@@ -76,6 +115,27 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       unmute: "Ativar som",
       soundOn: "Som ligado",
       soundOff: "Som desligado",
+      pause: "Pausar memória",
+    },
+    pause: {
+      eyebrow: "MEMÓRIA SUSPENSA",
+      title: "PAUSA",
+      resume: "RETOMAR",
+      restart: "REINICIAR MEMÓRIA",
+      archive: "ARQUIVO DE MEMÓRIAS",
+      returnTitle: "VOLTAR AO TÍTULO",
+    },
+    archive: {
+      eyebrow: "REGISTRO LUNAR",
+      title: "ARQUIVO DE MEMÓRIAS",
+      recovered: "RECUPERADO",
+      restored: "RESTAURADA",
+      unstable: "INSTÁVEL",
+      unknown: "DESCONHECIDA",
+      locked: "BLOQUEADO",
+      close: "FECHAR ARQUIVO",
+      akariUnknown: "REGISTRO DESCONHECIDO",
+      replay: "REVISITAR",
     },
     memory: {
       label: "MEMÓRIA",
@@ -111,6 +171,15 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       eyebrow: "A TSUKIHARA EXPERIENCE",
       title: "REMEMBER",
       begin: "BEGIN",
+      continue: "CONTINUE MEMORY",
+      revisit: "REVISIT MEMORIES",
+      newGame: "NEW MEMORY",
+      archive: "MEMORY ARCHIVE",
+      beginAgain: "BEGIN AGAIN?",
+      beginAgainBody: "The current memory will be replaced. Recorded scars cannot be recovered.",
+      confirm: "BEGIN AGAIN",
+      cancel: "CANCEL",
+      progress: "CURRENT MEMORY",
       language: "Language",
       thesis: "RESTORE THE MEMORY. KEEP THE SCAR.",
     },
@@ -126,6 +195,27 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       unmute: "Unmute",
       soundOn: "Sound on",
       soundOff: "Sound off",
+      pause: "Pause memory",
+    },
+    pause: {
+      eyebrow: "MEMORY SUSPENDED",
+      title: "PAUSE",
+      resume: "RESUME",
+      restart: "RESTART MEMORY",
+      archive: "MEMORY ARCHIVE",
+      returnTitle: "RETURN TO TITLE",
+    },
+    archive: {
+      eyebrow: "LUNAR RECORD",
+      title: "MEMORY ARCHIVE",
+      recovered: "RECOVERED",
+      restored: "RESTORED",
+      unstable: "UNSTABLE",
+      unknown: "UNKNOWN",
+      locked: "LOCKED",
+      close: "CLOSE ARCHIVE",
+      akariUnknown: "UNKNOWN RECORD",
+      replay: "REVISIT",
     },
     memory: {
       label: "MEMORY",
