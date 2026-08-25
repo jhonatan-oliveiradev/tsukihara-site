@@ -1,5 +1,5 @@
-import { rememberAssets } from "@/components/remember/content/remember-assets";
-import type { RememberStageId } from "@/components/remember/state/remember-state";
+import { rememberAssets } from "../content/remember-assets.ts";
+import type { RememberStageId } from "../state/remember-state.ts";
 
 export type StageAssetManifest = {
   critical: string[];
@@ -79,7 +79,10 @@ export const getInitialAssetManifest = (): StageAssetManifest => ({
 export const getStageAssetManifest = (stage: RememberStageId): StageAssetManifest => {
   switch (stage) {
     case "hanamori":
-      return { critical: hanamoriAssets, next: [rememberAssets.mizukyoBroken, rememberAssets.mizukyoRestored] };
+      return {
+        critical: hanamoriAssets,
+        next: [rememberAssets.mizukyoBroken, rememberAssets.mizukyoRestored],
+      };
     case "mizukyo":
       return { critical: mizukyoAssets, next: [rememberAssets.interludeUnknownMemory] };
     case "interlude-01":
@@ -175,7 +178,9 @@ export async function preloadRememberAssets(
     }),
   );
 
-  const failure = results.find((result): result is PromiseRejectedResult => result.status === "rejected");
+  const failure = results.find(
+    (result): result is PromiseRejectedResult => result.status === "rejected",
+  );
   if (failure) throw failure.reason;
   return createPreloadProgress(loaded, total);
 }
