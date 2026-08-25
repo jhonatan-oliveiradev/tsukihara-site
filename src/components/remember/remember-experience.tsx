@@ -415,7 +415,9 @@ export function RememberExperience() {
 
   const menuVisible = state.scene === "boot" || state.scene === "menu";
   const pauseAvailable =
-    (state.scene === "memory" || state.scene === "interlude") && transitionState === "idle";
+    ((state.scene === "memory" && state.restorationPhase === "idle") ||
+      state.scene === "interlude") &&
+    transitionState === "idle";
   const gameplayInteractive =
     state.restorationPhase === "idle" &&
     transitionState === "idle" &&
@@ -425,7 +427,15 @@ export function RememberExperience() {
   const progressMemory = storedSave
     ? memoryDefinitions.find((memory) => memory.id === storedSave.currentStage)
     : null;
-  const progressLabel = progressMemory?.title ?? storedSave?.currentStage.toUpperCase() ?? null;
+  const progressFragmentCount =
+    progressMemory && storedSave
+      ? (storedSave.memoryProgress[progressMemory.id]?.restoredFragmentIds.length ?? 0)
+      : 0;
+  const progressLabel = progressMemory
+    ? `${progressMemory.title} · ${progressFragmentCount} / ${progressMemory.fragments.length}`
+    : (storedSave?.currentStage.toUpperCase() ?? null);
+  const archiveCurrentStage =
+    state.scene === "menu" && storedSave ? storedSave.currentStage : state.currentStage;
 
   return (
     <>
@@ -489,7 +499,7 @@ export function RememberExperience() {
           <MemoryArchive
             copy={copy.archive}
             save={storedSave}
-            currentStage={state.currentStage}
+            currentStage={archiveCurrentStage}
             onClose={handleCloseArchive}
             onReplayMemory={(memoryId) => void handleReplayMemory(memoryId)}
           />
