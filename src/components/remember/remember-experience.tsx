@@ -9,6 +9,7 @@ import { useRememberAudio } from "@/components/remember/audio/use-remember-audio
 import { memoryDefinitions } from "@/components/remember/content/memory-definitions";
 import { getRememberCopy } from "@/components/remember/content/remember-locales";
 import { RememberShell } from "@/components/remember/remember-shell";
+import { isMemoryReadyForRestoration } from "@/components/remember/restore/memory-mechanic-policy";
 import { BootScene } from "@/components/remember/scenes/boot-scene";
 import { GamePreloader } from "@/components/remember/scenes/game-preloader";
 import { RememberMenuBackdrop } from "@/components/remember/scenes/menu-backdrop";
@@ -256,6 +257,8 @@ export function RememberExperience() {
       }
 
       const restoredFragmentIds = [...state.restoredFragmentIds, fragmentId];
+      const completesMemory = isMemoryReadyForRestoration(activeMemory, restoredFragmentIds);
+
       mutateSave((save) => ({
         ...save,
         updatedAt: new Date().toISOString(),
@@ -268,7 +271,6 @@ export function RememberExperience() {
         },
       }));
 
-      const completesMemory = restoredFragmentIds.length >= activeMemory.fragments.length;
       if (completesMemory) void audio.duckMemoryForRestoration();
 
       audio.playPieceComplete();
@@ -276,11 +278,61 @@ export function RememberExperience() {
         type: "RESTORE_FRAGMENT",
         fragmentId,
         totalFragments: activeMemory.fragments.length,
+        completesMemory,
       });
     },
     [
-      activeMemory.fragments.length,
-      activeMemory.id,
+      activeMemory,
+      audio,
+      mutateSave,
+      state.archiveOpen,
+      state.paused,
+      state.restorationPhase,
+      state.restoredFragmentIds,
+      state.scene,
+    ],
+  );
+
+  const handleUnrestore = useCallback(
+    (fragmentId: string) => {
+      if (
+        activeMemory.mechanic !== "false-memory" ||
+        state.scene !== "memory" ||
+        state.paused ||
+        state.archiveOpen ||
+        state.restorationPhase !== "idle" ||
+        !state.restoredFragmentIds.includes(fragmentId)
+      ) {
+        return;
+      }
+
+      const restoredFragmentIds = state.restoredFragmentIds.filter(
+        (restoredFragmentId) => restoredFragmentId !== fragmentId,
+      );
+      const completesMemory = isMemoryReadyForRestoration(activeMemory, restoredFragmentIds);
+
+      mutateSave((save) => ({
+        ...save,
+        updatedAt: new Date().toISOString(),
+        memoryProgress: {
+          ...save.memoryProgress,
+          [activeMemory.id]: createMemoryProgress(
+            restoredFragmentIds,
+            save.memoryProgress[activeMemory.id],
+          ),
+        },
+      }));
+
+      if (completesMemory) void audio.duckMemoryForRestoration();
+
+      dispatch({
+        type: "UNRESTORE_FRAGMENT",
+        fragmentId,
+        completesMemory,
+      });
+    },
+    [
+      activeMemory,
       audio,
       mutateSave,
       state.archiveOpen,
@@ -309,12 +361,26 @@ export function RememberExperience() {
 
   const handleKintsugi = useCallback(() => audio.playKintsugi(), [audio]);
   const handleRestored = useCallback(() => audio.playRestored(), [audio]);
-  const handleContinue = useCallback(() => {
-    if (state.activeMemoryIndex < memoryDefinitions.length - 1) {
-      void audio.restoreMemoryLevel();
+  const handleContinue = useCallback(async () => {
+    const nextMemory = memoryDefinitions[state.activeMemoryIndex + 1];
+    if (!nextMemory) {
+      dispatch({ type: "CONTINUE" });
+      return;
     }
-    dispatch({ type: "CONTINUE" });
-  }, [audio, state.activeMemoryIndex]);
+
+    const manifest = getStageAssetManifest(nextMemory.id);
+    const transitioned = await requestTransition(
+      () => {
+        dispatch({ type: "CONTINUE" });
+        void audio.restoreMemoryLevel();
+      },
+      async () => {
+        await preloadRememberAssets(manifest.critical);
+      },
+    ).catch(() => false);
+
+    if (transitioned) void preloadRememberAssetsInBackground(manifest.next);
+  }, [audio, requestTransition, state.activeMemoryIndex]);
 
   const closePause = useCallback(() => {
     dispatch({ type: "CLOSE_PAUSE" });
@@ -518,11 +584,12 @@ export function RememberExperience() {
             reducedMotion={reducedMotion}
             interactive={gameplayInteractive}
             onRestore={handleRestore}
+            onUnrestore={handleUnrestore}
             onRestorationPhaseChange={handleRestorationPhaseChange}
             onRestorationComplete={handleRestorationComplete}
             onKintsugi={handleKintsugi}
             onRestored={handleRestored}
-            onContinue={handleContinue}
+            onContinue={() => void handleContinue()}
           />
         )}
       </RememberShell>
