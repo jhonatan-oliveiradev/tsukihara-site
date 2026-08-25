@@ -10,9 +10,13 @@ import {
 } from "react";
 import gsap from "gsap";
 import { magneticProgress, isWithinSnapRadius, type Point } from "./restore-math";
-import { HANAMORI_VIEWBOX, type MemoryFragmentDefinition } from "./restore-geometry";
+import type { MemoryFragmentDefinition } from "./restore-geometry";
+
+type ViewBox = { width: number; height: number };
 
 type MemoryFragmentProps = {
+  memoryId: string;
+  viewBox: ViewBox;
   definition: MemoryFragmentDefinition;
   source: string;
   restored: boolean;
@@ -28,6 +32,8 @@ type DragState = {
 };
 
 export function MemoryFragment({
+  memoryId,
+  viewBox,
   definition,
   source,
   restored,
@@ -42,6 +48,7 @@ export function MemoryFragment({
   const settledRef = useRef(restored);
   const interactedRef = useRef(false);
   const [active, setActive] = useState(false);
+  const clipId = `remember-clip-${memoryId}-${definition.id}`;
 
   const setTransform = useCallback((point: Point) => {
     const wrapper = wrapperRef.current;
@@ -211,20 +218,20 @@ export function MemoryFragment({
       data-fragment-id={definition.id}
     >
       <svg
-        viewBox={`0 0 ${HANAMORI_VIEWBOX.width} ${HANAMORI_VIEWBOX.height}`}
+        viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="false"
       >
         <defs>
-          <clipPath id={`remember-clip-${definition.id}`}>
+          <clipPath id={clipId}>
             <path d={definition.path} />
           </clipPath>
         </defs>
-        <g clipPath={`url(#remember-clip-${definition.id})`} aria-hidden="true">
+        <g clipPath={`url(#${clipId})`} aria-hidden="true">
           <image
             href={source}
-            width={HANAMORI_VIEWBOX.width}
-            height={HANAMORI_VIEWBOX.height}
+            width={viewBox.width}
+            height={viewBox.height}
             preserveAspectRatio="xMidYMid slice"
           />
         </g>

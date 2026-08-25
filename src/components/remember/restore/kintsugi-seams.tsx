@@ -1,6 +1,6 @@
 "use client";
 
-import { HANAMORI_VIEWBOX, hanamoriSeams } from "./restore-geometry";
+import type { KintsugiSeamDefinition } from "./restore-geometry";
 
 const seamParticles: Record<string, Array<{ x: number; y: number }>> = {
   "seam-a": [
@@ -31,21 +31,28 @@ const seamParticles: Record<string, Array<{ x: number; y: number }>> = {
 };
 
 type KintsugiSeamsProps = {
+  viewBox: { width: number; height: number };
+  seams: KintsugiSeamDefinition[];
   restoredFragmentIds: string[];
   complete: boolean;
 };
 
-export function KintsugiSeams({ restoredFragmentIds, complete }: KintsugiSeamsProps) {
+export function KintsugiSeams({
+  viewBox,
+  seams,
+  restoredFragmentIds,
+  complete,
+}: KintsugiSeamsProps) {
   const restored = new Set(restoredFragmentIds);
 
   return (
     <svg
       className={["remember-kintsugi", complete && "is-complete"].filter(Boolean).join(" ")}
-      viewBox={`0 0 ${HANAMORI_VIEWBOX.width} ${HANAMORI_VIEWBOX.height}`}
+      viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
       preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
     >
-      {hanamoriSeams.map((seam) => {
+      {seams.map((seam) => {
         const active = restored.has(seam.fragmentId);
         return (
           <g

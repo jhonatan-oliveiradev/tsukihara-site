@@ -1,28 +1,46 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
-import { rememberCopy } from "@/components/remember/content/remember-copy";
-import { hanamoriFragments } from "@/components/remember/restore/restore-geometry";
-import { HanamoriMemory } from "@/components/remember/restore/hanamori-memory";
-import { trackRememberEvent } from "@/components/remember/system/remember-analytics";
+import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
+import type { RememberLocaleCopy } from "@/components/remember/content/remember-locales";
+import { MemoryPuzzle } from "@/components/remember/restore/memory-puzzle";
+import type { RestorationPhase } from "@/components/remember/state/remember-state";
 
 type RestoreSceneProps = {
+  memory: MemoryDefinition;
+  copy: RememberLocaleCopy["memory"];
+  completionLine: string;
   restoredFragmentIds: string[];
+  restorationPhase: RestorationPhase;
   reducedMotion: boolean;
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
+  onRestorationPhaseChange: (phase: RestorationPhase) => void;
+  onRestorationComplete: () => void;
+  onKintsugi: () => void;
+  onRestored: () => void;
+  onContinue: () => void;
 };
 
 export function RestoreScene({
+  memory,
+  copy,
+  completionLine,
   restoredFragmentIds,
+  restorationPhase,
   reducedMotion,
   interactive,
   onRestore,
+  onRestorationPhaseChange,
+  onRestorationComplete,
+  onKintsugi,
+  onRestored,
+  onContinue,
 }: RestoreSceneProps) {
   const rootRef = useRef<HTMLElement>(null);
-  const completionTrackedRef = useRef(false);
-  const complete = restoredFragmentIds.length === hanamoriFragments.length;
+  const restored = restorationPhase === "restored";
+  const climax = restorationPhase !== "idle" && !restored;
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -31,11 +49,11 @@ export function RestoreScene({
     const ctx = gsap.context(() => {
       const label = root.querySelector("[data-restore-label]");
       const instruction = root.querySelector("[data-restore-instruction]");
-      const memory = root.querySelector(".remember-memory__surface");
+      const memorySurface = root.querySelector(".remember-memory__surface");
 
       if (reducedMotion) {
         gsap.fromTo(
-          [label, instruction, memory],
+          [label, instruction, memorySurface],
           { opacity: 0 },
           { opacity: 1, duration: 0.35, stagger: 0.08 },
         );
@@ -45,7 +63,7 @@ export function RestoreScene({
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
         .fromTo(
-          memory,
+          memorySurface,
           { opacity: 0, scale: 0.985, filter: "blur(10px)" },
           { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.15 },
         )
@@ -54,45 +72,67 @@ export function RestoreScene({
     }, root);
 
     return () => ctx.revert();
-  }, [reducedMotion]);
-
-  useEffect(() => {
-    if (!complete || completionTrackedRef.current) return;
-    completionTrackedRef.current = true;
-    trackRememberEvent("remember_restore_completed", { realm: "hanamori" });
-  }, [complete]);
+  }, [memory.id, reducedMotion]);
 
   return (
     <section
       ref={rootRef}
-      className={["remember-restore", complete && "is-complete"].filter(Boolean).join(" ")}
+      className={["remember-restore", climax && "is-climax", restored && "is-restored"]
+        .filter(Boolean)
+        .join(" ")}
       aria-labelledby="remember-restore-title"
+      data-memory-id={memory.id}
     >
       <div className="remember-restore__header" data-restore-label>
-        <span>MEMORY / 01</span>
-        <h1 id="remember-restore-title">{rememberCopy.restore.realm}</h1>
-        <small>花守</small>
+        <span>
+          {copy.label} / {String(memory.index).padStart(2, "0")}
+        </span>
+        <h1 id="remember-restore-title">{memory.title}</h1>
+        <small>{memory.titleJp}</small>
       </div>
 
-      <HanamoriMemory
+      <MemoryPuzzle
+        memory={memory}
         restoredFragmentIds={restoredFragmentIds}
+        restorationPhase={restorationPhase}
         reducedMotion={reducedMotion}
         interactive={interactive}
+        keyboardLabel={copy.keyboardAction}
+        restoredLabel={copy.restored}
+        completionLine={completionLine}
         onRestore={onRestore}
+        onRestorationPhaseChange={onRestorationPhaseChange}
+        onRestorationComplete={onRestorationComplete}
+        onKintsugi={onKintsugi}
+        onRestored={onRestored}
       />
 
       <div
-        className={["remember-restore__instruction", restoredFragmentIds.length > 0 && "is-receded"]
+        className={[
+          "remember-restore__instruction",
+          restoredFragmentIds.length > 0 && "is-receded",
+          climax && "is-hidden",
+          restored && "is-restored",
+        ]
           .filter(Boolean)
           .join(" ")}
         data-restore-instruction
       >
-        <span>{rememberCopy.restore.instruction}</span>
-        <i aria-hidden="true" />
-        <small>
-          {String(restoredFragmentIds.length).padStart(2, "0")} /{" "}
-          {String(hanamoriFragments.length).padStart(2, "0")}
-        </small>
+        {restored ? (
+          <button type="button" className="remember-restore__continue" onClick={onContinue}>
+            <span>{copy.continue}</span>
+            <i aria-hidden="true" />
+          </button>
+        ) : (
+          <>
+            <span>{copy.instruction}</span>
+            <i aria-hidden="true" />
+            <small>
+              {copy.fragments} {String(restoredFragmentIds.length).padStart(2, "0")} /{" "}
+              {String(memory.fragments.length).padStart(2, "0")}
+            </small>
+          </>
+        )}
       </div>
     </section>
   );
