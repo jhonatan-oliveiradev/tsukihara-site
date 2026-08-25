@@ -58,6 +58,7 @@ export function PauseMenu({
       role="dialog"
       aria-modal="true"
       aria-labelledby="remember-pause-title"
+      style={{ zIndex: 90 }}
     >
       <div className="remember-pause__veil" aria-hidden="true" />
       <div className="remember-pause__panel">
