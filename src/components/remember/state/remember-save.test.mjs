@@ -97,3 +97,16 @@ test("valid partial progress and completed results hydrate without pixel positio
   assert.equal("x" in hydrated.memoryProgress.yumegakure, false);
   assert.equal("y" in hydrated.memoryProgress.yumegakure, false);
 });
+
+test("legacy premature Akari saves resume at the first incomplete expanded memory", () => {
+  const legacyBugSave = {
+    ...createNewRememberSave(now),
+    currentStage: "akari-reveal",
+    completedStages: ["hanamori", "mizukyo", "kurogane"],
+  };
+
+  const hydrated = loadRememberSave(JSON.stringify(legacyBugSave));
+  assert.ok(hydrated);
+  assert.equal(hydrated.currentStage, "yumegakure");
+  assert.equal(hydrated.gameCompleted, false);
+});
