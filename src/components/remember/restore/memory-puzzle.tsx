@@ -9,6 +9,14 @@ import {
   shouldMountRestorationEffect,
 } from "@/components/remember/system/remember-render-policy";
 import { KintsugiSeams } from "./kintsugi-seams";
+import {
+  getFragmentSource,
+  getRequiredFragmentIds,
+  getRestoredRequiredFragmentCount,
+  getStabilizedFalseFragmentIds,
+  isFragmentReversible,
+  isMemoryReadyForRestoration,
+} from "./memory-mechanic-policy";
 import { MemoryFragment } from "./memory-fragment";
 import { MemoryRestorationEffect } from "./memory-restoration-effect";
 
@@ -22,6 +30,7 @@ type MemoryPuzzleProps = {
   restoredLabel: string;
   completionLine: string;
   onRestore: (fragmentId: string) => void;
+  onUnrestore: (fragmentId: string) => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
   onRestorationComplete: () => void;
   onKintsugi: () => void;
@@ -38,16 +47,22 @@ export function MemoryPuzzle({
   restoredLabel,
   completionLine,
   onRestore,
+  onUnrestore,
   onRestorationPhaseChange,
   onRestorationComplete,
   onKintsugi,
   onRestored,
 }: MemoryPuzzleProps) {
   const restored = new Set(restoredFragmentIds);
-  const allFragmentsPlaced = restoredFragmentIds.length === memory.fragments.length;
+  const requiredFragmentIds = getRequiredFragmentIds(memory);
+  const restoredRequiredCount = getRestoredRequiredFragmentCount(memory, restoredFragmentIds);
+  const stabilizedFalseFragmentIds = getStabilizedFalseFragmentIds(memory, restoredFragmentIds);
+  const unstable = stabilizedFalseFragmentIds.length > 0;
+  const readyForRestoration = isMemoryReadyForRestoration(memory, restoredFragmentIds);
   const visuallyRestored = restorationPhase === "restored";
   const showKintsugiSeams = shouldMountKintsugiSeams(restorationPhase);
   const showRestorationEffect = shouldMountRestorationEffect(restorationPhase);
+  const reversible = isFragmentReversible(memory) && restorationPhase === "idle";
   const lastFragmentId = restoredFragmentIds.at(-1);
   const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
   const originPoint = lastFragment
@@ -63,6 +78,7 @@ export function MemoryPuzzle({
         "remember-memory",
         `remember-memory--${memory.id}`,
         visuallyRestored && "is-complete",
+        unstable && "is-unstable",
         !interactive && "is-locked",
       ]
         .filter(Boolean)
@@ -70,6 +86,7 @@ export function MemoryPuzzle({
       role="group"
       aria-label={`${keyboardLabel}: ${memory.title}`}
       data-memory-id={memory.id}
+      data-memory-unstable={unstable ? "true" : "false"}
       data-restoration-phase={restorationPhase}
     >
       {memory.id === "hanamori" ? (
@@ -117,6 +134,17 @@ export function MemoryPuzzle({
           className="remember-memory__ghost"
         />
 
+        {memory.mechanic === "false-memory" && unstable ? (
+          <Image
+            src={memory.distortionAsset}
+            alt=""
+            fill
+            sizes="(max-width: 900px) 94vw, 76vw"
+            className="remember-memory__distortion"
+            aria-hidden="true"
+          />
+        ) : null}
+
         <div className="remember-memory__fragments">
           {memory.fragments.map((fragment) => (
             <MemoryFragment
@@ -124,11 +152,13 @@ export function MemoryPuzzle({
               memoryId={memory.id}
               viewBox={memory.viewBox}
               definition={fragment}
-              source={memory.brokenAsset}
+              source={getFragmentSource(memory, fragment)}
               restored={restored.has(fragment.id)}
+              reversible={interactive && reversible}
               reducedMotion={reducedMotion}
               keyboardLabel={keyboardLabel}
               onRestore={interactive ? onRestore : () => undefined}
+              onUnrestore={interactive ? onUnrestore : undefined}
             />
           ))}
         </div>
@@ -171,8 +201,9 @@ export function MemoryPuzzle({
       </div>
 
       <span className="sr-only" aria-live="polite">
-        {restoredFragmentIds.length} / {memory.fragments.length}
-        {allFragmentsPlaced ? " — complete" : ""}
+        {restoredRequiredCount} / {requiredFragmentIds.length}
+        {unstable ? " — unstable" : ""}
+        {readyForRestoration ? " — complete" : ""}
       </span>
     </div>
   );
