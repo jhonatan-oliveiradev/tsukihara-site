@@ -23,6 +23,7 @@ import { KintsugiLunarChapter } from "@/components/experience/kintsugi-lunar-cha
 import { MotherMoonChapter } from "@/components/experience/mother-moon-chapter";
 import { NavLabelSwap } from "@/components/experience/nav-label-swap";
 import { RealmAtlas } from "@/components/experience/realm-atlas";
+import { SoundToggle } from "@/components/shared/sound-toggle";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
 const ImmersiveWorld = dynamic(
@@ -294,21 +295,12 @@ export function ImmersiveExperience() {
                 EN
               </button>
             </div>
-            <button
-              type="button"
+            <SoundToggle
+              muted={muted}
+              label={copy.nav.sound}
+              onToggle={toggleMute}
               className="ix-sound"
-              onClick={toggleMute}
-              aria-pressed={!muted}
-              aria-label={`${copy.nav.sound}: ${muted ? "off" : "on"}`}
-              title={copy.nav.sound}
-            >
-              <span className="ix-sound-bars" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </span>
-              <span>{copy.nav.sound}</span>
-            </button>
+            />
             <button
               type="button"
               className="ix-menu"

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { getRememberCopy } from "@/components/remember/content/remember-locales";
 import type { RememberLocale, RememberScene } from "@/components/remember/state/remember-state";
+import { SoundToggle } from "@/components/shared/sound-toggle";
 
 type RememberShellProps = {
   children: ReactNode;
@@ -50,16 +51,12 @@ export function RememberShell({
             ))}
           </div>
 
-          <button
-            type="button"
+          <SoundToggle
+            muted={muted}
+            label={muted ? copy.controls.soundOff : copy.controls.soundOn}
+            onToggle={onToggleMute}
             className="remember-sound-toggle"
-            aria-pressed={!muted}
-            aria-label={muted ? copy.controls.unmute : copy.controls.mute}
-            onClick={onToggleMute}
-          >
-            <span>{muted ? copy.controls.soundOff : copy.controls.soundOn}</span>
-            <i aria-hidden="true" />
-          </button>
+          />
 
           <button type="button" className="remember-exit-toggle" onClick={onExit}>
             <span aria-hidden="true">×</span>
