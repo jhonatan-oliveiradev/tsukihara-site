@@ -7,6 +7,7 @@ import { SoundToggle } from "@/components/shared/sound-toggle";
 
 type RememberShellProps = {
   children: ReactNode;
+  overlay?: ReactNode;
   scene: RememberScene;
   locale: RememberLocale;
   muted: boolean;
@@ -20,6 +21,7 @@ type RememberShellProps = {
 
 export function RememberShell({
   children,
+  overlay,
   scene,
   locale,
   muted,
@@ -32,6 +34,7 @@ export function RememberShell({
 }: RememberShellProps) {
   const copy = getRememberCopy(locale);
   const showControls = scene !== "boot";
+  const pauseLabel = paused ? copy.controls.resume : copy.controls.pause;
 
   return (
     <main
@@ -74,11 +77,11 @@ export function RememberShell({
               type="button"
               className="remember-pause-toggle"
               aria-pressed={paused}
-              aria-label={copy.controls.pause}
+              aria-label={pauseLabel}
               onClick={onTogglePause}
             >
               <span aria-hidden="true">{paused ? "▶" : "Ⅱ"}</span>
-              <span>{copy.controls.pause}</span>
+              <span>{pauseLabel}</span>
             </button>
           ) : null}
 
@@ -90,6 +93,7 @@ export function RememberShell({
       )}
 
       <div className="remember-stage">{children}</div>
+      {overlay}
     </main>
   );
 }
