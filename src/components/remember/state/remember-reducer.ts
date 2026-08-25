@@ -119,13 +119,27 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
       if (state.restoredFragmentIds.includes(action.fragmentId)) return state;
 
       const restoredFragmentIds = [...state.restoredFragmentIds, action.fragmentId];
+      const completesMemory =
+        action.completesMemory ?? restoredFragmentIds.length >= action.totalFragments;
+
       return {
         ...state,
         restoredFragmentIds,
-        restorationPhase:
-          restoredFragmentIds.length >= action.totalFragments
-            ? "last-piece"
-            : state.restorationPhase,
+        restorationPhase: completesMemory ? "last-piece" : state.restorationPhase,
+      };
+    }
+
+    case "UNRESTORE_FRAGMENT": {
+      if (state.scene !== "memory" || state.restorationPhase !== "idle" || state.paused)
+        return state;
+      if (!state.restoredFragmentIds.includes(action.fragmentId)) return state;
+
+      return {
+        ...state,
+        restoredFragmentIds: state.restoredFragmentIds.filter(
+          (fragmentId) => fragmentId !== action.fragmentId,
+        ),
+        restorationPhase: action.completesMemory ? "last-piece" : state.restorationPhase,
       };
     }
 
