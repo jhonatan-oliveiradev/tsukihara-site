@@ -5,12 +5,17 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   format-design-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -22,10 +27,15 @@ jobs:
           npx prettier --write
           docs/superpowers/specs/2026-08-25-remember-gamefeel-transitions-design.md
           docs/superpowers/plans/2026-08-25-remember-gamefeel-transitions.md
-      - name: Upload formatted docs
-        uses: actions/upload-artifact@v4
-        with:
-          name: remember-formatted-design-docs
-          path: |
-            docs/superpowers/specs/2026-08-25-remember-gamefeel-transitions-design.md
-            docs/superpowers/plans/2026-08-25-remember-gamefeel-transitions.md
+      - name: Commit formatting when needed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/superpowers/specs/2026-08-25-remember-gamefeel-transitions-design.md
+          git add docs/superpowers/plans/2026-08-25-remember-gamefeel-transitions.md
+          if git diff --cached --quiet; then
+            echo "Design docs already formatted."
+            exit 0
+          fi
+          git commit -m "docs: format REMEMBER design artifacts"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
