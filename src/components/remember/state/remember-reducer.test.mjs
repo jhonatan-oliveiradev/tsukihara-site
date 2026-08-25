@@ -130,6 +130,26 @@ test("legacy fragment restoration remains idempotent for the existing puzzles", 
   assert.equal(duplicate.restorationPhase, "idle");
 });
 
+test("Yumegakure can release a stabilized false-memory fragment without resetting the puzzle", () => {
+  const playing = {
+    ...initialRememberState,
+    scene: "memory",
+    currentStage: "yumegakure",
+    activeMemoryIndex: 3,
+    restoredFragmentIds: ["yumegakure-a", "yumegakure-false-01", "yumegakure-b"],
+    restorationPhase: "idle",
+  };
+
+  const next = rememberReducer(playing, {
+    type: "UNRESTORE_FRAGMENT",
+    fragmentId: "yumegakure-false-01",
+  });
+
+  assert.deepEqual(next.restoredFragmentIds, ["yumegakure-a", "yumegakure-b"]);
+  assert.equal(next.currentStage, "yumegakure");
+  assert.equal(next.restorationPhase, "idle");
+});
+
 test("Kurogane completion continues into Yumegakure instead of revealing Akari early", () => {
   const kuroganeComplete = {
     ...initialRememberState,
