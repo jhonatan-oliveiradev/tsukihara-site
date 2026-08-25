@@ -33,7 +33,9 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
         ...state,
         restoredFragmentIds,
         restorationPhase:
-          restoredFragmentIds.length >= action.totalFragments ? "last-piece" : state.restorationPhase,
+          restoredFragmentIds.length >= action.totalFragments
+            ? "last-piece"
+            : state.restorationPhase,
       };
     }
 
