@@ -74,6 +74,15 @@ export function MemoryFragment({
     gsap.set(wrapper, { x: point.x, y: point.y });
   }, []);
 
+  const getFragmentTransformOrigin = useCallback(() => {
+    const bounds = hitRef.current?.getBBox();
+    if (!bounds || bounds.width <= 0 || bounds.height <= 0) return "50% 50%";
+
+    const centerX = bounds.x + bounds.width / 2;
+    const centerY = bounds.y + bounds.height / 2;
+    return `${(centerX / viewBox.width) * 100}% ${(centerY / viewBox.height) * 100}%`;
+  }, [viewBox.height, viewBox.width]);
+
   const getStageMetrics = useCallback((): StageMetrics | null => {
     const stage = wrapperRef.current?.parentElement;
     if (!stage) return null;
@@ -120,6 +129,9 @@ export function MemoryFragment({
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
+    const transformOrigin = getFragmentTransformOrigin();
+    gsap.set(wrapper, { transformOrigin });
+
     settledRef.current = restored;
     if (restored) {
       translationRef.current = { x: 0, y: 0 };
@@ -147,7 +159,7 @@ export function MemoryFragment({
     const observer = new ResizeObserver(placeInitial);
     observer.observe(stage);
     return () => observer.disconnect();
-  }, [getInitialPlacement, getStageMetrics, restored]);
+  }, [getFragmentTransformOrigin, getInitialPlacement, getStageMetrics, restored]);
 
   useEffect(
     () => () => {
