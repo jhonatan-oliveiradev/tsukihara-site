@@ -25,7 +25,7 @@ const memoryIndexForStage = (stage: RememberStageId) => {
   return index >= 0 ? index : 0;
 };
 
-const resetPuzzleRuntime = <T extends RememberState>(state: T): T => ({
+const resetPuzzleRuntime = (state: RememberState): RememberState => ({
   ...state,
   restoredFragmentIds: [],
   restorationPhase: "idle",
@@ -45,6 +45,9 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
       return { ...state, scene: "menu" };
 
     case "BEGIN_GAME":
+      if (state.scene !== "menu") return state;
+      return startFreshGame(state);
+
     case "START_NEW_GAME":
       return startFreshGame(state);
 
