@@ -9,13 +9,15 @@ import {
   type PointerEvent,
 } from "react";
 import gsap from "gsap";
+import type { MemoryDefinition } from "../content/memory-definitions";
+import { createScatterLayout } from "./scatter-layout";
 import { magneticProgress, isWithinSnapRadius, type Point } from "./restore-math";
 import type { MemoryFragmentDefinition } from "./restore-geometry";
 
 type ViewBox = { width: number; height: number };
 
 type MemoryFragmentProps = {
-  memoryId: string;
+  memory: MemoryDefinition;
   viewBox: ViewBox;
   definition: MemoryFragmentDefinition;
   source: string;
@@ -23,8 +25,10 @@ type MemoryFragmentProps = {
   reversible?: boolean;
   reducedMotion: boolean;
   keyboardLabel: string;
+  scatterSeed: number;
   onRestore: (fragmentId: string) => void;
   onUnrestore?: (fragmentId: string) => void;
+  onInteractionChange?: (fragmentId: string | null) => void;
 };
 
 type DragState = {
@@ -33,8 +37,15 @@ type DragState = {
   startTranslation: Point;
 };
 
+type StageMetrics = {
+  width: number;
+  height: number;
+  min: number;
+  responsiveScale: number;
+};
+
 export function MemoryFragment({
-  memoryId,
+  memory,
   viewBox,
   definition,
   source,
@@ -42,8 +53,10 @@ export function MemoryFragment({
   reversible = false,
   reducedMotion,
   keyboardLabel,
+  scatterSeed,
   onRestore,
   onUnrestore,
+  onInteractionChange,
 }: MemoryFragmentProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const hitRef = useRef<SVGPathElement>(null);
@@ -52,7 +65,7 @@ export function MemoryFragment({
   const settledRef = useRef(restored);
   const interactedRef = useRef(false);
   const [active, setActive] = useState(false);
-  const clipId = `remember-clip-${memoryId}-${definition.id}`;
+  const clipId = `remember-clip-${memory.id}-${definition.id}`;
 
   const setTransform = useCallback((point: Point) => {
     const wrapper = wrapperRef.current;
@@ -61,7 +74,7 @@ export function MemoryFragment({
     gsap.set(wrapper, { x: point.x, y: point.y });
   }, []);
 
-  const getStageMetrics = useCallback(() => {
+  const getStageMetrics = useCallback((): StageMetrics | null => {
     const stage = wrapperRef.current?.parentElement;
     if (!stage) return null;
     const rect = stage.getBoundingClientRect();
@@ -73,6 +86,27 @@ export function MemoryFragment({
       responsiveScale,
     };
   }, []);
+
+  const getInitialPlacement = useCallback(
+    (metrics: StageMetrics) => {
+      if (memory.mechanic === "standard") {
+        const layout = createScatterLayout(memory, scatterSeed, {
+          width: metrics.width,
+          height: metrics.height,
+          mobile: window.innerWidth <= 900,
+        });
+        const scattered = layout[definition.id];
+        if (scattered) return scattered;
+      }
+
+      return {
+        x: definition.initial.x * metrics.width * metrics.responsiveScale,
+        y: definition.initial.y * metrics.height * metrics.responsiveScale,
+        rotation: definition.rotation,
+      };
+    },
+    [definition, memory, scatterSeed],
+  );
 
   const getSnapRadius = useCallback(
     (minimumStageDimension: number) => {
@@ -97,12 +131,14 @@ export function MemoryFragment({
       if (interactedRef.current || settledRef.current) return;
       const metrics = getStageMetrics();
       if (!metrics) return;
-      const point = {
-        x: definition.initial.x * metrics.width * metrics.responsiveScale,
-        y: definition.initial.y * metrics.height * metrics.responsiveScale,
-      };
-      translationRef.current = point;
-      gsap.set(wrapper, { x: point.x, y: point.y, rotation: definition.rotation, scale: 1 });
+      const point = getInitialPlacement(metrics);
+      translationRef.current = { x: point.x, y: point.y };
+      gsap.set(wrapper, {
+        x: point.x,
+        y: point.y,
+        rotation: point.rotation,
+        scale: 1,
+      });
     };
 
     placeInitial();
@@ -111,7 +147,7 @@ export function MemoryFragment({
     const observer = new ResizeObserver(placeInitial);
     observer.observe(stage);
     return () => observer.disconnect();
-  }, [definition, getStageMetrics, restored]);
+  }, [getInitialPlacement, getStageMetrics, restored]);
 
   useEffect(
     () => () => {
@@ -154,6 +190,7 @@ export function MemoryFragment({
     if (target.hasPointerCapture(pointerId)) target.releasePointerCapture(pointerId);
     dragRef.current = null;
     setActive(false);
+    onInteractionChange?.(null);
   };
 
   const handlePointerDown = (event: PointerEvent<SVGPathElement>) => {
@@ -168,6 +205,7 @@ export function MemoryFragment({
       startTranslation: { ...translationRef.current },
     };
     setActive(true);
+    onInteractionChange?.(definition.id);
     gsap.to(wrapperRef.current, { scale: 1.018, duration: 0.2, ease: "power2.out" });
   };
 
@@ -222,15 +260,12 @@ export function MemoryFragment({
       if (!releaseSettlement()) return;
       const metrics = getStageMetrics();
       if (!metrics) return;
-      const point = {
-        x: definition.initial.x * metrics.width * metrics.responsiveScale,
-        y: definition.initial.y * metrics.height * metrics.responsiveScale,
-      };
-      translationRef.current = point;
+      const point = getInitialPlacement(metrics);
+      translationRef.current = { x: point.x, y: point.y };
       gsap.to(wrapperRef.current, {
         x: point.x,
         y: point.y,
-        rotation: definition.rotation,
+        rotation: point.rotation,
         scale: 1,
         duration: reducedMotion ? 0.12 : 0.32,
         ease: "power2.out",
@@ -238,7 +273,9 @@ export function MemoryFragment({
       return;
     }
 
+    onInteractionChange?.(definition.id);
     settle();
+    onInteractionChange?.(null);
   };
 
   const locked = restored && !reversible;
