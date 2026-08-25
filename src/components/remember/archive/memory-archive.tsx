@@ -27,7 +27,8 @@ const memoryIds = memoryDefinitions.map((memory) => memory.id);
 const completedMemoryIdsFromSave = (save: RememberSaveV1 | null): MemoryId[] => {
   if (!save) return [];
   return memoryIds.filter(
-    (memoryId) => save.completedStages.includes(memoryId) || save.memories[memoryId]?.completed === true,
+    (memoryId) =>
+      save.completedStages.includes(memoryId) || save.memories[memoryId]?.completed === true,
   );
 };
 
@@ -51,7 +52,12 @@ export function MemoryArchive({
   const akariState = getAkariArchiveRecordState(save?.discoveredAkariRecord === true);
 
   return (
-    <section className="remember-archive" role="dialog" aria-modal="true" aria-labelledby="remember-archive-title">
+    <section
+      className="remember-archive"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="remember-archive-title"
+    >
       <Image
         src={rememberAssets.memoryArchiveBackground}
         alt=""
@@ -63,7 +69,13 @@ export function MemoryArchive({
       <div className="remember-archive__veil" aria-hidden="true" />
 
       <header className="remember-archive__header">
-        <Image src={rememberAssets.memoryArchiveSigil} alt="" width={92} height={92} aria-hidden="true" />
+        <Image
+          src={rememberAssets.memoryArchiveSigil}
+          alt=""
+          width={92}
+          height={92}
+          aria-hidden="true"
+        />
         <div>
           <span>{copy.eyebrow}</span>
           <h2 id="remember-archive-title">{copy.title}</h2>
@@ -84,7 +96,12 @@ export function MemoryArchive({
           const replayable = canOpenArchiveRecord(gameCompleted, state);
 
           return (
-            <article key={memory.id} className="remember-archive-record" data-record-state={state} role="listitem">
+            <article
+              key={memory.id}
+              className="remember-archive-record"
+              data-record-state={state}
+              role="listitem"
+            >
               <div className="remember-archive-record__index">
                 <span>{String(memory.index).padStart(2, "0")}</span>
                 <i aria-hidden="true" />
@@ -95,15 +112,23 @@ export function MemoryArchive({
               </div>
               <span className="remember-archive-record__status">{statusLabel(state, copy)}</span>
               {replayable ? (
-                <button type="button" onClick={() => onReplayMemory(memory.id)}>{copy.replay}</button>
+                <button type="button" onClick={() => onReplayMemory(memory.id)}>
+                  {copy.replay}
+                </button>
               ) : (
-                <span className="remember-archive-record__mark" aria-hidden="true">月</span>
+                <span className="remember-archive-record__mark" aria-hidden="true">
+                  月
+                </span>
               )}
             </article>
           );
         })}
 
-        <article className="remember-archive-record remember-archive-record--akari" data-record-state={akariState} role="listitem">
+        <article
+          className="remember-archive-record remember-archive-record--akari"
+          data-record-state={akariState}
+          role="listitem"
+        >
           <div className="remember-archive-record__index">
             <span>∞</span>
             <i aria-hidden="true" />
@@ -114,14 +139,24 @@ export function MemoryArchive({
           </div>
           <span className="remember-archive-record__status">{statusLabel(akariState, copy)}</span>
           {akariState !== "LOCKED" ? (
-            <Image src={rememberAssets.akr001Signature} alt="" width={88} height={40} className="remember-archive-record__signature" />
+            <Image
+              src={rememberAssets.akr001Signature}
+              alt=""
+              width={88}
+              height={40}
+              className="remember-archive-record__signature"
+            />
           ) : (
-            <span className="remember-archive-record__mark" aria-hidden="true">?</span>
+            <span className="remember-archive-record__mark" aria-hidden="true">
+              ?
+            </span>
           )}
         </article>
       </div>
 
-      <button type="button" className="remember-archive__close" onClick={onClose}>{copy.close}</button>
+      <button type="button" className="remember-archive__close" onClick={onClose}>
+        {copy.close}
+      </button>
     </section>
   );
 }
