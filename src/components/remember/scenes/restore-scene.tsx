@@ -10,22 +10,32 @@ import type { RestorationPhase } from "@/components/remember/state/remember-stat
 type RestoreSceneProps = {
   memory: MemoryDefinition;
   copy: RememberLocaleCopy["memory"];
+  completionLine: string;
   restoredFragmentIds: string[];
   restorationPhase: RestorationPhase;
   reducedMotion: boolean;
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
+  onRestorationPhaseChange: (phase: RestorationPhase) => void;
+  onRestorationComplete: () => void;
+  onKintsugi: () => void;
+  onRestored: () => void;
   onContinue: () => void;
 };
 
 export function RestoreScene({
   memory,
   copy,
+  completionLine,
   restoredFragmentIds,
   restorationPhase,
   reducedMotion,
   interactive,
   onRestore,
+  onRestorationPhaseChange,
+  onRestorationComplete,
+  onKintsugi,
+  onRestored,
   onContinue,
 }: RestoreSceneProps) {
   const rootRef = useRef<HTMLElement>(null);
@@ -88,7 +98,13 @@ export function RestoreScene({
         reducedMotion={reducedMotion}
         interactive={interactive}
         keyboardLabel={copy.keyboardAction}
+        restoredLabel={copy.restored}
+        completionLine={completionLine}
         onRestore={onRestore}
+        onRestorationPhaseChange={onRestorationPhaseChange}
+        onRestorationComplete={onRestorationComplete}
+        onKintsugi={onKintsugi}
+        onRestored={onRestored}
       />
 
       <div
