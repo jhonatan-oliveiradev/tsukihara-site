@@ -34,6 +34,9 @@ export type RememberSaveV1 = {
   gameCompleted: boolean;
 };
 
+const memoryOrder: MemoryId[] = ["hanamori", "mizukyo", "kurogane", "yumegakure", "gekkai"];
+const prematureFinaleStages = new Set<RememberStageId>(["akari-reveal", "epilogue", "credits"]);
+
 const stageIds = new Set<RememberStageId>([
   "hanamori",
   "mizukyo",
@@ -47,8 +50,7 @@ const stageIds = new Set<RememberStageId>([
   "credits",
 ]);
 
-const memoryIds = new Set<MemoryId>(["hanamori", "mizukyo", "kurogane", "yumegakure", "gekkai"]);
-
+const memoryIds = new Set<MemoryId>(memoryOrder);
 const resonanceRanks = new Set<ResonanceRank>(["S", "A", "B", "C"]);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -103,6 +105,22 @@ const isMemoryResultRecord = (value: unknown): value is Partial<Record<MemoryId,
   return Object.values(value).every(isMemoryResult);
 };
 
+const repairPrematureFinaleStage = (
+  currentStage: RememberStageId,
+  completedStages: RememberStageId[],
+  memories: Partial<Record<MemoryId, MemoryResult>>,
+  gameCompleted: boolean,
+): RememberStageId => {
+  if (gameCompleted || !prematureFinaleStages.has(currentStage)) return currentStage;
+
+  const firstIncompleteMemory = memoryOrder.find(
+    (memoryId) =>
+      !completedStages.includes(memoryId) && memories[memoryId]?.completed !== true,
+  );
+
+  return firstIncompleteMemory ?? currentStage;
+};
+
 const normalizeV1 = (value: unknown): RememberSaveV1 | null => {
   if (!isRecord(value) || value.version !== 1) return null;
   if (typeof value.startedAt !== "string" || typeof value.updatedAt !== "string") return null;
@@ -113,12 +131,20 @@ const normalizeV1 = (value: unknown): RememberSaveV1 | null => {
   if (typeof value.discoveredAkariRecord !== "boolean") return null;
   if (typeof value.gameCompleted !== "boolean") return null;
 
+  const completedStages = [...new Set(value.completedStages)];
+  const currentStage = repairPrematureFinaleStage(
+    value.currentStage,
+    completedStages,
+    value.memories,
+    value.gameCompleted,
+  );
+
   return {
     version: 1,
     startedAt: value.startedAt,
     updatedAt: value.updatedAt,
-    currentStage: value.currentStage,
-    completedStages: [...new Set(value.completedStages)],
+    currentStage,
+    completedStages,
     memoryProgress: value.memoryProgress,
     memories: value.memories,
     discoveredAkariRecord: value.discoveredAkariRecord,
