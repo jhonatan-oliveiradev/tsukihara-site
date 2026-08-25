@@ -56,7 +56,10 @@ export function useRememberAudio(): RememberAudioController {
       if (!audio) return;
       audio.pause();
       audio.currentTime = 0;
+      audio.removeAttribute("src");
+      audio.load();
     });
+    tracksRef.current = {};
 
     transientsRef.current.forEach((audio) => {
       audio.pause();
