@@ -130,6 +130,42 @@ test("legacy fragment restoration remains idempotent for the existing puzzles", 
   assert.equal(duplicate.restorationPhase, "idle");
 });
 
+test("Kurogane completion continues into Yumegakure instead of revealing Akari early", () => {
+  const kuroganeComplete = {
+    ...initialRememberState,
+    scene: "memory",
+    currentStage: "kurogane",
+    activeMemoryIndex: 2,
+    completedMemoryIds: ["hanamori", "mizukyo", "kurogane"],
+    completedStages: ["hanamori", "mizukyo", "kurogane"],
+    restorationPhase: "restored",
+  };
+
+  const next = rememberReducer(kuroganeComplete, { type: "CONTINUE" });
+  assert.equal(next.scene, "memory");
+  assert.equal(next.currentStage, "yumegakure");
+  assert.equal(next.activeMemoryIndex, 3);
+  assert.deepEqual(next.restoredFragmentIds, []);
+  assert.equal(next.restorationPhase, "idle");
+});
+
+test("Yumegakure completion continues into Gekkai while memories remain", () => {
+  const yumegakureComplete = {
+    ...initialRememberState,
+    scene: "memory",
+    currentStage: "yumegakure",
+    activeMemoryIndex: 3,
+    completedMemoryIds: ["hanamori", "mizukyo", "kurogane", "yumegakure"],
+    completedStages: ["hanamori", "mizukyo", "kurogane", "yumegakure"],
+    restorationPhase: "restored",
+  };
+
+  const next = rememberReducer(yumegakureComplete, { type: "CONTINUE" });
+  assert.equal(next.scene, "memory");
+  assert.equal(next.currentStage, "gekkai");
+  assert.equal(next.activeMemoryIndex, 4);
+});
+
 test("RESTART clears runtime progress while preserving locale and mute preference", () => {
   let state = rememberReducer(initialRememberState, { type: "SET_LOCALE", locale: "en" });
   state = rememberReducer(state, { type: "SET_MUTED", muted: true });
