@@ -36,7 +36,10 @@ export function MemoryRestorationEffect({
   const rootRef = useRef<HTMLDivElement>(null);
   const ranMemoryRef = useRef<string | null>(null);
   const callbacksRef = useRef({ onPhaseChange, onComplete, onKintsugi, onRestored });
-  callbacksRef.current = { onPhaseChange, onComplete, onKintsugi, onRestored };
+
+  useLayoutEffect(() => {
+    callbacksRef.current = { onPhaseChange, onComplete, onKintsugi, onRestored };
+  }, [onComplete, onKintsugi, onPhaseChange, onRestored]);
 
   useLayoutEffect(() => {
     if (ranMemoryRef.current !== memory.id) ranMemoryRef.current = null;
