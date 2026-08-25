@@ -53,7 +53,9 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
 
     case "HYDRATE_SAVE": {
       const completedMemoryIds = memoryOrder.filter(
-        (memoryId) => action.save.memories[memoryId]?.completed === true,
+        (memoryId) =>
+          action.save.completedStages.includes(memoryId) ||
+          action.save.memories[memoryId]?.completed === true,
       );
       const restoredFragmentIds = isMemoryStage(action.save.currentStage)
         ? (action.save.memoryProgress[action.save.currentStage]?.restoredFragmentIds ?? [])
@@ -61,6 +63,7 @@ export function rememberReducer(state: RememberState, action: RememberAction): R
 
       return {
         ...state,
+        scene: sceneForStage(action.save.currentStage),
         currentStage: action.save.currentStage,
         completedStages: [...action.save.completedStages],
         completedMemoryIds,
