@@ -34,13 +34,21 @@ export function RestoreScene({
       const memory = root.querySelector(".remember-memory__surface");
 
       if (reducedMotion) {
-        gsap.fromTo([label, instruction, memory], { opacity: 0 }, { opacity: 1, duration: 0.35, stagger: 0.08 });
+        gsap.fromTo(
+          [label, instruction, memory],
+          { opacity: 0 },
+          { opacity: 1, duration: 0.35, stagger: 0.08 },
+        );
         return;
       }
 
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
-        .fromTo(memory, { opacity: 0, scale: 0.985, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.15 })
+        .fromTo(
+          memory,
+          { opacity: 0, scale: 0.985, filter: "blur(10px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.15 },
+        )
         .fromTo(label, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7 }, 0.35)
         .fromTo(instruction, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.65 }, 0.5);
     }, root);
@@ -74,10 +82,7 @@ export function RestoreScene({
       />
 
       <div
-        className={[
-          "remember-restore__instruction",
-          restoredFragmentIds.length > 0 && "is-receded",
-        ]
+        className={["remember-restore__instruction", restoredFragmentIds.length > 0 && "is-receded"]
           .filter(Boolean)
           .join(" ")}
         data-restore-instruction
@@ -85,7 +90,8 @@ export function RestoreScene({
         <span>{rememberCopy.restore.instruction}</span>
         <i aria-hidden="true" />
         <small>
-          {String(restoredFragmentIds.length).padStart(2, "0")} / {String(hanamoriFragments.length).padStart(2, "0")}
+          {String(restoredFragmentIds.length).padStart(2, "0")} /{" "}
+          {String(hanamoriFragments.length).padStart(2, "0")}
         </small>
       </div>
     </section>
