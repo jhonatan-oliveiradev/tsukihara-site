@@ -22,7 +22,7 @@ type RestoreSceneProps = {
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
   onUnrestore: (fragmentId: string) => void;
-  onMistake: () => void;
+  onMistake?: () => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
   onRestorationComplete: () => void;
   onKintsugi: () => void;
@@ -40,7 +40,7 @@ export function RestoreScene({
   interactive,
   onRestore,
   onUnrestore,
-  onMistake,
+  onMistake = () => undefined,
   onRestorationPhaseChange,
   onRestorationComplete,
   onKintsugi,
