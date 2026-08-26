@@ -82,7 +82,7 @@ export function RememberShell({
           {fullscreenAvailable && onToggleFullscreen ? (
             <button
               type="button"
-              className="remember-fullscreen-toggle"
+              className="remember-pause-toggle remember-fullscreen-toggle"
               aria-pressed={isFullscreen}
               aria-label={fullscreenLabel}
               onClick={onToggleFullscreen}
