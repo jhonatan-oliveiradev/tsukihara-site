@@ -29,7 +29,7 @@ export const tickLunarFocus = (
   let delta = sanitizeDelta(elapsedMs);
   if (paused || delta === 0 || state.status === "ready") return state;
 
-  let current = state;
+  let current: LunarFocusState = state;
 
   while (delta > 0 && current.status !== "ready") {
     if (delta < current.remainingMs) {
