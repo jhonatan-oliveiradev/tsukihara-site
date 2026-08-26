@@ -57,8 +57,7 @@ export function EpilogueScene({
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            textShadow:
-              "0 1rem 3rem rgb(0 0 0 / 0.92), 0 0 2.8rem rgb(214 177 116 / 0.16)",
+            textShadow: "0 1rem 3rem rgb(0 0 0 / 0.92), 0 0 2.8rem rgb(214 177 116 / 0.16)",
             duration: 1.65,
           },
           "-=0.28",

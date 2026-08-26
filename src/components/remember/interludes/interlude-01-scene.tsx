@@ -62,10 +62,7 @@ export function Interlude01Scene({
         padding: "clamp(5.5rem, 11vh, 8rem) clamp(1.25rem, 5vw, 5rem) 5rem",
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{ position: "absolute", inset: "8% 7% 9%", opacity: 0.55 }}
-      >
+      <div aria-hidden="true" style={{ position: "absolute", inset: "8% 7% 9%", opacity: 0.55 }}>
         <Image
           src={rememberAssets.interludeUnknownMemory}
           alt=""

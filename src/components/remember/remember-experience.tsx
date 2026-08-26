@@ -83,12 +83,8 @@ export function RememberExperience() {
   const saveRef = useRef<RememberSaveV1 | null>(null);
   const transitionDirectorRef = useRef<SceneTransitionDirectorHandle>(null);
   const reducedMotion = useRememberReducedMotion();
-  const {
-    isFullscreen,
-    fullscreenAvailable,
-    requestFullscreen,
-    toggleFullscreen,
-  } = useRememberFullscreen();
+  const { isFullscreen, fullscreenAvailable, requestFullscreen, toggleFullscreen } =
+    useRememberFullscreen();
   const audio = useRememberAudio();
   const copy = getRememberCopy(state.locale);
   const activeMemory = memoryDefinitions[state.activeMemoryIndex] ?? memoryDefinitions[0];
