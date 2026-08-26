@@ -22,6 +22,7 @@ type RestoreSceneProps = {
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
   onUnrestore: (fragmentId: string) => void;
+  onMistake: () => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
   onRestorationComplete: () => void;
   onKintsugi: () => void;
@@ -39,6 +40,7 @@ export function RestoreScene({
   interactive,
   onRestore,
   onUnrestore,
+  onMistake,
   onRestorationPhaseChange,
   onRestorationComplete,
   onKintsugi,
@@ -190,9 +192,14 @@ export function RestoreScene({
         completionLine={completionLine}
         guidanceTitle={copy.guidanceTitle}
         guidanceBody={copy.guidanceBody}
+        lunarFocusLabel={copy.lunarFocus}
+        lunarFocusReady={copy.lunarFocusReady}
+        lunarFocusActive={copy.lunarFocusActive}
+        lunarFocusCooldown={copy.lunarFocusCooldown}
         scatterSeed={scatterSeed}
         onRestore={onRestore}
         onUnrestore={onUnrestore}
+        onMistake={onMistake}
         onRestorationPhaseChange={onRestorationPhaseChange}
         onRestorationComplete={onRestorationComplete}
         onKintsugi={onKintsugi}
