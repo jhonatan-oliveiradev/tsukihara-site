@@ -22,6 +22,20 @@ jobs:
         run: npm run test:hero
       - name: REMEMBER regression
         run: npm run test:remember
+      - name: Format REMEMBER diagnostic set
+        run: |
+          npx prettier --write \
+            src/components/remember/interludes/interlude-01-scene.tsx \
+            src/components/remember/remember-experience.tsx \
+            src/components/remember/scenes/epilogue-scene.tsx \
+            src/components/remember/state/remember-reducer.ts \
+            src/components/remember/system/remember-gamefeel-contract.test.mjs
+          git diff -- \
+            src/components/remember/interludes/interlude-01-scene.tsx \
+            src/components/remember/remember-experience.tsx \
+            src/components/remember/scenes/epilogue-scene.tsx \
+            src/components/remember/state/remember-reducer.ts \
+            src/components/remember/system/remember-gamefeel-contract.test.mjs
       - name: Check formatting
         run: npm run format:check
       - name: Lint
