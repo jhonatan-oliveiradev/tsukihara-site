@@ -21,12 +21,16 @@ type MemoryFragmentProps = {
   viewBox: ViewBox;
   definition: MemoryFragmentDefinition;
   source: string;
+  alternateSource?: string;
+  sourceBlend?: number;
   restored: boolean;
   reversible?: boolean;
   reducedMotion: boolean;
   keyboardLabel: string;
   scatterSeed: number;
+  canRestore?: () => boolean;
   onRestore: (fragmentId: string) => void;
+  onInvalidRestore?: () => void;
   onUnrestore?: (fragmentId: string) => void;
   onInteractionChange?: (fragmentId: string | null) => void;
 };
@@ -49,12 +53,16 @@ export function MemoryFragment({
   viewBox,
   definition,
   source,
+  alternateSource,
+  sourceBlend = 0,
   restored,
   reversible = false,
   reducedMotion,
   keyboardLabel,
   scatterSeed,
+  canRestore,
   onRestore,
+  onInvalidRestore,
   onUnrestore,
   onInteractionChange,
 }: MemoryFragmentProps) {
@@ -66,6 +74,7 @@ export function MemoryFragment({
   const interactedRef = useRef(false);
   const [active, setActive] = useState(false);
   const clipId = `remember-clip-${memory.id}-${definition.id}`;
+  const blend = Math.max(0, Math.min(1, sourceBlend));
 
   const setTransform = useCallback((point: Point) => {
     const wrapper = wrapperRef.current;
@@ -174,9 +183,19 @@ export function MemoryFragment({
   );
 
   const settle = useCallback(() => {
-    if (settledRef.current) return;
+    if (settledRef.current) return false;
     const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    if (!wrapper) return false;
+
+    if (canRestore && !canRestore()) {
+      onInvalidRestore?.();
+      gsap.to(wrapper, {
+        scale: 1,
+        duration: reducedMotion ? 0.12 : 0.22,
+        ease: "power2.out",
+      });
+      return false;
+    }
 
     settledRef.current = true;
     translationRef.current = { x: 0, y: 0 };
@@ -189,7 +208,8 @@ export function MemoryFragment({
       ease: reducedMotion ? "power1.out" : "power3.out",
       onComplete: () => onRestore(definition.id),
     });
-  }, [definition.id, onRestore, reducedMotion]);
+    return true;
+  }, [canRestore, definition.id, onInvalidRestore, onRestore, reducedMotion]);
 
   const releaseSettlement = useCallback(() => {
     if (!settledRef.current || !reversible || !onUnrestore) return false;
@@ -204,6 +224,20 @@ export function MemoryFragment({
     setActive(false);
     onInteractionChange?.(null);
   };
+
+  const returnTo = useCallback(
+    (point: Point) => {
+      translationRef.current = point;
+      gsap.to(wrapperRef.current, {
+        x: point.x,
+        y: point.y,
+        scale: 1,
+        duration: reducedMotion ? 0.14 : 0.32,
+        ease: "power2.out",
+      });
+    },
+    [reducedMotion],
+  );
 
   const handlePointerDown = (event: PointerEvent<SVGPathElement>) => {
     if (settledRef.current && !releaseSettlement()) return;
@@ -252,7 +286,7 @@ export function MemoryFragment({
     releasePointer(event.currentTarget, event.pointerId);
 
     if (shouldSnap) {
-      settle();
+      if (!settle()) returnTo(drag.startTranslation);
       return;
     }
 
@@ -291,6 +325,7 @@ export function MemoryFragment({
   };
 
   const locked = restored && !reversible;
+  const imageTransition = reducedMotion ? "opacity 120ms ease" : "opacity 620ms ease";
 
   return (
     <div
@@ -321,7 +356,17 @@ export function MemoryFragment({
             width={viewBox.width}
             height={viewBox.height}
             preserveAspectRatio="xMidYMid slice"
+            style={{ opacity: alternateSource ? 1 - blend : 1, transition: imageTransition }}
           />
+          {alternateSource ? (
+            <image
+              href={alternateSource}
+              width={viewBox.width}
+              height={viewBox.height}
+              preserveAspectRatio="xMidYMid slice"
+              style={{ opacity: blend, transition: imageTransition }}
+            />
+          ) : null}
         </g>
         <path
           ref={hitRef}
