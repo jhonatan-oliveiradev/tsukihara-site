@@ -209,22 +209,13 @@ export function CreditsScene({
           </button>
           <button
             type="button"
-            className="remember-credits__replay"
+            className="remember-menu__secondary remember-credits__replay"
             disabled={!interactive}
             onClick={onReplay}
             style={{
-              border: "1px solid rgb(211 179 130 / 0.22)",
-              padding: "0.72rem 1rem",
-              background: "rgb(7 6 8 / 0.24)",
-              color: "rgb(226 211 188 / 0.5)",
-              font: "inherit",
-              fontSize: "0.54rem",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
+              marginTop: 0,
               opacity: interactive ? 1 : 0.28,
               cursor: interactive ? "pointer" : "default",
-              transition:
-                "color 220ms ease, border-color 220ms ease, box-shadow 260ms ease, transform 220ms ease",
             }}
           >
             {copy.replay}
