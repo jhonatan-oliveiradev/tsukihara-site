@@ -227,7 +227,9 @@ export function MemoryPuzzle({
         cycleMs,
       );
       realityCycleRef.current = nextReality;
-      setCurrentReality((current) => (current === nextReality.reality ? current : nextReality.reality));
+      setCurrentReality((current) =>
+        current === nextReality.reality ? current : nextReality.reality,
+      );
 
       frame = window.requestAnimationFrame(tick);
     };
@@ -252,7 +254,9 @@ export function MemoryPuzzle({
       const target = event.target;
       if (
         target instanceof Element &&
-        target.closest('button, a, input, textarea, select, [contenteditable="true"], [role="button"]')
+        target.closest(
+          'button, a, input, textarea, select, [contenteditable="true"], [role="button"]',
+        )
       ) {
         return;
       }
@@ -272,7 +276,9 @@ export function MemoryPuzzle({
         ? lunarFocusCooldown
         : lunarFocusReady;
   const focusSeconds =
-    focusState.status === "ready" ? null : Math.max(1, Math.ceil(focusState.remainingMs / 1000));
+    focusState.status === "ready"
+      ? null
+      : Math.max(1, Math.ceil(focusState.remainingMs / 1000));
 
   return (
     <div
@@ -419,7 +425,9 @@ export function MemoryPuzzle({
           {memory.fragments.map((fragment) => {
             const overlappingFragment =
               memory.mechanic === "overlapping" ? (fragment as OverlappingFragment) : null;
-            const source = overlappingFragment ? memory.stateAAsset : getFragmentSource(memory, fragment);
+            const source = overlappingFragment
+              ? memory.stateAAsset
+              : getFragmentSource(memory, fragment);
             const alternateSource = overlappingFragment ? memory.stateBAsset : undefined;
             const sourceBlend = overlappingFragment
               ? focusActive
