@@ -67,6 +67,10 @@ export type RememberLocaleCopy = {
     continue: string;
     guidanceTitle: string;
     guidanceBody: string;
+    lunarFocus: string;
+    lunarFocusReady: string;
+    lunarFocusActive: string;
+    lunarFocusCooldown: string;
   };
   interlude01: {
     eyebrow: string;
@@ -175,6 +179,10 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       continue: "CONTINUAR",
       guidanceTitle: "RECONSTRUA A MEMÓRIA",
       guidanceBody: "Arraste os fragmentos e devolva-os ao lugar ao qual pertencem.",
+      lunarFocus: "FOCO LUNAR",
+      lunarFocusReady: "PRONTO",
+      lunarFocusActive: "REALIDADE ESTABILIZADA",
+      lunarFocusCooldown: "RECARGA",
     },
     interlude01: {
       eyebrow: "ASSINATURA DE MEMÓRIA DESCONHECIDA",
@@ -285,6 +293,10 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       continue: "CONTINUE",
       guidanceTitle: "RECONSTRUCT THE MEMORY",
       guidanceBody: "Drag the fragments and return them to the place where they belong.",
+      lunarFocus: "LUNAR FOCUS",
+      lunarFocusReady: "READY",
+      lunarFocusActive: "REALITY STABILIZED",
+      lunarFocusCooldown: "COOLDOWN",
     },
     interlude01: {
       eyebrow: "UNKNOWN MEMORY SIGNATURE",
