@@ -17,13 +17,14 @@ export function useRememberFullscreen() {
       setFullscreenAvailable(canUseFullscreen());
     };
 
-    syncFullscreenState();
     document.addEventListener("fullscreenchange", syncFullscreenState);
     return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
   }, []);
 
   const requestFullscreen = useCallback(() => {
-    if (!canUseFullscreen() || document.fullscreenElement) return;
+    const available = canUseFullscreen();
+    setFullscreenAvailable(available);
+    if (!available || document.fullscreenElement) return;
     void document.documentElement.requestFullscreen().catch(() => undefined);
   }, []);
 
@@ -33,6 +34,7 @@ export function useRememberFullscreen() {
   }, []);
 
   const toggleFullscreen = useCallback(() => {
+    setFullscreenAvailable(canUseFullscreen());
     if (document.fullscreenElement) {
       exitFullscreen();
       return;
