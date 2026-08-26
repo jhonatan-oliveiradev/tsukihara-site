@@ -51,6 +51,7 @@ import {
   preloadRememberAssetsInBackground,
 } from "@/components/remember/system/remember-asset-manifest";
 import type { TransitionState } from "@/components/remember/system/scene-transition-policy";
+import { useRememberFullscreen } from "@/components/remember/system/use-remember-fullscreen";
 import { useRememberReducedMotion } from "@/components/remember/system/use-remember-reduced-motion";
 import { useRememberScrollLock } from "@/components/remember/system/use-remember-scroll-lock";
 
@@ -82,6 +83,12 @@ export function RememberExperience() {
   const saveRef = useRef<RememberSaveV1 | null>(null);
   const transitionDirectorRef = useRef<SceneTransitionDirectorHandle>(null);
   const reducedMotion = useRememberReducedMotion();
+  const {
+    isFullscreen,
+    fullscreenAvailable,
+    requestFullscreen,
+    toggleFullscreen,
+  } = useRememberFullscreen();
   const audio = useRememberAudio();
   const copy = getRememberCopy(state.locale);
   const activeMemory = memoryDefinitions[state.activeMemoryIndex] ?? memoryDefinitions[0];
@@ -239,6 +246,11 @@ export function RememberExperience() {
 
     if (transitioned) void preloadRememberAssetsInBackground(manifest.next);
   }, [audio, persistSave, requestTransition]);
+
+  const handleReplayExperience = useCallback(async () => {
+    trackRememberEvent("remember_replay_started");
+    await handleNewGame();
+  }, [handleNewGame]);
 
   const handleContinueSave = useCallback(async () => {
     const save = saveRef.current;
@@ -621,15 +633,24 @@ export function RememberExperience() {
         muted={state.muted}
         paused={state.paused}
         pauseAvailable={pauseAvailable}
+        isFullscreen={isFullscreen}
+        fullscreenAvailable={fullscreenAvailable}
         onExit={handleExit}
         onToggleMute={handleToggleMute}
         onTogglePause={handleTogglePause}
+        onToggleFullscreen={toggleFullscreen}
         onLocaleChange={handleLocaleChange}
         overlay={overlay}
       >
         {menuVisible && <RememberMenuBackdrop reducedMotion={reducedMotion} />}
 
-        {state.scene === "boot" && <BootScene copy={copy.boot} onUnlock={handleUnlockMenu} />}
+        {state.scene === "boot" && (
+          <BootScene
+            copy={copy.boot}
+            onUnlock={handleUnlockMenu}
+            onFirstInteraction={requestFullscreen}
+          />
+        )}
         {state.scene === "menu" && (
           <MenuScene
             copy={copy.menu}
@@ -706,6 +727,7 @@ export function RememberExperience() {
             interactive={gameplayInteractive}
             reducedMotion={reducedMotion}
             onReturn={handleExit}
+            onReplay={() => void handleReplayExperience()}
           />
         )}
       </RememberShell>
