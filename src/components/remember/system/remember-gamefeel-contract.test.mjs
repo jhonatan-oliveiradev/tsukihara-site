@@ -79,7 +79,7 @@ test("Gekkai runs overlapping realities with one Lunar Focus action for SPACE an
   assert.match(puzzle, /memory\.stateAAsset/);
   assert.match(puzzle, /memory\.stateBAsset/);
   assert.match(puzzle, /memory\.focusOverlayAsset/);
-  assert.match(puzzle, /event\.code === "Space"/);
+  assert.match(puzzle, /event\.code !== "Space"/);
   assert.match(puzzle, /data-lunar-focus/);
   assert.match(puzzle, /onClick=\{activateFocus\}/);
   assert.match(puzzle, /isRealitySnapAllowed/);
