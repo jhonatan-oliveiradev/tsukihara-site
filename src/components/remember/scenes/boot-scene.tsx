@@ -6,14 +6,16 @@ import type { RememberLocaleCopy } from "@/components/remember/content/remember-
 type BootSceneProps = {
   copy: RememberLocaleCopy["boot"];
   onUnlock: () => Promise<void>;
+  onFirstInteraction?: () => void;
 };
 
-export function BootScene({ copy, onUnlock }: BootSceneProps) {
+export function BootScene({ copy, onUnlock, onFirstInteraction }: BootSceneProps) {
   const [unlocking, setUnlocking] = useState(false);
   const unlockingRef = useRef(false);
 
   const handleUnlock = useCallback(async () => {
     if (unlockingRef.current) return;
+    onFirstInteraction?.();
     unlockingRef.current = true;
     setUnlocking(true);
     try {
@@ -22,7 +24,7 @@ export function BootScene({ copy, onUnlock }: BootSceneProps) {
       unlockingRef.current = false;
       setUnlocking(false);
     }
-  }, [onUnlock]);
+  }, [onFirstInteraction, onUnlock]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {

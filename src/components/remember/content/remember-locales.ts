@@ -35,6 +35,8 @@ export type RememberLocaleCopy = {
     soundOff: string;
     pause: string;
     resume: string;
+    fullscreen: string;
+    exitFullscreen: string;
   };
   pause: {
     eyebrow: string;
@@ -100,6 +102,7 @@ export type RememberLocaleCopy = {
     eyebrow: string;
     title: string;
     cta: string;
+    replay: string;
   };
 };
 
@@ -140,6 +143,8 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       soundOff: "Som desligado",
       pause: "Pausar memória",
       resume: "Retomar memória",
+      fullscreen: "Tela cheia",
+      exitFullscreen: "Sair da tela cheia",
     },
     pause: {
       eyebrow: "MEMÓRIA SUSPENSA",
@@ -210,6 +215,7 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       eyebrow: "TSUKIHARA — ECLIPSE OF THE NINE REALMS",
       title: "LEMBRE-SE DO QUE RESTA.",
       cta: "CONTINUAR PARA TSUKIHARA",
+      replay: "REPETIR A EXPERIÊNCIA",
     },
   },
   en: {
@@ -247,6 +253,8 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       soundOff: "Sound off",
       pause: "Pause memory",
       resume: "Resume memory",
+      fullscreen: "Fullscreen",
+      exitFullscreen: "Exit fullscreen",
     },
     pause: {
       eyebrow: "MEMORY SUSPENDED",
@@ -317,6 +325,7 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       eyebrow: "TSUKIHARA — ECLIPSE OF THE NINE REALMS",
       title: "REMEMBER WHAT REMAINS.",
       cta: "CONTINUE TO TSUKIHARA",
+      replay: "EXPERIENCE AGAIN",
     },
   },
 };

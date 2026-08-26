@@ -1,5 +1,7 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
+import { gsap } from "gsap";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { RememberLocaleCopy } from "@/components/remember/content/remember-locales";
 
@@ -16,8 +18,59 @@ export function EpilogueScene({
   reducedMotion,
   onContinue,
 }: EpilogueSceneProps) {
+  const rootRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const context = gsap.context(() => {
+      const eyebrow = ".remember-epilogue__eyebrow";
+      const line = ".remember-epilogue__line";
+      const cta = ".remember-epilogue__cta";
+
+      if (reducedMotion) {
+        gsap.set([eyebrow, line, cta], {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          clearProps: "letterSpacing,textShadow",
+        });
+        return;
+      }
+
+      gsap.set(eyebrow, { opacity: 0, y: 8, letterSpacing: "0.48em" });
+      gsap.set(line, { opacity: 0, y: 24, filter: "blur(10px)" });
+      gsap.set(cta, { opacity: 0, y: 12 });
+
+      const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      timeline
+        .to(eyebrow, {
+          opacity: 1,
+          y: 0,
+          letterSpacing: "0.3em",
+          duration: 1.05,
+        })
+        .to(
+          line,
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            textShadow: "0 1rem 3rem rgb(0 0 0 / 0.92), 0 0 2.8rem rgb(214 177 116 / 0.16)",
+            duration: 1.65,
+          },
+          "-=0.28",
+        )
+        .to(cta, { opacity: 1, y: 0, duration: 0.8 }, "-=0.42");
+    }, root);
+
+    return () => context.revert();
+  }, [reducedMotion]);
+
   return (
     <section
+      ref={rootRef}
       className="remember-epilogue"
       aria-labelledby="remember-epilogue-title"
       style={{
@@ -71,6 +124,7 @@ export function EpilogueScene({
         }}
       >
         <span
+          className="remember-epilogue__eyebrow"
           style={{
             color: "rgb(211 184 146 / 0.52)",
             fontSize: "0.58rem",
@@ -82,6 +136,7 @@ export function EpilogueScene({
         </span>
         <h1
           id="remember-epilogue-title"
+          className="remember-epilogue__line"
           style={{
             margin: "1.2rem 0 0",
             color: "rgb(238 229 216 / 0.88)",
@@ -95,6 +150,7 @@ export function EpilogueScene({
         </h1>
         <button
           type="button"
+          className="remember-epilogue__cta"
           disabled={!interactive}
           onClick={onContinue}
           style={{
@@ -108,7 +164,6 @@ export function EpilogueScene({
             fontSize: "0.62rem",
             letterSpacing: "0.24em",
             textTransform: "uppercase",
-            opacity: interactive ? 1 : 0.38,
             cursor: interactive ? "pointer" : "default",
           }}
         >

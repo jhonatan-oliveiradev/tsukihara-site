@@ -13,9 +13,12 @@ type RememberShellProps = {
   muted: boolean;
   paused?: boolean;
   pauseAvailable?: boolean;
+  isFullscreen?: boolean;
+  fullscreenAvailable?: boolean;
   onExit: () => void;
   onToggleMute: () => void;
   onTogglePause?: () => void;
+  onToggleFullscreen?: () => void;
   onLocaleChange: (locale: RememberLocale) => void;
 };
 
@@ -27,14 +30,18 @@ export function RememberShell({
   muted,
   paused = false,
   pauseAvailable = false,
+  isFullscreen = false,
+  fullscreenAvailable = false,
   onExit,
   onToggleMute,
   onTogglePause,
+  onToggleFullscreen,
   onLocaleChange,
 }: RememberShellProps) {
   const copy = getRememberCopy(locale);
   const showControls = scene !== "boot";
   const pauseLabel = paused ? copy.controls.resume : copy.controls.pause;
+  const fullscreenLabel = isFullscreen ? copy.controls.exitFullscreen : copy.controls.fullscreen;
 
   return (
     <main
@@ -71,6 +78,19 @@ export function RememberShell({
             onToggle={onToggleMute}
             className="remember-sound-toggle"
           />
+
+          {fullscreenAvailable && onToggleFullscreen ? (
+            <button
+              type="button"
+              className="remember-pause-toggle remember-fullscreen-toggle"
+              aria-pressed={isFullscreen}
+              aria-label={fullscreenLabel}
+              onClick={onToggleFullscreen}
+            >
+              <span aria-hidden="true">⛶</span>
+              <span>{fullscreenLabel}</span>
+            </button>
+          ) : null}
 
           {pauseAvailable && onTogglePause ? (
             <button

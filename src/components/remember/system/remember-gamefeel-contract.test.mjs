@@ -33,34 +33,28 @@ test("Menu resolves Japanese memory glyphs into localized cinematic copy", () =>
   assert.match(menu, /text=\{copy\.thesis\}/);
 });
 
-test(
-  "REMEMBER composition routes scene changes through the transition director and truthful preloader",
-  () => {
-    const experience = read("../remember-experience.tsx");
-    assert.match(experience, /SceneTransitionDirector/);
-    assert.match(experience, /GamePreloader/);
-    assert.match(experience, /requestTransition/);
-  },
-);
+test("REMEMBER composition routes scene changes through the transition director and truthful preloader", () => {
+  const experience = read("../remember-experience.tsx");
+  assert.match(experience, /SceneTransitionDirector/);
+  assert.match(experience, /GamePreloader/);
+  assert.match(experience, /requestTransition/);
+});
 
-test(
-  "restored memories hand off organically through the canonical stage graph and transition veil",
-  () => {
-    const experience = read("../remember-experience.tsx");
-    const transitionToNextStage =
-      experience.match(
-        /const transitionToNextStage = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/,
-      )?.[0] ?? "";
+test("restored memories hand off organically through the canonical stage graph and transition veil", () => {
+  const experience = read("../remember-experience.tsx");
+  const transitionToNextStage =
+    experience.match(
+      /const transitionToNextStage = useCallback\([\s\S]*?\n  \}, \[[\s\S]*?\]\);/,
+    )?.[0] ?? "";
 
-    assert.match(transitionToNextStage, /getNextStage\(state\.currentStage\)/);
-    assert.match(transitionToNextStage, /getStageAssetManifest\(nextStage\)/);
-    assert.match(transitionToNextStage, /await requestTransition/);
-    assert.match(transitionToNextStage, /dispatch\(\{ type: "CONTINUE" \}\)/);
-    assert.match(transitionToNextStage, /preloadRememberAssets\(manifest\.critical\)/);
-    assert.match(transitionToNextStage, /preloadRememberAssetsInBackground\(manifest\.next\)/);
-    assert.doesNotMatch(experience, /memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/);
-  },
-);
+  assert.match(transitionToNextStage, /getNextStage\(state\.currentStage\)/);
+  assert.match(transitionToNextStage, /getStageAssetManifest\(nextStage\)/);
+  assert.match(transitionToNextStage, /await requestTransition/);
+  assert.match(transitionToNextStage, /dispatch\(\{ type: "CONTINUE" \}\)/);
+  assert.match(transitionToNextStage, /preloadRememberAssets\(manifest\.critical\)/);
+  assert.match(transitionToNextStage, /preloadRememberAssetsInBackground\(manifest\.next\)/);
+  assert.doesNotMatch(experience, /memoryDefinitions\[state\.activeMemoryIndex \+ 1\]/);
+});
 
 test("Yumegakure wires false assets, instability, and reversible stabilized fragments", () => {
   const puzzle = read("../restore/memory-puzzle.tsx");
@@ -92,19 +86,16 @@ test("game preloader exposes loaded and total counts instead of synthetic percen
   assert.doesNotMatch(preloader, /%/);
 });
 
-test(
-  "pause control switches between pause and resume copy while preserving header typography",
-  () => {
-    const shell = read("../remember-shell.tsx");
-    const locales = read("../content/remember-locales.ts");
-    const styles = read("../../../app/remember/remember-game.css");
+test("pause control switches between pause and resume copy while preserving header typography", () => {
+  const shell = read("../remember-shell.tsx");
+  const locales = read("../content/remember-locales.ts");
+  const styles = read("../../../app/remember/remember-game.css");
 
-    assert.match(shell, /paused \? copy\.controls\.resume : copy\.controls\.pause/);
-    assert.match(locales, /resume: "Retomar memória"/);
-    assert.match(locales, /resume: "Resume memory"/);
-    assert.match(styles, /\.remember-pause-toggle[\s\S]*font: inherit/);
-  },
-);
+  assert.match(shell, /paused \? copy\.controls\.resume : copy\.controls\.pause/);
+  assert.match(locales, /resume: "Retomar memória"/);
+  assert.match(locales, /resume: "Resume memory"/);
+  assert.match(styles, /\.remember-pause-toggle[\s\S]*font: inherit/);
+});
 
 test("pause and archive overlays render outside the gameplay stage stacking context", () => {
   const shell = read("../remember-shell.tsx");
@@ -113,4 +104,60 @@ test("pause and archive overlays render outside the gameplay stage stacking cont
   assert.match(shell, /overlay\?: ReactNode/);
   assert.match(shell, /<div className="remember-stage">\{children\}<\/div>[\s\S]*\{overlay\}/);
   assert.match(experience, /overlay=\{/);
+});
+
+test("first REMEMBER interaction requests fullscreen without blocking game entry", () => {
+  const boot = read("../scenes/boot-scene.tsx");
+  const fullscreen = read("./use-remember-fullscreen.ts");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(boot, /onFirstInteraction\?\.\(\)[\s\S]*await onUnlock\(\)/);
+  assert.match(fullscreen, /document\.documentElement\.requestFullscreen\(\)/);
+  assert.match(fullscreen, /document\.exitFullscreen\(\)/);
+  assert.match(fullscreen, /addEventListener\("fullscreenchange"/);
+  assert.match(experience, /onFirstInteraction=\{requestFullscreen\}/);
+});
+
+test("REMEMBER header exposes a localized fullscreen toggle", () => {
+  const shell = read("../remember-shell.tsx");
+  const locales = read("../content/remember-locales.ts");
+
+  assert.match(shell, /remember-fullscreen-toggle/);
+  assert.match(
+    shell,
+    /isFullscreen \? copy\.controls\.exitFullscreen : copy\.controls\.fullscreen/,
+  );
+  assert.match(locales, /fullscreen: "Tela cheia"/);
+  assert.match(locales, /exitFullscreen: "Sair da tela cheia"/);
+  assert.match(locales, /fullscreen: "Fullscreen"/);
+  assert.match(locales, /exitFullscreen: "Exit fullscreen"/);
+});
+
+test("epilogue and credits stage cinematic text reveals with reduced-motion fallbacks", () => {
+  const epilogue = read("../scenes/epilogue-scene.tsx");
+  const credits = read("../scenes/credits-scene.tsx");
+
+  for (const scene of [epilogue, credits]) {
+    assert.match(scene, /gsap\.context/);
+    assert.match(scene, /gsap\.timeline/);
+    assert.match(scene, /reducedMotion/);
+  }
+  assert.match(epilogue, /filter: "blur\(10px\)"/);
+  assert.match(credits, /remember-credits__title/);
+  assert.match(credits, /remember-credits__moon/);
+});
+
+test("credits offer a secondary replay CTA that creates a fresh Hanamori run", () => {
+  const credits = read("../scenes/credits-scene.tsx");
+  const locales = read("../content/remember-locales.ts");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(credits, /onReplay/);
+  assert.match(credits, /copy\.replay/);
+  assert.match(locales, /replay: "REPETIR A EXPERIÊNCIA"/);
+  assert.match(locales, /replay: "EXPERIENCE AGAIN"/);
+  assert.match(experience, /handleReplayExperience/);
+  assert.match(experience, /createNewRememberSave/);
+  assert.match(experience, /START_NEW_GAME/);
+  assert.match(experience, /getStageAssetManifest\("hanamori"\)/);
 });
