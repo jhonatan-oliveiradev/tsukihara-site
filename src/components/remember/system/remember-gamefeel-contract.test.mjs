@@ -70,6 +70,25 @@ test("Yumegakure wires false assets, instability, and reversible stabilized frag
   assert.match(experience, /type: "UNRESTORE_FRAGMENT"/);
 });
 
+test("Gekkai runs overlapping realities with one Lunar Focus action for SPACE and touch", () => {
+  const puzzle = read("../restore/memory-puzzle.tsx");
+  const fragment = read("../restore/memory-fragment.tsx");
+
+  assert.match(puzzle, /lunar-focus-policy/);
+  assert.match(puzzle, /requestAnimationFrame/);
+  assert.match(puzzle, /memory\.stateAAsset/);
+  assert.match(puzzle, /memory\.stateBAsset/);
+  assert.match(puzzle, /memory\.focusOverlayAsset/);
+  assert.match(puzzle, /event\.code !== "Space"/);
+  assert.match(puzzle, /data-lunar-focus/);
+  assert.match(puzzle, /onClick=\{activateFocus\}/);
+  assert.match(puzzle, /isRealitySnapAllowed/);
+  assert.match(fragment, /alternateSource/);
+  assert.match(fragment, /sourceBlend/);
+  assert.match(fragment, /canRestore/);
+  assert.match(fragment, /onInvalidRestore/);
+});
+
 test("rotated puzzle fragments use their own geometry as the transform origin", () => {
   const fragment = read("../restore/memory-fragment.tsx");
 

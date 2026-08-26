@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
-import type { MemoryDefinition } from "@/components/remember/content/memory-definitions";
+import type {
+  MemoryDefinition,
+  OverlappingFragment,
+  RealityState,
+} from "@/components/remember/content/memory-definitions";
 import type { RestorationPhase } from "@/components/remember/state/remember-state";
 import {
   shouldMountKintsugiSeams,
@@ -17,6 +21,16 @@ import {
   shouldShowHanamoriHint,
 } from "./hanamori-guidance";
 import { KintsugiSeams } from "./kintsugi-seams";
+import {
+  activateLunarFocus,
+  isRealitySnapAllowed,
+  REALITY_CYCLE_MS,
+  REALITY_REDUCED_CYCLE_MS,
+  tickLunarFocus,
+  tickRealityCycle,
+  type LunarFocusState,
+  type RealityCycleState,
+} from "./lunar-focus-policy";
 import {
   getFragmentSource,
   getRequiredFragmentIds,
@@ -39,9 +53,14 @@ type MemoryPuzzleProps = {
   completionLine: string;
   guidanceTitle: string;
   guidanceBody: string;
+  lunarFocusLabel: string;
+  lunarFocusReady: string;
+  lunarFocusActive: string;
+  lunarFocusCooldown: string;
   scatterSeed: number;
   onRestore: (fragmentId: string) => void;
   onUnrestore: (fragmentId: string) => void;
+  onMistake: () => void;
   onRestorationPhaseChange: (phase: RestorationPhase) => void;
   onRestorationComplete: () => void;
   onKintsugi: () => void;
@@ -76,6 +95,9 @@ const guidanceBodyStyle: CSSProperties = {
   lineHeight: 1.45,
 };
 
+const READY_FOCUS: LunarFocusState = { status: "ready" };
+const INITIAL_REALITY: RealityCycleState = { reality: "a", elapsedMs: 0 };
+
 export function MemoryPuzzle({
   memory,
   restoredFragmentIds,
@@ -87,9 +109,14 @@ export function MemoryPuzzle({
   completionLine,
   guidanceTitle,
   guidanceBody,
+  lunarFocusLabel,
+  lunarFocusReady,
+  lunarFocusActive,
+  lunarFocusCooldown,
   scatterSeed,
   onRestore,
   onUnrestore,
+  onMistake,
   onRestorationPhaseChange,
   onRestorationComplete,
   onKintsugi,
@@ -113,8 +140,14 @@ export function MemoryPuzzle({
     restoredRequiredCount === 0;
   const [activeFragmentId, setActiveFragmentId] = useState<string | null>(null);
   const [hintPulse, setHintPulse] = useState(0);
+  const [focusState, setFocusState] = useState<LunarFocusState>(READY_FOCUS);
+  const [currentReality, setCurrentReality] = useState<RealityState>("a");
+  const focusStateRef = useRef<LunarFocusState>(READY_FOCUS);
+  const realityCycleRef = useRef<RealityCycleState>(INITIAL_REALITY);
   const guidanceStateRef = useRef(createHanamoriGuidanceState());
   const guidanceElapsedRef = useRef(0);
+  const overlapping = memory.mechanic === "overlapping";
+  const focusActive = overlapping && focusState.status === "active";
   const lastFragmentId = restoredFragmentIds.at(-1);
   const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
   const originPoint = lastFragment
@@ -123,6 +156,13 @@ export function MemoryPuzzle({
         y: 50 + lastFragment.initial.y * 85,
       }
     : { x: 50, y: 50 };
+
+  useEffect(() => {
+    focusStateRef.current = READY_FOCUS;
+    realityCycleRef.current = INITIAL_REALITY;
+    setFocusState(READY_FOCUS);
+    setCurrentReality("a");
+  }, [memory.id]);
 
   useEffect(() => {
     if (memory.id !== "hanamori" || restoredRequiredCount === 0) return;
@@ -162,11 +202,91 @@ export function MemoryPuzzle({
     return () => window.cancelAnimationFrame(frame);
   }, [interactive, memory.id, restorationPhase, restoredRequiredCount]);
 
+  useEffect(() => {
+    if (!overlapping || !interactive || restorationPhase !== "idle") return;
+
+    let frame = 0;
+    let previous = performance.now();
+    const cycleMs = reducedMotion ? REALITY_REDUCED_CYCLE_MS : REALITY_CYCLE_MS;
+
+    const tick = (now: number) => {
+      const delta = Math.max(0, now - previous);
+      previous = now;
+
+      const nextFocus = tickLunarFocus(focusStateRef.current, delta, false);
+      if (nextFocus !== focusStateRef.current) {
+        focusStateRef.current = nextFocus;
+        setFocusState(nextFocus);
+      }
+
+      const nextReality = tickRealityCycle(
+        realityCycleRef.current,
+        delta,
+        false,
+        nextFocus.status === "active",
+        cycleMs,
+      );
+      realityCycleRef.current = nextReality;
+      setCurrentReality((current) =>
+        current === nextReality.reality ? current : nextReality.reality,
+      );
+
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [interactive, overlapping, reducedMotion, restorationPhase]);
+
+  const activateFocus = useCallback(() => {
+    if (!overlapping || !interactive || restorationPhase !== "idle") return;
+    const nextFocus = activateLunarFocus(focusStateRef.current);
+    if (nextFocus === focusStateRef.current) return;
+    focusStateRef.current = nextFocus;
+    setFocusState(nextFocus);
+  }, [interactive, overlapping, restorationPhase]);
+
+  useEffect(() => {
+    if (!overlapping) return;
+
+    const handleFocusKey = (event: globalThis.KeyboardEvent) => {
+      if (event.code !== "Space" || event.repeat || event.defaultPrevented) return;
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(
+          'button, a, input, textarea, select, [contenteditable="true"], [role="button"]',
+        )
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      activateFocus();
+    };
+
+    window.addEventListener("keydown", handleFocusKey);
+    return () => window.removeEventListener("keydown", handleFocusKey);
+  }, [activateFocus, overlapping]);
+
+  const focusStatus =
+    focusState.status === "active"
+      ? lunarFocusActive
+      : focusState.status === "cooldown"
+        ? lunarFocusCooldown
+        : lunarFocusReady;
+  const focusSeconds =
+    focusState.status === "ready"
+      ? null
+      : Math.max(1, Math.ceil(focusState.remainingMs / 1000));
+
   return (
     <div
       className={[
         "remember-memory",
         `remember-memory--${memory.id}`,
+        overlapping && "remember-memory--overlapping",
+        focusActive && "is-lunar-focus",
         visuallyRestored && "is-complete",
         unstable && "is-unstable",
         !interactive && "is-locked",
@@ -178,6 +298,8 @@ export function MemoryPuzzle({
       data-memory-id={memory.id}
       data-memory-unstable={unstable ? "true" : "false"}
       data-restoration-phase={restorationPhase}
+      data-current-reality={overlapping ? currentReality : undefined}
+      data-lunar-focus-state={overlapping ? focusState.status : undefined}
     >
       {memory.id === "hanamori" ? (
         <div className="remember-memory__atmosphere" aria-hidden="true">
@@ -227,14 +349,47 @@ export function MemoryPuzzle({
       ) : null}
 
       <div className="remember-memory__surface" data-remember-memory-surface>
-        <Image
-          src={memory.brokenAsset}
-          alt=""
-          fill
-          priority={memory.index === 1}
-          sizes="(max-width: 900px) 94vw, 76vw"
-          className="remember-memory__ghost"
-        />
+        {memory.mechanic === "overlapping" ? (
+          <>
+            <Image
+              src={memory.stateAAsset}
+              alt=""
+              fill
+              priority={false}
+              sizes="(max-width: 900px) 94vw, 76vw"
+              className="remember-memory__ghost remember-memory__reality-layer"
+              style={{ opacity: currentReality === "a" ? 0.18 : 0.035 }}
+            />
+            <Image
+              src={memory.stateBAsset}
+              alt=""
+              fill
+              priority={false}
+              sizes="(max-width: 900px) 94vw, 76vw"
+              className="remember-memory__ghost remember-memory__reality-layer"
+              style={{ opacity: currentReality === "b" ? 0.18 : 0.035 }}
+            />
+            {focusActive ? (
+              <Image
+                src={memory.focusOverlayAsset}
+                alt=""
+                fill
+                sizes="(max-width: 900px) 94vw, 76vw"
+                className="remember-memory__focus-overlay"
+                aria-hidden="true"
+              />
+            ) : null}
+          </>
+        ) : (
+          <Image
+            src={memory.brokenAsset}
+            alt=""
+            fill
+            priority={memory.index === 1}
+            sizes="(max-width: 900px) 94vw, 76vw"
+            className="remember-memory__ghost"
+          />
+        )}
 
         {memory.mechanic === "false-memory" && unstable ? (
           <Image
@@ -267,23 +422,53 @@ export function MemoryPuzzle({
         ) : null}
 
         <div className="remember-memory__fragments">
-          {memory.fragments.map((fragment) => (
-            <MemoryFragment
-              key={fragment.id}
-              memory={memory}
-              viewBox={memory.viewBox}
-              definition={fragment}
-              source={getFragmentSource(memory, fragment)}
-              restored={restored.has(fragment.id)}
-              reversible={interactive && reversible}
-              reducedMotion={reducedMotion}
-              keyboardLabel={keyboardLabel}
-              scatterSeed={scatterSeed}
-              onRestore={interactive ? onRestore : () => undefined}
-              onUnrestore={interactive ? onUnrestore : undefined}
-              onInteractionChange={setActiveFragmentId}
-            />
-          ))}
+          {memory.fragments.map((fragment) => {
+            const overlappingFragment =
+              memory.mechanic === "overlapping" ? (fragment as OverlappingFragment) : null;
+            const source = overlappingFragment
+              ? memory.stateAAsset
+              : getFragmentSource(memory, fragment);
+            const alternateSource = overlappingFragment ? memory.stateBAsset : undefined;
+            const sourceBlend = overlappingFragment
+              ? focusActive
+                ? overlappingFragment.stableReality === "b"
+                  ? 1
+                  : 0
+                : currentReality === "b"
+                  ? 1
+                  : 0
+              : 0;
+            const canRestore = overlappingFragment
+              ? () =>
+                  isRealitySnapAllowed(
+                    overlappingFragment.stableReality,
+                    currentReality,
+                    focusStateRef.current,
+                  )
+              : undefined;
+
+            return (
+              <MemoryFragment
+                key={fragment.id}
+                memory={memory}
+                viewBox={memory.viewBox}
+                definition={fragment}
+                source={source}
+                alternateSource={alternateSource}
+                sourceBlend={sourceBlend}
+                restored={restored.has(fragment.id)}
+                reversible={interactive && reversible}
+                reducedMotion={reducedMotion}
+                keyboardLabel={keyboardLabel}
+                scatterSeed={scatterSeed}
+                canRestore={canRestore}
+                onRestore={interactive ? onRestore : () => undefined}
+                onInvalidRestore={overlappingFragment && interactive ? onMistake : undefined}
+                onUnrestore={interactive ? onUnrestore : undefined}
+                onInteractionChange={setActiveFragmentId}
+              />
+            );
+          })}
         </div>
 
         {showKintsugiSeams && (
@@ -322,6 +507,25 @@ export function MemoryPuzzle({
 
         <span className="remember-memory__edge" aria-hidden="true" />
       </div>
+
+      {overlapping && restorationPhase === "idle" ? (
+        <button
+          type="button"
+          className="remember-lunar-focus"
+          data-lunar-focus
+          data-status={focusState.status}
+          disabled={!interactive || focusState.status !== "ready"}
+          onClick={activateFocus}
+          aria-label={`${lunarFocusLabel}: ${focusStatus}${focusSeconds ? ` ${focusSeconds}` : ""}`}
+        >
+          <span>{lunarFocusLabel}</span>
+          <small>
+            {focusStatus}
+            {focusSeconds ? ` · ${focusSeconds}s` : ""}
+          </small>
+          <kbd aria-hidden="true">SPACE</kbd>
+        </button>
+      ) : null}
 
       <span className="sr-only" aria-live="polite">
         {restoredRequiredCount} / {requiredFragmentIds.length}
