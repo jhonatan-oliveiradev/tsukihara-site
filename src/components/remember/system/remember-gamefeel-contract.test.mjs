@@ -114,3 +114,56 @@ test("pause and archive overlays render outside the gameplay stage stacking cont
   assert.match(shell, /<div className="remember-stage">\{children\}<\/div>[\s\S]*\{overlay\}/);
   assert.match(experience, /overlay=\{/);
 });
+
+test("first REMEMBER interaction requests fullscreen without blocking game entry", () => {
+  const boot = read("../scenes/boot-scene.tsx");
+  const fullscreen = read("./use-remember-fullscreen.ts");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(boot, /onFirstInteraction\?\.\(\)[\s\S]*await onUnlock\(\)/);
+  assert.match(fullscreen, /document\.documentElement\.requestFullscreen\(\)/);
+  assert.match(fullscreen, /document\.exitFullscreen\(\)/);
+  assert.match(fullscreen, /addEventListener\("fullscreenchange"/);
+  assert.match(experience, /onFirstInteraction=\{requestFullscreen\}/);
+});
+
+test("REMEMBER header exposes a localized fullscreen toggle", () => {
+  const shell = read("../remember-shell.tsx");
+  const locales = read("../content/remember-locales.ts");
+
+  assert.match(shell, /remember-fullscreen-toggle/);
+  assert.match(shell, /isFullscreen \? copy\.controls\.exitFullscreen : copy\.controls\.fullscreen/);
+  assert.match(locales, /fullscreen: "Tela cheia"/);
+  assert.match(locales, /exitFullscreen: "Sair da tela cheia"/);
+  assert.match(locales, /fullscreen: "Fullscreen"/);
+  assert.match(locales, /exitFullscreen: "Exit fullscreen"/);
+});
+
+test("epilogue and credits stage cinematic text reveals with reduced-motion fallbacks", () => {
+  const epilogue = read("../scenes/epilogue-scene.tsx");
+  const credits = read("../scenes/credits-scene.tsx");
+
+  for (const scene of [epilogue, credits]) {
+    assert.match(scene, /gsap\.context/);
+    assert.match(scene, /gsap\.timeline/);
+    assert.match(scene, /reducedMotion/);
+  }
+  assert.match(epilogue, /filter: "blur\(10px\)"/);
+  assert.match(credits, /remember-credits__title/);
+  assert.match(credits, /remember-credits__moon/);
+});
+
+test("credits offer a secondary replay CTA that creates a fresh Hanamori run", () => {
+  const credits = read("../scenes/credits-scene.tsx");
+  const locales = read("../content/remember-locales.ts");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(credits, /onReplay/);
+  assert.match(credits, /copy\.replay/);
+  assert.match(locales, /replay: "REPETIR A EXPERIÊNCIA"/);
+  assert.match(locales, /replay: "EXPERIENCE AGAIN"/);
+  assert.match(experience, /handleReplayExperience/);
+  assert.match(experience, /createNewRememberSave/);
+  assert.match(experience, /START_NEW_GAME/);
+  assert.match(experience, /getStageAssetManifest\("hanamori"\)/);
+});
