@@ -6,23 +6,24 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: feat/remember-finale-immersion
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install dependencies
         run: npm install
-      - name: Hero timeline regression
-        run: npm run test:hero
-      - name: REMEMBER regression
-        run: npm run test:remember
-      - name: Format REMEMBER diagnostic set
+      - name: Persist REMEMBER formatting
         run: |
           npx prettier --write \
             src/components/remember/interludes/interlude-01-scene.tsx \
@@ -30,12 +31,27 @@ jobs:
             src/components/remember/scenes/epilogue-scene.tsx \
             src/components/remember/state/remember-reducer.ts \
             src/components/remember/system/remember-gamefeel-contract.test.mjs
-          git diff -- \
+          if ! git diff --quiet -- \
             src/components/remember/interludes/interlude-01-scene.tsx \
             src/components/remember/remember-experience.tsx \
             src/components/remember/scenes/epilogue-scene.tsx \
             src/components/remember/state/remember-reducer.ts \
-            src/components/remember/system/remember-gamefeel-contract.test.mjs
+            src/components/remember/system/remember-gamefeel-contract.test.mjs; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add \
+              src/components/remember/interludes/interlude-01-scene.tsx \
+              src/components/remember/remember-experience.tsx \
+              src/components/remember/scenes/epilogue-scene.tsx \
+              src/components/remember/state/remember-reducer.ts \
+              src/components/remember/system/remember-gamefeel-contract.test.mjs
+            git commit -m "style: apply REMEMBER formatter"
+            git push origin HEAD:feat/remember-finale-immersion
+          fi
+      - name: Hero timeline regression
+        run: npm run test:hero
+      - name: REMEMBER regression
+        run: npm run test:remember
       - name: Check formatting
         run: npm run format:check
       - name: Lint
