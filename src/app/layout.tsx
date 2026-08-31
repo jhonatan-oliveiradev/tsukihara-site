@@ -19,6 +19,7 @@ import "./kintsugi-lunar-chapter.css";
 import "./kintsugi-lunar-refinement.css";
 import "./gameplay-chapter.css";
 import "./gameplay-typography-fix.css";
+import "./remember-gateway.css";
 import "./companions-chapter.css";
 import "./bestiary-bosses.css";
 import "./bestiary-inspector-refinement.css";
