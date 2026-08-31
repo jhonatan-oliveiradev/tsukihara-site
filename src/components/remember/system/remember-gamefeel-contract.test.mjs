@@ -89,6 +89,29 @@ test("Gekkai runs overlapping realities with one Lunar Focus action for SPACE an
   assert.match(fragment, /onInvalidRestore/);
 });
 
+test("Memory Results persist pause-safe metrics and render before continuation", () => {
+  const experience = read("../remember-experience.tsx");
+  const restore = read("../scenes/restore-scene.tsx");
+  const locales = read("../content/remember-locales.ts");
+
+  assert.match(experience, /results\/memory-result/);
+  assert.match(experience, /createMemoryResult/);
+  assert.match(experience, /memoryElapsedMsRef/);
+  assert.match(experience, /performance\.now\(\)/);
+  assert.match(experience, /falseFragments/);
+  assert.match(experience, /mistakes/);
+  assert.match(experience, /memories:/);
+  assert.match(experience, /memoryResult=/);
+  assert.match(restore, /memoryResult/);
+  assert.match(restore, /data-memory-result/);
+  assert.match(restore, /copy\.integrity/);
+  assert.match(restore, /copy\.resonance/);
+  assert.match(locales, /integrity: "Integridade"/);
+  assert.match(locales, /resonance: "Ressonância"/);
+  assert.match(locales, /integrity: "Integrity"/);
+  assert.match(locales, /resonance: "Resonance"/);
+});
+
 test("rotated puzzle fragments use their own geometry as the transform origin", () => {
   const fragment = read("../restore/memory-fragment.tsx");
 
