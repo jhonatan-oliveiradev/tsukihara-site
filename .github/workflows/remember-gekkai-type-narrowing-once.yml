@@ -55,7 +55,10 @@ jobs:
                   'memory.mechanic === "overlapping" ? (fragment as OverlappingFragment) : null;',
                   'overlappingMemory ? (fragment as OverlappingFragment) : null;',
               ),
-              ('? memory.stateAAsset', '? overlappingMemory.stateAAsset'),
+              (
+                  'const source = overlappingFragment\n              ? memory.stateAAsset',
+                  'const source = overlappingMemory\n              ? overlappingMemory.stateAAsset',
+              ),
               (
                   'const alternateSource = overlappingFragment ? memory.stateBAsset : undefined;',
                   'const alternateSource = overlappingMemory ? overlappingMemory.stateBAsset : undefined;',
