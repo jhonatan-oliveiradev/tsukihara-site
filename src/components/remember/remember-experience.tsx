@@ -11,6 +11,7 @@ import { getRememberCopy } from "@/components/remember/content/remember-locales"
 import { Interlude01Scene } from "@/components/remember/interludes/interlude-01-scene";
 import { Interlude02Scene } from "@/components/remember/interludes/interlude-02-scene";
 import { RememberShell } from "@/components/remember/remember-shell";
+import { createMemoryResult } from "@/components/remember/results/memory-result";
 import { isMemoryReadyForRestoration } from "@/components/remember/restore/memory-mechanic-policy";
 import { BootScene } from "@/components/remember/scenes/boot-scene";
 import { CreditsScene } from "@/components/remember/scenes/credits-scene";
@@ -58,15 +59,20 @@ import { useRememberScrollLock } from "@/components/remember/system/use-remember
 const localeStorageKey = "tsukihara:remember:locale";
 const initialAssetManifest = getInitialAssetManifest();
 
+type MemoryProgressMetrics = Partial<
+  Pick<MemoryProgress, "elapsedMs" | "mistakes" | "falseFragments">
+>;
+
 const createMemoryProgress = (
   restoredFragmentIds: string[],
   previous?: MemoryProgress,
+  metrics: MemoryProgressMetrics = {},
 ): MemoryProgress => ({
   restoredFragmentIds,
   startedAt: previous?.startedAt ?? new Date().toISOString(),
-  elapsedMs: previous?.elapsedMs ?? 0,
-  mistakes: previous?.mistakes ?? 0,
-  falseFragments: previous?.falseFragments ?? 0,
+  elapsedMs: metrics.elapsedMs ?? previous?.elapsedMs ?? 0,
+  mistakes: metrics.mistakes ?? previous?.mistakes ?? 0,
+  falseFragments: metrics.falseFragments ?? previous?.falseFragments ?? 0,
 });
 
 export function RememberExperience() {
@@ -82,6 +88,8 @@ export function RememberExperience() {
   );
   const saveRef = useRef<RememberSaveV1 | null>(null);
   const transitionDirectorRef = useRef<SceneTransitionDirectorHandle>(null);
+  const memoryElapsedMsRef = useRef(0);
+  const clockMemoryIdRef = useRef<MemoryId | null>(null);
   const reducedMotion = useRememberReducedMotion();
   const { isFullscreen, fullscreenAvailable, requestFullscreen, toggleFullscreen } =
     useRememberFullscreen();
@@ -166,6 +174,44 @@ export function RememberExperience() {
     });
   }, [persistSave, state.currentStage, state.scene]);
 
+  useEffect(() => {
+    if (state.scene !== "memory" || clockMemoryIdRef.current === activeMemory.id) return;
+    memoryElapsedMsRef.current =
+      saveRef.current?.memoryProgress[activeMemory.id]?.elapsedMs ?? 0;
+    clockMemoryIdRef.current = activeMemory.id;
+  }, [activeMemory.id, state.scene]);
+
+  useEffect(() => {
+    const clockRunning =
+      state.scene === "memory" &&
+      state.restorationPhase === "idle" &&
+      transitionState === "idle" &&
+      !preloaderVisible &&
+      !state.paused &&
+      !state.archiveOpen;
+
+    if (!clockRunning) return;
+
+    let frame = 0;
+    let previous = performance.now();
+
+    const tick = (now: number) => {
+      memoryElapsedMsRef.current += Math.max(0, now - previous);
+      previous = now;
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [
+    preloaderVisible,
+    state.archiveOpen,
+    state.paused,
+    state.restorationPhase,
+    state.scene,
+    transitionState,
+  ]);
+
   const requestTransition = useCallback(
     async (commitDestination: () => void, prepareDestination?: () => Promise<void>) => {
       const director = transitionDirectorRef.current;
@@ -199,8 +245,24 @@ export function RememberExperience() {
   const saveBeforeLeaving = useCallback(() => {
     const save = saveRef.current;
     if (!save) return;
+
+    if (state.scene === "memory") {
+      const previous = save.memoryProgress[activeMemory.id];
+      persistSave({
+        ...save,
+        memoryProgress: {
+          ...save.memoryProgress,
+          [activeMemory.id]: createMemoryProgress(state.restoredFragmentIds, previous, {
+            elapsedMs: memoryElapsedMsRef.current,
+          }),
+        },
+        updatedAt: new Date().toISOString(),
+      });
+      return;
+    }
+
     persistSave({ ...save, updatedAt: new Date().toISOString() });
-  }, [persistSave]);
+  }, [activeMemory.id, persistSave, state.restoredFragmentIds, state.scene]);
 
   const handleExit = useCallback(() => {
     saveBeforeLeaving();
@@ -230,6 +292,8 @@ export function RememberExperience() {
     const transitioned = await requestTransition(
       () => {
         const save = createNewRememberSave(new Date().toISOString());
+        memoryElapsedMsRef.current = 0;
+        clockMemoryIdRef.current = "hanamori";
         persistSave(save);
         dispatch({ type: "START_NEW_GAME" });
         trackRememberEvent("remember_started");
@@ -255,6 +319,11 @@ export function RememberExperience() {
 
     const transitioned = await requestTransition(
       () => {
+        if (isMemoryStage(save.currentStage)) {
+          memoryElapsedMsRef.current =
+            save.memoryProgress[save.currentStage]?.elapsedMs ?? 0;
+          clockMemoryIdRef.current = save.currentStage;
+        }
         dispatch({ type: "HYDRATE_SAVE", save });
         enterAudioForStage(save.currentStage);
       },
@@ -293,18 +362,24 @@ export function RememberExperience() {
 
       const restoredFragmentIds = [...state.restoredFragmentIds, fragmentId];
       const completesMemory = isMemoryReadyForRestoration(activeMemory, restoredFragmentIds);
+      const falseFragment =
+        activeMemory.mechanic === "false-memory" &&
+        activeMemory.fragments.find((fragment) => fragment.id === fragmentId)?.truth === "false";
 
-      mutateSave((save) => ({
-        ...save,
-        updatedAt: new Date().toISOString(),
-        memoryProgress: {
-          ...save.memoryProgress,
-          [activeMemory.id]: createMemoryProgress(
-            restoredFragmentIds,
-            save.memoryProgress[activeMemory.id],
-          ),
-        },
-      }));
+      mutateSave((save) => {
+        const previous = save.memoryProgress[activeMemory.id];
+        return {
+          ...save,
+          updatedAt: new Date().toISOString(),
+          memoryProgress: {
+            ...save.memoryProgress,
+            [activeMemory.id]: createMemoryProgress(restoredFragmentIds, previous, {
+              elapsedMs: memoryElapsedMsRef.current,
+              falseFragments: (previous?.falseFragments ?? 0) + (falseFragment ? 1 : 0),
+            }),
+          },
+        };
+      });
 
       if (completesMemory) void audio.duckMemoryForRestoration();
 
@@ -346,17 +421,19 @@ export function RememberExperience() {
       );
       const completesMemory = isMemoryReadyForRestoration(activeMemory, restoredFragmentIds);
 
-      mutateSave((save) => ({
-        ...save,
-        updatedAt: new Date().toISOString(),
-        memoryProgress: {
-          ...save.memoryProgress,
-          [activeMemory.id]: createMemoryProgress(
-            restoredFragmentIds,
-            save.memoryProgress[activeMemory.id],
-          ),
-        },
-      }));
+      mutateSave((save) => {
+        const previous = save.memoryProgress[activeMemory.id];
+        return {
+          ...save,
+          updatedAt: new Date().toISOString(),
+          memoryProgress: {
+            ...save.memoryProgress,
+            [activeMemory.id]: createMemoryProgress(restoredFragmentIds, previous, {
+              elapsedMs: memoryElapsedMsRef.current,
+            }),
+          },
+        };
+      });
 
       if (completesMemory) void audio.duckMemoryForRestoration();
 
@@ -378,21 +455,76 @@ export function RememberExperience() {
     ],
   );
 
+  const handleMistake = useCallback(() => {
+    if (
+      state.scene !== "memory" ||
+      state.paused ||
+      state.archiveOpen ||
+      state.restorationPhase !== "idle"
+    ) {
+      return;
+    }
+
+    mutateSave((save) => {
+      const previous = save.memoryProgress[activeMemory.id];
+      return {
+        ...save,
+        updatedAt: new Date().toISOString(),
+        memoryProgress: {
+          ...save.memoryProgress,
+          [activeMemory.id]: createMemoryProgress(state.restoredFragmentIds, previous, {
+            elapsedMs: memoryElapsedMsRef.current,
+            mistakes: (previous?.mistakes ?? 0) + 1,
+          }),
+        },
+      };
+    });
+  }, [activeMemory.id, mutateSave, state.archiveOpen, state.paused, state.restorationPhase, state.restoredFragmentIds, state.scene]);
+
   const handleRestorationPhaseChange = useCallback((phase: RestorationPhase) => {
     dispatch({ type: "SET_RESTORATION_PHASE", phase });
   }, []);
 
   const handleRestorationComplete = useCallback(() => {
-    trackRememberEvent("remember_restore_completed", { realm: activeMemory.id });
-    mutateSave((save) => ({
-      ...save,
-      updatedAt: new Date().toISOString(),
-      completedStages: save.completedStages.includes(activeMemory.id)
-        ? save.completedStages
-        : [...save.completedStages, activeMemory.id],
-    }));
+    const completedAt = new Date().toISOString();
+    const completionTime = Math.max(0, memoryElapsedMsRef.current / 1000);
+    const nextSave = mutateSave((save) => {
+      const previous = save.memoryProgress[activeMemory.id];
+      const progress = createMemoryProgress(state.restoredFragmentIds, previous, {
+        elapsedMs: memoryElapsedMsRef.current,
+      });
+      const result = createMemoryResult({
+        progress,
+        completionTime,
+        parSeconds: activeMemory.parSeconds,
+        completedAt,
+      });
+
+      return {
+        ...save,
+        updatedAt: completedAt,
+        completedStages: save.completedStages.includes(activeMemory.id)
+          ? save.completedStages
+          : [...save.completedStages, activeMemory.id],
+        memoryProgress: {
+          ...save.memoryProgress,
+          [activeMemory.id]: progress,
+        },
+        memories: {
+          ...save.memories,
+          [activeMemory.id]: result,
+        },
+      };
+    });
+
+    const result = nextSave?.memories[activeMemory.id];
+    trackRememberEvent("remember_restore_completed", {
+      realm: activeMemory.id,
+      integrity: result?.integrity,
+      resonance: result?.resonance,
+    });
     dispatch({ type: "MARK_MEMORY_RESTORED", memoryId: activeMemory.id });
-  }, [activeMemory.id, mutateSave]);
+  }, [activeMemory.id, activeMemory.parSeconds, mutateSave, state.restoredFragmentIds]);
 
   const handleKintsugi = useCallback(() => audio.playKintsugi(), [audio]);
   const handleRestored = useCallback(() => audio.playRestored(), [audio]);
@@ -505,6 +637,8 @@ export function RememberExperience() {
       if (!event.shiftKey || event.key.toLowerCase() !== "r") return;
       gsap.globalTimeline.resume();
       audio.stopAll();
+      memoryElapsedMsRef.current = 0;
+      clockMemoryIdRef.current = null;
       dispatch({ type: "RESTART" });
     };
 
@@ -514,6 +648,8 @@ export function RememberExperience() {
 
   const handleRestartMemory = useCallback(() => {
     if (!isMemoryStage(state.currentStage)) return;
+    memoryElapsedMsRef.current = 0;
+    clockMemoryIdRef.current = state.currentStage;
     mutateSave((save) => ({
       ...save,
       updatedAt: new Date().toISOString(),
@@ -542,6 +678,8 @@ export function RememberExperience() {
     dispatch({ type: "CLOSE_ARCHIVE" });
     void audio.enterCredits();
     await requestTransition(() => {
+      memoryElapsedMsRef.current = 0;
+      clockMemoryIdRef.current = null;
       dispatch({ type: "RESTART" });
       dispatch({ type: "UNLOCK_MENU" });
     });
@@ -555,6 +693,16 @@ export function RememberExperience() {
       dispatch({ type: "CLOSE_ARCHIVE" });
       await requestTransition(
         () => {
+          memoryElapsedMsRef.current = 0;
+          clockMemoryIdRef.current = memoryId;
+          mutateSave((currentSave) => ({
+            ...currentSave,
+            memoryProgress: {
+              ...currentSave.memoryProgress,
+              [memoryId]: createMemoryProgress([]),
+            },
+            updatedAt: new Date().toISOString(),
+          }));
           dispatch({ type: "ENTER_STAGE", stage: memoryId });
           void audio.startMemory();
         },
@@ -564,7 +712,7 @@ export function RememberExperience() {
       );
       void preloadRememberAssetsInBackground(manifest.next);
     },
-    [audio, requestTransition],
+    [audio, mutateSave, requestTransition],
   );
 
   const handleRetryPreload = useCallback(() => {
@@ -596,6 +744,7 @@ export function RememberExperience() {
     : (storedSave?.currentStage.toUpperCase() ?? null);
   const archiveCurrentStage =
     state.scene === "menu" && storedSave ? storedSave.currentStage : state.currentStage;
+  const activeMemoryResult = storedSave?.memories[activeMemory.id] ?? null;
 
   const overlay = (
     <>
@@ -668,10 +817,12 @@ export function RememberExperience() {
             completionLine={activeMemory.completionCopy[state.locale]}
             restoredFragmentIds={state.restoredFragmentIds}
             restorationPhase={state.restorationPhase}
+            memoryResult={activeMemoryResult}
             reducedMotion={reducedMotion}
             interactive={gameplayInteractive}
             onRestore={handleRestore}
             onUnrestore={handleUnrestore}
+            onMistake={handleMistake}
             onRestorationPhaseChange={handleRestorationPhaseChange}
             onRestorationComplete={handleRestorationComplete}
             onKintsugi={handleKintsugi}
