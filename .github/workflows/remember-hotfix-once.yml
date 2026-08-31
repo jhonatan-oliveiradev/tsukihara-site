@@ -33,56 +33,29 @@ jobs:
 
           puzzle_path = Path("src/components/remember/restore/memory-puzzle.tsx")
           puzzle = puzzle_path.read_text()
-          old = '''  useEffect(() => {
-            if (!overlapping) return;
 
-            const handleFocusKey = (event: globalThis.KeyboardEvent) => {
-              if (event.code !== "Space" || event.repeat || event.defaultPrevented) return;
-              const target = event.target;
-              if (
-                target instanceof Element &&
-                target.closest(
-                  'button, a, input, textarea, select, [contenteditable="true"], [role="button"]',
-                )
-              ) {
-                return;
-              }
+          blocked_selector = 'button, a, input, textarea, select, [contenteditable="true"], [role="button"]'
+          native_selector = 'button, a, input, textarea, select, [contenteditable="true"]'
+          if puzzle.count(blocked_selector) != 1:
+              raise SystemExit(f"expected one Gekkai blocked selector, found {puzzle.count(blocked_selector)}")
+          puzzle = puzzle.replace(blocked_selector, native_selector, 1)
 
-              event.preventDefault();
+          old_tail = '''    event.preventDefault();
               activateFocus();
             };
 
             window.addEventListener("keydown", handleFocusKey);
-            return () => window.removeEventListener("keydown", handleFocusKey);
-          }, [activateFocus, overlapping]);'''
-          new = '''  useEffect(() => {
-            if (!overlapping) return;
-
-            const handleFocusKey = (event: globalThis.KeyboardEvent) => {
-              if (event.code !== "Space" || event.repeat || event.defaultPrevented) return;
-              const target = event.target;
-
-              if (target instanceof Element) {
-                const nativeControl = target.closest(
-                  'button, a, input, textarea, select, [contenteditable="true"]',
-                );
-                const roleButton = target.closest('[role="button"]');
-                const fragmentHit = target.closest(".remember-fragment__hit");
-
-                if (nativeControl || (roleButton && !fragmentHit)) return;
-              }
-
-              event.preventDefault();
+            return () => window.removeEventListener("keydown", handleFocusKey);'''
+          new_tail = '''    event.preventDefault();
               event.stopPropagation();
               activateFocus();
             };
 
             window.addEventListener("keydown", handleFocusKey, true);
-            return () => window.removeEventListener("keydown", handleFocusKey, true);
-          }, [activateFocus, overlapping]);'''
-          if puzzle.count(old) != 1:
-              raise SystemExit(f"expected one Gekkai keyboard handler, found {puzzle.count(old)}")
-          puzzle_path.write_text(puzzle.replace(old, new, 1))
+            return () => window.removeEventListener("keydown", handleFocusKey, true);'''
+          if puzzle.count(old_tail) != 1:
+              raise SystemExit(f"expected one Gekkai keyboard tail, found {puzzle.count(old_tail)}")
+          puzzle_path.write_text(puzzle.replace(old_tail, new_tail, 1))
 
           css_path = Path("src/app/remember/remember-cinematic.css")
           css = css_path.read_text()
@@ -111,8 +84,12 @@ jobs:
           if css.count(anchor) != 1:
               raise SystemExit(f"expected one credits viewport anchor, found {css.count(anchor)}")
           css = css.replace(anchor, enhancement + anchor, 1)
+
+          shadow_anchor = "  text-align: right;\n  mask-image:"
+          if css.count(shadow_anchor) != 1:
+              raise SystemExit(f"expected one credits text anchor, found {css.count(shadow_anchor)}")
           css = css.replace(
-              "  text-align: right;\n  mask-image:",
+              shadow_anchor,
               "  text-align: right;\n  text-shadow: 0 0.4rem 1.2rem rgb(0 0 0 / 0.95);\n  mask-image:",
               1,
           )
