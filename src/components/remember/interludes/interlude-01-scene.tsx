@@ -253,8 +253,7 @@ export function Interlude01Scene({
               transition: reducedMotion
                 ? "background 120ms ease, color 120ms ease"
                 : "background 240ms ease, color 240ms ease, border-color 240ms ease, box-shadow 320ms ease, transform 240ms ease",
-              transform:
-                continueHovered && continueUnlocked ? "translateY(-1px)" : "translateY(0)",
+              transform: continueHovered && continueUnlocked ? "translateY(-1px)" : "translateY(0)",
             }}
           >
             {copy.continue}

@@ -217,7 +217,12 @@ export function RestoreScene({
       />
 
       {restored && memoryResult ? (
-        <aside className="remember-memory-result" data-memory-result role="status" aria-live="polite">
+        <aside
+          className="remember-memory-result"
+          data-memory-result
+          role="status"
+          aria-live="polite"
+        >
           <span className="remember-memory-result__eyebrow">{copy.result}</span>
           <div className="remember-memory-result__metrics">
             <div>

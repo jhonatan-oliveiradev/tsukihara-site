@@ -276,9 +276,7 @@ export function MemoryPuzzle({
         ? lunarFocusCooldown
         : lunarFocusReady;
   const focusSeconds =
-    focusState.status === "ready"
-      ? null
-      : Math.max(1, Math.ceil(focusState.remainingMs / 1000));
+    focusState.status === "ready" ? null : Math.max(1, Math.ceil(focusState.remainingMs / 1000));
 
   return (
     <div

@@ -176,8 +176,7 @@ export function RememberExperience() {
 
   useEffect(() => {
     if (state.scene !== "memory" || clockMemoryIdRef.current === activeMemory.id) return;
-    memoryElapsedMsRef.current =
-      saveRef.current?.memoryProgress[activeMemory.id]?.elapsedMs ?? 0;
+    memoryElapsedMsRef.current = saveRef.current?.memoryProgress[activeMemory.id]?.elapsedMs ?? 0;
     clockMemoryIdRef.current = activeMemory.id;
   }, [activeMemory.id, state.scene]);
 
@@ -320,8 +319,7 @@ export function RememberExperience() {
     const transitioned = await requestTransition(
       () => {
         if (isMemoryStage(save.currentStage)) {
-          memoryElapsedMsRef.current =
-            save.memoryProgress[save.currentStage]?.elapsedMs ?? 0;
+          memoryElapsedMsRef.current = save.memoryProgress[save.currentStage]?.elapsedMs ?? 0;
           clockMemoryIdRef.current = save.currentStage;
         }
         dispatch({ type: "HYDRATE_SAVE", save });
@@ -479,7 +477,15 @@ export function RememberExperience() {
         },
       };
     });
-  }, [activeMemory.id, mutateSave, state.archiveOpen, state.paused, state.restorationPhase, state.restoredFragmentIds, state.scene]);
+  }, [
+    activeMemory.id,
+    mutateSave,
+    state.archiveOpen,
+    state.paused,
+    state.restorationPhase,
+    state.restoredFragmentIds,
+    state.scene,
+  ]);
 
   const handleRestorationPhaseChange = useCallback((phase: RestorationPhase) => {
     dispatch({ type: "SET_RESTORATION_PHASE", phase });

@@ -14,8 +14,7 @@ type CreateMemoryResultInput = {
   completedAt: string;
 };
 
-const finiteNonNegative = (value: number) =>
-  Number.isFinite(value) ? Math.max(0, value) : 0;
+const finiteNonNegative = (value: number) => (Number.isFinite(value) ? Math.max(0, value) : 0);
 
 export const calculateIntegrity = ({
   mistakes,
@@ -29,8 +28,7 @@ export const calculateIntegrity = ({
   const safeParSeconds = finiteNonNegative(parSeconds);
   const overtimeSeconds = Math.max(0, safeCompletionTime - safeParSeconds);
   const overtimePenalty = Math.floor(overtimeSeconds / 30) * 2;
-  const integrity =
-    100 - safeMistakes * 3 - safeFalseFragments * 8 - overtimePenalty;
+  const integrity = 100 - safeMistakes * 3 - safeFalseFragments * 8 - overtimePenalty;
 
   return Math.max(0, Math.min(100, integrity));
 };
