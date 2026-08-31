@@ -226,3 +226,17 @@ test("credits offer a secondary replay CTA that creates a fresh Hanamori run", (
   assert.match(experience, /START_NEW_GAME/);
   assert.match(experience, /getStageAssetManifest\("hanamori"\)/);
 });
+
+test("landing page exposes REMEMBER as a discoverable route and the game returns to its teaser", () => {
+  const landing = read("../../experience/immersive-experience.tsx");
+  const gateway = read("../../experience/remember-gateway.tsx");
+  const experience = read("../remember-experience.tsx");
+
+  assert.match(landing, /href="\/remember"/);
+  assert.match(landing, />REMEMBER</);
+  assert.match(landing, /<RememberGateway/);
+  assert.match(gateway, /id="remember"/);
+  assert.match(gateway, /href="\/remember"/);
+  assert.match(gateway, /remember-menu-background\.png/);
+  assert.match(experience, /router\.push\("\/#remember"\)/);
+});
