@@ -10,6 +10,7 @@ import {
 } from "@/components/remember/restore/memory-mechanic-policy";
 import { getMemoryIntroSchedule } from "@/components/remember/restore/memory-intro-timeline";
 import { MemoryPuzzle } from "@/components/remember/restore/memory-puzzle";
+import type { MemoryResult } from "@/components/remember/state/remember-save";
 import type { RestorationPhase } from "@/components/remember/state/remember-state";
 
 type RestoreSceneProps = {
@@ -18,6 +19,7 @@ type RestoreSceneProps = {
   completionLine: string;
   restoredFragmentIds: string[];
   restorationPhase: RestorationPhase;
+  memoryResult?: MemoryResult | null;
   reducedMotion: boolean;
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
@@ -30,12 +32,20 @@ type RestoreSceneProps = {
   onContinue: () => void;
 };
 
+const formatCompletionTime = (seconds: number) => {
+  const safeSeconds = Math.max(0, Math.round(seconds));
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainder = safeSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+};
+
 export function RestoreScene({
   memory,
   copy,
   completionLine,
   restoredFragmentIds,
   restorationPhase,
+  memoryResult = null,
   reducedMotion,
   interactive,
   onRestore,
@@ -205,6 +215,26 @@ export function RestoreScene({
         onKintsugi={onKintsugi}
         onRestored={onRestored}
       />
+
+      {restored && memoryResult ? (
+        <aside className="remember-memory-result" data-memory-result role="status" aria-live="polite">
+          <span className="remember-memory-result__eyebrow">{copy.result}</span>
+          <div className="remember-memory-result__metrics">
+            <div>
+              <small>{copy.integrity}</small>
+              <strong>{Math.round(memoryResult.integrity)}%</strong>
+            </div>
+            <div className="remember-memory-result__resonance">
+              <small>{copy.resonance}</small>
+              <strong>{memoryResult.resonance}</strong>
+            </div>
+            <div>
+              <small>{copy.time}</small>
+              <strong>{formatCompletionTime(memoryResult.completionTime)}</strong>
+            </div>
+          </div>
+        </aside>
+      ) : null}
 
       <div
         className={[
