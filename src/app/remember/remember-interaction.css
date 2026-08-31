@@ -1,0 +1,24 @@
+.remember-root {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.remember-root img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.remember-root button,
+.remember-root a,
+.remember-root [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.remember-memory__surface,
+.remember-fragment__hit {
+  touch-action: none;
+}
