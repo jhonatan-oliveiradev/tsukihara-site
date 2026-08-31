@@ -1,0 +1,55 @@
+name: Temporary REMEMBER formatter
+
+on:
+  push:
+    branches:
+      - fix/remember-publish-ready-final
+    paths:
+      - .github/workflows/remember-format-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/remember-publish-ready-final
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Format REMEMBER final files
+        run: >-
+          npx prettier --write
+          src/components/remember/interludes/interlude-01-scene.tsx
+          src/components/remember/remember-experience.tsx
+          src/components/remember/restore/memory-puzzle.tsx
+          src/components/remember/results/memory-result.ts
+          src/components/remember/scenes/restore-scene.tsx
+
+      - name: Commit formatting
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/components/remember/interludes/interlude-01-scene.tsx \
+            src/components/remember/remember-experience.tsx \
+            src/components/remember/restore/memory-puzzle.tsx \
+            src/components/remember/results/memory-result.ts \
+            src/components/remember/scenes/restore-scene.tsx
+          git commit -m "chore: format REMEMBER final pass"
+          git push origin HEAD:fix/remember-publish-ready-final
