@@ -146,7 +146,8 @@ export function MemoryPuzzle({
   const realityCycleRef = useRef<RealityCycleState>(INITIAL_REALITY);
   const guidanceStateRef = useRef(createHanamoriGuidanceState());
   const guidanceElapsedRef = useRef(0);
-  const overlapping = memory.mechanic === "overlapping";
+  const overlappingMemory = memory.mechanic === "overlapping" ? memory : null;
+  const overlapping = overlappingMemory !== null;
   const focusActive = overlapping && focusState.status === "active";
   const lastFragmentId = restoredFragmentIds.at(-1);
   const lastFragment = memory.fragments.find((fragment) => fragment.id === lastFragmentId);
@@ -413,12 +414,13 @@ export function MemoryPuzzle({
 
         <div className="remember-memory__fragments">
           {memory.fragments.map((fragment) => {
-            const overlappingFragment =
-              memory.mechanic === "overlapping" ? (fragment as OverlappingFragment) : null;
-            const source = overlappingFragment
-              ? memory.stateAAsset
+            const overlappingFragment = overlappingMemory
+              ? (fragment as OverlappingFragment)
+              : null;
+            const source = overlappingMemory
+              ? overlappingMemory.stateAAsset
               : getFragmentSource(memory, fragment);
-            const alternateSource = overlappingFragment ? memory.stateBAsset : undefined;
+            const alternateSource = overlappingMemory ? overlappingMemory.stateBAsset : undefined;
             const sourceBlend = overlappingFragment
               ? focusActive
                 ? overlappingFragment.stableReality === "b"
