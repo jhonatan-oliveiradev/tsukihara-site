@@ -5,6 +5,8 @@ import { gsap } from "gsap";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { RememberLocaleCopy } from "@/components/remember/content/remember-locales";
 
+const CREATOR_NAME = "JHONATAN OLIVEIRA";
+
 type CreditsSceneProps = {
   copy: RememberLocaleCopy["credits"];
   interactive: boolean;
@@ -222,6 +224,26 @@ export function CreditsScene({
           </button>
         </div>
       </div>
+
+      <aside
+        className={["remember-credits__roll-viewport", reducedMotion && "is-static"]
+          .filter(Boolean)
+          .join(" ")}
+        aria-label={copy.creditsLabel}
+      >
+        <div className="remember-credits__roll-track">
+          <span className="remember-credits__roll-title">{copy.creditsLabel}</span>
+          {copy.creditRoles.map((role) => (
+            <div className="remember-credits__credit" key={role}>
+              <small>{role}</small>
+              <strong>JHONATAN OLIVEIRA</strong>
+            </div>
+          ))}
+          <span className="remember-credits__signature" aria-hidden="true">
+            月原 · {CREATOR_NAME}
+          </span>
+        </div>
+      </aside>
     </section>
   );
 }

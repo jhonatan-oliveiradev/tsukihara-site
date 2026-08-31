@@ -1,5 +1,8 @@
 export type RememberAnalyticsEvent =
-  "remember_started" | "remember_restore_completed" | "remember_replay_started";
+  | "remember_started"
+  | "remember_restore_completed"
+  | "remember_replay_started"
+  | "remember_memory_retry";
 
 export function trackRememberEvent(
   _event: RememberAnalyticsEvent,
