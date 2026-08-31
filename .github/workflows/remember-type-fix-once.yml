@@ -1,0 +1,78 @@
+name: Temporary REMEMBER type fixer
+
+on:
+  push:
+    branches:
+      - fix/remember-publish-ready-final
+    paths:
+      - .github/workflows/remember-type-fix-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/remember-publish-ready-final
+
+      - name: Stabilize overlapping-memory narrowing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/components/remember/restore/memory-puzzle.tsx")
+          text = path.read_text()
+
+          old_discriminant = '  const overlapping = memory.mechanic === "overlapping";\n'
+          new_discriminant = (
+              '  const overlappingMemory = memory.mechanic === "overlapping" ? memory : null;\n'
+              '  const overlapping = overlappingMemory !== null;\n'
+          )
+          assert text.count(old_discriminant) == 1, "expected one overlapping discriminant"
+          text = text.replace(old_discriminant, new_discriminant, 1)
+
+          old_fragment = '''            const overlappingFragment =
+              memory.mechanic === "overlapping" ? (fragment as OverlappingFragment) : null;
+            const source = overlappingFragment
+              ? memory.stateAAsset
+              : getFragmentSource(memory, fragment);
+            const alternateSource = overlappingFragment ? memory.stateBAsset : undefined;
+          '''
+          new_fragment = '''            const overlappingFragment = overlappingMemory
+              ? (fragment as OverlappingFragment)
+              : null;
+            const source = overlappingMemory
+              ? overlappingMemory.stateAAsset
+              : getFragmentSource(memory, fragment);
+            const alternateSource = overlappingMemory ? overlappingMemory.stateBAsset : undefined;
+          '''
+          assert text.count(old_fragment) == 1, "expected one overlapping fragment source block"
+          text = text.replace(old_fragment, new_fragment, 1)
+          path.write_text(text)
+          PY
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Format and type-check touched code
+        run: |
+          npx prettier --write src/components/remember/restore/memory-puzzle.tsx
+          npm run build
+
+      - name: Commit type fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/remember/restore/memory-puzzle.tsx
+          git commit -m "fix: preserve Gekkai discriminant in fragment render"
+          git push origin HEAD:fix/remember-publish-ready-final

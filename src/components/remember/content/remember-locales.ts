@@ -71,6 +71,10 @@ export type RememberLocaleCopy = {
     lunarFocusReady: string;
     lunarFocusActive: string;
     lunarFocusCooldown: string;
+    result: string;
+    integrity: string;
+    resonance: string;
+    time: string;
   };
   interlude01: {
     eyebrow: string;
@@ -183,6 +187,10 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       lunarFocusReady: "PRONTO",
       lunarFocusActive: "REALIDADE ESTABILIZADA",
       lunarFocusCooldown: "RECARGA",
+      result: "RESULTADO DA MEMÓRIA",
+      integrity: "Integridade",
+      resonance: "Ressonância",
+      time: "Tempo",
     },
     interlude01: {
       eyebrow: "ASSINATURA DE MEMÓRIA DESCONHECIDA",
@@ -297,6 +305,10 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       lunarFocusReady: "READY",
       lunarFocusActive: "REALITY STABILIZED",
       lunarFocusCooldown: "COOLDOWN",
+      result: "MEMORY RESULT",
+      integrity: "Integrity",
+      resonance: "Resonance",
+      time: "Time",
     },
     interlude01: {
       eyebrow: "UNKNOWN MEMORY SIGNATURE",
