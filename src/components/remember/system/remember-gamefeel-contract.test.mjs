@@ -124,14 +124,15 @@ test("Interlude I unlock CTA gains the approved gold fill and luminous hover tre
 });
 
 test("REMEMBER prevents accidental selection and image dragging without disabling controls", () => {
-  const styles = read("../../../app/remember/remember.css");
+  const interactionStyles = read("../../../app/remember/remember-interaction.css");
+  const baseStyles = read("../../../app/remember/remember.css");
 
-  assert.match(styles, /\.remember-root \{[\s\S]*?-webkit-user-select: none/);
-  assert.match(styles, /\.remember-root \{[\s\S]*?user-select: none/);
-  assert.match(styles, /\.remember-root img[\s\S]*?-webkit-user-drag: none/);
-  assert.match(styles, /\.remember-root img[\s\S]*?pointer-events: none/);
-  assert.match(styles, /\.remember-control \{[\s\S]*?pointer-events: auto/);
-  assert.match(styles, /\.remember-fragment__hit \{[\s\S]*?pointer-events: all/);
+  assert.match(interactionStyles, /\.remember-root \{[\s\S]*?-webkit-user-select: none/);
+  assert.match(interactionStyles, /\.remember-root \{[\s\S]*?user-select: none/);
+  assert.match(interactionStyles, /\.remember-root img[\s\S]*?-webkit-user-drag: none/);
+  assert.match(interactionStyles, /\.remember-root img[\s\S]*?pointer-events: none/);
+  assert.match(baseStyles, /\.remember-control \{[\s\S]*?pointer-events: auto/);
+  assert.match(baseStyles, /\.remember-fragment__hit \{[\s\S]*?pointer-events: all/);
 });
 
 test("rotated puzzle fragments use their own geometry as the transform origin", () => {
