@@ -1,0 +1,74 @@
+name: Temporary static credits verifier
+
+on:
+  push:
+    branches:
+      - feat/remember-memory-retry-credits
+    paths:
+      - .github/workflows/remember-static-credits-fix-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feat/remember-memory-retry-credits
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Keep reduced-motion credits fully visible
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/app/remember/remember-cinematic.css')
+          content = path.read_text()
+          old = '''.remember-credits__roll-viewport.is-static {
+            height: auto;
+            max-height: 12rem;
+            mask-image: none;
+          }'''.replace('          ', '')
+          new = '''.remember-credits__roll-viewport.is-static {
+            height: auto;
+            max-height: none;
+            overflow: visible;
+            mask-image: none;
+          }'''.replace('          ', '')
+          if content.count(old) != 1:
+              raise SystemExit('expected exactly one static credits viewport block')
+          path.write_text(content.replace(old, new, 1))
+          PY
+          npx prettier --write src/app/remember/remember-cinematic.css
+
+      - name: Test REMEMBER
+        run: npm run test:remember
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/app/remember/remember-cinematic.css
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: keep reduced-motion credits fully visible"
+          git push origin HEAD:feat/remember-memory-retry-credits
