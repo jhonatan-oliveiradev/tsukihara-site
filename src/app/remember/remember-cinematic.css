@@ -479,7 +479,8 @@
 
 .remember-credits__roll-viewport.is-static {
   height: auto;
-  max-height: 12rem;
+  max-height: none;
+  overflow: visible;
   mask-image: none;
 }
 
