@@ -409,3 +409,101 @@
     transition: none;
   }
 }
+
+.remember-credits__roll-viewport {
+  position: absolute;
+  z-index: 3;
+  right: max(2.2rem, calc(env(safe-area-inset-right) + 1.4rem));
+  bottom: max(1.6rem, calc(env(safe-area-inset-bottom) + 1rem));
+  width: min(18rem, 24vw);
+  height: clamp(8rem, 24vh, 14rem);
+  overflow: hidden;
+  pointer-events: none;
+  text-align: right;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+
+.remember-credits__roll-track {
+  display: grid;
+  justify-items: end;
+  gap: 1.05rem;
+  animation: remember-credits-roll 28s linear 1.8s infinite;
+  will-change: transform;
+}
+
+.remember-credits__roll-title {
+  margin-bottom: 0.4rem;
+  color: rgb(226 200 158 / 0.5);
+  font-size: 0.48rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.remember-credits__credit {
+  display: grid;
+  justify-items: end;
+  gap: 0.18rem;
+}
+
+.remember-credits__credit small {
+  color: rgb(238 226 208 / 0.32);
+  font-size: 0.44rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.remember-credits__credit strong {
+  color: rgb(239 228 211 / 0.68);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(0.72rem, 0.9vw, 0.92rem);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.remember-credits__signature {
+  margin-top: 0.8rem;
+  color: rgb(202 169 116 / 0.36);
+  font-family: var(--display, Georgia, serif);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+@keyframes remember-credits-roll {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.remember-credits__roll-viewport.is-static {
+  height: auto;
+  max-height: 12rem;
+  mask-image: none;
+}
+
+.remember-credits__roll-viewport.is-static .remember-credits__roll-track {
+  animation: none;
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .remember-credits__roll-viewport {
+    right: max(1rem, calc(env(safe-area-inset-right) + 0.7rem));
+    bottom: max(1rem, calc(env(safe-area-inset-bottom) + 0.7rem));
+    width: min(13rem, 42vw);
+    height: 7.5rem;
+  }
+
+  .remember-credits__credit strong {
+    font-size: 0.66rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-credits__roll-track {
+    animation: none;
+    transform: none;
+  }
+}

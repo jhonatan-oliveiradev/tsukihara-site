@@ -75,6 +75,10 @@ export type RememberLocaleCopy = {
     integrity: string;
     resonance: string;
     time: string;
+    retryMemory: string;
+    newBest: string;
+    bestMaintained: string;
+    bestRecord: string;
   };
   interlude01: {
     eyebrow: string;
@@ -111,6 +115,8 @@ export type RememberLocaleCopy = {
     title: string;
     cta: string;
     replay: string;
+    creditsLabel: string;
+    creditRoles: readonly string[];
   };
 };
 
@@ -191,6 +197,10 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       integrity: "Integridade",
       resonance: "Ressonância",
       time: "Tempo",
+      retryMemory: "REPETIR MEMÓRIA",
+      newBest: "NOVO MELHOR RESULTADO",
+      bestMaintained: "MELHOR REGISTRO MANTIDO",
+      bestRecord: "MELHOR",
     },
     interlude01: {
       eyebrow: "ASSINATURA DE MEMÓRIA DESCONHECIDA",
@@ -232,6 +242,18 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       title: "LEMBRE-SE DO QUE RESTA.",
       cta: "CONTINUAR PARA TSUKIHARA",
       replay: "REPETIR A EXPERIÊNCIA",
+      creditsLabel: "CRÉDITOS",
+      creditRoles: [
+        "Direção Criativa",
+        "Direção de Arte",
+        "Game Design",
+        "Narrativa",
+        "UX / UI",
+        "Desenvolvimento",
+        "Motion & VFX",
+        "QA",
+        "Restaurador Oficial de Memórias",
+      ],
     },
   },
   en: {
@@ -309,6 +331,10 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       integrity: "Integrity",
       resonance: "Resonance",
       time: "Time",
+      retryMemory: "RETRY MEMORY",
+      newBest: "NEW BEST RESULT",
+      bestMaintained: "BEST RECORD KEPT",
+      bestRecord: "BEST",
     },
     interlude01: {
       eyebrow: "UNKNOWN MEMORY SIGNATURE",
@@ -350,6 +376,18 @@ export const rememberLocales: Record<RememberLocale, RememberLocaleCopy> = {
       title: "REMEMBER WHAT REMAINS.",
       cta: "CONTINUE TO TSUKIHARA",
       replay: "EXPERIENCE AGAIN",
+      creditsLabel: "CREDITS",
+      creditRoles: [
+        "Creative Direction",
+        "Art Direction",
+        "Game Design",
+        "Narrative",
+        "UX / UI",
+        "Development",
+        "Motion & VFX",
+        "QA",
+        "Official Memory Restorer",
+      ],
     },
   },
 };

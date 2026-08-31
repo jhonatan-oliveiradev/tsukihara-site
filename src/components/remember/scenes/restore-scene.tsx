@@ -20,6 +20,8 @@ type RestoreSceneProps = {
   restoredFragmentIds: string[];
   restorationPhase: RestorationPhase;
   memoryResult?: MemoryResult | null;
+  bestMemoryResult?: MemoryResult | null;
+  attemptOutcome?: "first" | "new-best" | "best-kept" | null;
   reducedMotion: boolean;
   interactive: boolean;
   onRestore: (fragmentId: string) => void;
@@ -29,6 +31,7 @@ type RestoreSceneProps = {
   onRestorationComplete: () => void;
   onKintsugi: () => void;
   onRestored: () => void;
+  onRetry: () => void;
   onContinue: () => void;
 };
 
@@ -46,6 +49,8 @@ export function RestoreScene({
   restoredFragmentIds,
   restorationPhase,
   memoryResult = null,
+  bestMemoryResult = null,
+  attemptOutcome = null,
   reducedMotion,
   interactive,
   onRestore,
@@ -55,6 +60,7 @@ export function RestoreScene({
   onRestorationComplete,
   onKintsugi,
   onRestored,
+  onRetry,
   onContinue,
 }: RestoreSceneProps) {
   const rootRef = useRef<HTMLElement>(null);
@@ -238,6 +244,15 @@ export function RestoreScene({
               <strong>{formatCompletionTime(memoryResult.completionTime)}</strong>
             </div>
           </div>
+          {attemptOutcome === "new-best" ? (
+            <span className="remember-memory-result__record is-new">{copy.newBest}</span>
+          ) : null}
+          {attemptOutcome === "best-kept" && bestMemoryResult ? (
+            <span className="remember-memory-result__record">
+              {copy.bestMaintained} · {copy.bestRecord} {bestMemoryResult.resonance} ·{" "}
+              {Math.round(bestMemoryResult.integrity)}%
+            </span>
+          ) : null}
         </aside>
       ) : null}
 
@@ -253,10 +268,15 @@ export function RestoreScene({
         data-restore-instruction
       >
         {restored ? (
-          <button type="button" className="remember-restore__continue" onClick={onContinue}>
-            <span>{copy.continue}</span>
-            <i aria-hidden="true" />
-          </button>
+          <div className="remember-restore__result-actions">
+            <button type="button" className="remember-restore__retry" onClick={onRetry}>
+              {copy.retryMemory}
+            </button>
+            <button type="button" className="remember-restore__continue" onClick={onContinue}>
+              <span>{copy.continue}</span>
+              <i aria-hidden="true" />
+            </button>
+          </div>
         ) : (
           <>
             <span>{copy.instruction}</span>

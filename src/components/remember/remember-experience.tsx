@@ -11,7 +11,10 @@ import { getRememberCopy } from "@/components/remember/content/remember-locales"
 import { Interlude01Scene } from "@/components/remember/interludes/interlude-01-scene";
 import { Interlude02Scene } from "@/components/remember/interludes/interlude-02-scene";
 import { RememberShell } from "@/components/remember/remember-shell";
-import { createMemoryResult } from "@/components/remember/results/memory-result";
+import {
+  chooseBestMemoryResult,
+  createMemoryResult,
+} from "@/components/remember/results/memory-result";
 import { isMemoryReadyForRestoration } from "@/components/remember/restore/memory-mechanic-policy";
 import { BootScene } from "@/components/remember/scenes/boot-scene";
 import { CreditsScene } from "@/components/remember/scenes/credits-scene";
@@ -34,6 +37,7 @@ import {
   REMEMBER_SAVE_KEY,
   serializeRememberSave,
   type MemoryProgress,
+  type MemoryResult,
   type RememberSaveV1,
 } from "@/components/remember/state/remember-save";
 import {
@@ -63,6 +67,8 @@ type MemoryProgressMetrics = Partial<
   Pick<MemoryProgress, "elapsedMs" | "mistakes" | "falseFragments">
 >;
 
+type MemoryAttemptOutcome = "first" | "new-best" | "best-kept" | null;
+
 const createMemoryProgress = (
   restoredFragmentIds: string[],
   previous?: MemoryProgress,
@@ -86,6 +92,9 @@ export function RememberExperience() {
   const [preloadProgress, setPreloadProgress] = useState(() =>
     createPreloadProgress(0, initialAssetManifest.critical.length),
   );
+  const [memoryAttemptKey, setMemoryAttemptKey] = useState(0);
+  const [latestAttemptResult, setLatestAttemptResult] = useState<MemoryResult | null>(null);
+  const [memoryAttemptOutcome, setMemoryAttemptOutcome] = useState<MemoryAttemptOutcome>(null);
   const saveRef = useRef<RememberSaveV1 | null>(null);
   const transitionDirectorRef = useRef<SceneTransitionDirectorHandle>(null);
   const memoryElapsedMsRef = useRef(0);
@@ -291,6 +300,9 @@ export function RememberExperience() {
     const transitioned = await requestTransition(
       () => {
         const save = createNewRememberSave(new Date().toISOString());
+        setLatestAttemptResult(null);
+        setMemoryAttemptOutcome(null);
+        setMemoryAttemptKey((attempt) => attempt + 1);
         memoryElapsedMsRef.current = 0;
         clockMemoryIdRef.current = "hanamori";
         persistSave(save);
@@ -318,6 +330,8 @@ export function RememberExperience() {
 
     const transitioned = await requestTransition(
       () => {
+        setLatestAttemptResult(null);
+        setMemoryAttemptOutcome(null);
         if (isMemoryStage(save.currentStage)) {
           memoryElapsedMsRef.current = save.memoryProgress[save.currentStage]?.elapsedMs ?? 0;
           clockMemoryIdRef.current = save.currentStage;
@@ -494,40 +508,47 @@ export function RememberExperience() {
   const handleRestorationComplete = useCallback(() => {
     const completedAt = new Date().toISOString();
     const completionTime = Math.max(0, memoryElapsedMsRef.current / 1000);
-    const nextSave = mutateSave((save) => {
-      const previous = save.memoryProgress[activeMemory.id];
-      const progress = createMemoryProgress(state.restoredFragmentIds, previous, {
-        elapsedMs: memoryElapsedMsRef.current,
-      });
-      const result = createMemoryResult({
-        progress,
-        completionTime,
-        parSeconds: activeMemory.parSeconds,
-        completedAt,
-      });
-
-      return {
-        ...save,
-        updatedAt: completedAt,
-        completedStages: save.completedStages.includes(activeMemory.id)
-          ? save.completedStages
-          : [...save.completedStages, activeMemory.id],
-        memoryProgress: {
-          ...save.memoryProgress,
-          [activeMemory.id]: progress,
-        },
-        memories: {
-          ...save.memories,
-          [activeMemory.id]: result,
-        },
-      };
+    const saveBeforeCompletion = saveRef.current;
+    const previousProgress = saveBeforeCompletion?.memoryProgress[activeMemory.id];
+    const previousBest = saveBeforeCompletion?.memories[activeMemory.id] ?? null;
+    const progress = createMemoryProgress(state.restoredFragmentIds, previousProgress, {
+      elapsedMs: memoryElapsedMsRef.current,
     });
+    const result = createMemoryResult({
+      progress,
+      completionTime,
+      parSeconds: activeMemory.parSeconds,
+      completedAt,
+    });
+    const bestResult = chooseBestMemoryResult(previousBest, result);
+    const attemptOutcome: MemoryAttemptOutcome = !previousBest
+      ? "first"
+      : bestResult === result
+        ? "new-best"
+        : "best-kept";
 
-    const result = nextSave?.memories[activeMemory.id];
+    mutateSave((save) => ({
+      ...save,
+      updatedAt: completedAt,
+      completedStages: save.completedStages.includes(activeMemory.id)
+        ? save.completedStages
+        : [...save.completedStages, activeMemory.id],
+      memoryProgress: {
+        ...save.memoryProgress,
+        [activeMemory.id]: progress,
+      },
+      memories: {
+        ...save.memories,
+        [activeMemory.id]: bestResult,
+      },
+    }));
+
+    setLatestAttemptResult(result);
+    setMemoryAttemptOutcome(attemptOutcome);
     trackRememberEvent("remember_restore_completed", {
       realm: activeMemory.id,
-      integrity: result?.integrity,
-      resonance: result?.resonance,
+      integrity: result.integrity,
+      resonance: result.resonance,
     });
     dispatch({ type: "MARK_MEMORY_RESTORED", memoryId: activeMemory.id });
   }, [activeMemory.id, activeMemory.parSeconds, mutateSave, state.restoredFragmentIds]);
@@ -542,6 +563,8 @@ export function RememberExperience() {
     const manifest = getStageAssetManifest(nextStage);
     const transitioned = await requestTransition(
       () => {
+        setLatestAttemptResult(null);
+        setMemoryAttemptOutcome(null);
         dispatch({ type: "CONTINUE" });
         if (nextStage === "credits") {
           mutateSave((save) => ({
@@ -652,10 +675,13 @@ export function RememberExperience() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [audio]);
 
-  const handleRestartMemory = useCallback(() => {
+  const restartActiveMemoryAttempt = useCallback(() => {
     if (!isMemoryStage(state.currentStage)) return;
     memoryElapsedMsRef.current = 0;
     clockMemoryIdRef.current = state.currentStage;
+    setLatestAttemptResult(null);
+    setMemoryAttemptOutcome(null);
+    setMemoryAttemptKey((attempt) => attempt + 1);
     mutateSave((save) => ({
       ...save,
       updatedAt: new Date().toISOString(),
@@ -668,6 +694,26 @@ export function RememberExperience() {
     gsap.globalTimeline.resume();
     void audio.restoreMemoryLevel();
   }, [audio, mutateSave, state.currentStage]);
+
+  const handleRestartMemory = restartActiveMemoryAttempt;
+
+  const handleRetryMemoryResult = useCallback(() => {
+    if (
+      state.scene !== "memory" ||
+      state.restorationPhase !== "restored" ||
+      transitionState !== "idle"
+    ) {
+      return;
+    }
+    trackRememberEvent("remember_memory_retry", { realm: activeMemory.id });
+    restartActiveMemoryAttempt();
+  }, [
+    activeMemory.id,
+    restartActiveMemoryAttempt,
+    state.restorationPhase,
+    state.scene,
+    transitionState,
+  ]);
 
   const handleOpenArchive = useCallback(() => {
     dispatch({ type: "OPEN_ARCHIVE" });
@@ -701,6 +747,9 @@ export function RememberExperience() {
         () => {
           memoryElapsedMsRef.current = 0;
           clockMemoryIdRef.current = memoryId;
+          setLatestAttemptResult(null);
+          setMemoryAttemptOutcome(null);
+          setMemoryAttemptKey((attempt) => attempt + 1);
           mutateSave((currentSave) => ({
             ...currentSave,
             memoryProgress: {
@@ -750,7 +799,8 @@ export function RememberExperience() {
     : (storedSave?.currentStage.toUpperCase() ?? null);
   const archiveCurrentStage =
     state.scene === "menu" && storedSave ? storedSave.currentStage : state.currentStage;
-  const activeMemoryResult = storedSave?.memories[activeMemory.id] ?? null;
+  const activeMemoryBestResult = storedSave?.memories[activeMemory.id] ?? null;
+  const activeMemoryResult = latestAttemptResult ?? activeMemoryBestResult;
 
   const overlay = (
     <>
@@ -817,13 +867,15 @@ export function RememberExperience() {
 
         {state.scene === "memory" && (
           <RestoreScene
-            key={activeMemory.id}
+            key={`${activeMemory.id}:${memoryAttemptKey}`}
             memory={activeMemory}
             copy={copy.memory}
             completionLine={activeMemory.completionCopy[state.locale]}
             restoredFragmentIds={state.restoredFragmentIds}
             restorationPhase={state.restorationPhase}
             memoryResult={activeMemoryResult}
+            bestMemoryResult={activeMemoryBestResult}
+            attemptOutcome={memoryAttemptOutcome}
             reducedMotion={reducedMotion}
             interactive={gameplayInteractive}
             onRestore={handleRestore}
@@ -833,6 +885,7 @@ export function RememberExperience() {
             onRestorationComplete={handleRestorationComplete}
             onKintsugi={handleKintsugi}
             onRestored={handleRestored}
+            onRetry={handleRetryMemoryResult}
             onContinue={() => void handleContinue()}
           />
         )}

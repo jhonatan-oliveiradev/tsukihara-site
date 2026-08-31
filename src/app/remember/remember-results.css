@@ -86,3 +86,59 @@
     animation-duration: 120ms;
   }
 }
+
+.remember-memory-result__record {
+  color: rgb(230 215 191 / 0.42);
+  font-size: 0.46rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.remember-memory-result__record.is-new {
+  color: rgb(226 190 128 / 0.88);
+  text-shadow: 0 0 1.6rem rgb(214 167 91 / 0.18);
+}
+
+.remember-restore__result-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(1rem, 2vw, 1.8rem);
+}
+
+.remember-restore__retry {
+  border: 0;
+  border-bottom: 1px solid rgb(226 207 177 / 0.2);
+  padding: 0.55rem 0.1rem;
+  background: transparent;
+  color: rgb(235 221 200 / 0.48);
+  font: inherit;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    text-shadow 180ms ease;
+}
+
+.remember-restore__retry:hover,
+.remember-restore__retry:focus-visible {
+  border-color: rgb(226 190 128 / 0.58);
+  color: rgb(240 224 198 / 0.84);
+  text-shadow: 0 0 1.2rem rgb(213 167 93 / 0.18);
+}
+
+@media (max-width: 900px) {
+  .remember-restore__result-actions {
+    flex-wrap: wrap;
+    gap: 0.7rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-restore__retry {
+    transition: none;
+  }
+}
