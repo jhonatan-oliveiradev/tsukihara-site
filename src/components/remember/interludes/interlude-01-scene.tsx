@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties, type FocusEvent, type PointerEvent } from "react";
+import { useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { rememberAssets } from "@/components/remember/content/remember-assets";
 import type { RememberLocaleCopy } from "@/components/remember/content/remember-locales";
@@ -40,13 +40,10 @@ export function Interlude01Scene({
     if (!interactive) return;
     setDiscovered((current) => recordInterlude01Trace(current, traceId));
   };
-
-  const handlePointerEnter =
-    (traceId: Interlude01TraceId) => (_event: PointerEvent<HTMLButtonElement>) => {
-      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) discover(traceId);
-    };
-
-  const handleFocus = (traceId: Interlude01TraceId) => (_event: FocusEvent<HTMLButtonElement>) => {
+  const handlePointerEnter = (traceId: Interlude01TraceId) => () => {
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) discover(traceId);
+  };
+  const handleFocus = (traceId: Interlude01TraceId) => () => {
     discover(traceId);
   };
 

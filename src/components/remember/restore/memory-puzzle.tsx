@@ -156,14 +156,6 @@ export function MemoryPuzzle({
         y: 50 + lastFragment.initial.y * 85,
       }
     : { x: 50, y: 50 };
-
-  useEffect(() => {
-    focusStateRef.current = READY_FOCUS;
-    realityCycleRef.current = INITIAL_REALITY;
-    setFocusState(READY_FOCUS);
-    setCurrentReality("a");
-  }, [memory.id]);
-
   useEffect(() => {
     if (memory.id !== "hanamori" || restoredRequiredCount === 0) return;
     guidanceStateRef.current = markHanamoriGuidanceLearned(guidanceStateRef.current);
