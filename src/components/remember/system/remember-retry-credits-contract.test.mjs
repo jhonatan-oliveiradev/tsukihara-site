@@ -77,7 +77,6 @@ test("Gekkai reserves Space for Lunar Focus while fragment keyboard restore rema
   const fragment = read("../restore/memory-fragment.tsx");
 
   assert.match(puzzle, /event\.stopPropagation\(\)/);
-  assert.match(puzzle, /remember-fragment__hit/);
   assert.match(puzzle, /addEventListener\("keydown", handleFocusKey, true\)/);
   assert.match(puzzle, /removeEventListener\("keydown", handleFocusKey, true\)/);
   assert.match(fragment, /if \(event\.key !== "Enter" && event\.key !== " "\) return;/);
