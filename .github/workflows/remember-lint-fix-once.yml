@@ -24,46 +24,55 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           puzzle = Path("src/components/remember/restore/memory-puzzle.tsx")
           text = puzzle.read_text()
-          reset_effect = '''  useEffect(() => {
-            focusStateRef.current = READY_FOCUS;
-            realityCycleRef.current = INITIAL_REALITY;
-            setFocusState(READY_FOCUS);
-            setCurrentReality("a");
-          }, [memory.id]);
-
-          '''
-          assert reset_effect in text, "expected redundant Gekkai reset effect was not found"
-          puzzle.write_text(text.replace(reset_effect, "", 1))
+          reset_pattern = re.compile(
+              r'\n\s*useEffect\(\(\) => \{\s*'
+              r'focusStateRef\.current = READY_FOCUS;\s*'
+              r'realityCycleRef\.current = INITIAL_REALITY;\s*'
+              r'setFocusState\(READY_FOCUS\);\s*'
+              r'setCurrentReality\("a"\);\s*'
+              r'\}, \[memory\.id\]\);\s*\n',
+              re.MULTILINE,
+          )
+          text, reset_count = reset_pattern.subn("\n", text, count=1)
+          assert reset_count == 1, f"expected one redundant Gekkai reset effect, removed {reset_count}"
+          puzzle.write_text(text)
 
           interlude = Path("src/components/remember/interludes/interlude-01-scene.tsx")
           text = interlude.read_text()
           old_import = 'import { useState, type CSSProperties, type FocusEvent, type PointerEvent } from "react";'
           new_import = 'import { useState, type CSSProperties } from "react";'
-          assert old_import in text, "expected React type import was not found"
+          assert text.count(old_import) == 1, "expected one React type import"
           text = text.replace(old_import, new_import, 1)
 
-          old_handlers = '''  const handlePointerEnter =
-            (traceId: Interlude01TraceId) => (_event: PointerEvent<HTMLButtonElement>) => {
-              if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) discover(traceId);
-            };
-
-          const handleFocus = (traceId: Interlude01TraceId) => (_event: FocusEvent<HTMLButtonElement>) => {
-            discover(traceId);
-          };
-          '''
-          new_handlers = '''  const handlePointerEnter = (traceId: Interlude01TraceId) => () => {
+          pointer_pattern = re.compile(
+              r'\s*const handlePointerEnter =\s*'
+              r'\(traceId: Interlude01TraceId\) => \(_event: PointerEvent<HTMLButtonElement>\) => \{\s*'
+              r'if \(window\.matchMedia\("\(hover: hover\) and \(pointer: fine\)"\)\.matches\) discover\(traceId\);\s*'
+              r'\};'
+          )
+          pointer_replacement = '''
+          const handlePointerEnter = (traceId: Interlude01TraceId) => () => {
             if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) discover(traceId);
-          };
+          };'''
+          text, pointer_count = pointer_pattern.subn(pointer_replacement, text, count=1)
+          assert pointer_count == 1, f"expected one pointer handler, replaced {pointer_count}"
 
+          focus_pattern = re.compile(
+              r'\s*const handleFocus = \(traceId: Interlude01TraceId\) => \(_event: FocusEvent<HTMLButtonElement>\) => \{\s*'
+              r'discover\(traceId\);\s*'
+              r'\};'
+          )
+          focus_replacement = '''
           const handleFocus = (traceId: Interlude01TraceId) => () => {
             discover(traceId);
-          };
-          '''
-          assert old_handlers in text, "expected Interlude I handlers were not found"
-          interlude.write_text(text.replace(old_handlers, new_handlers, 1))
+          };'''
+          text, focus_count = focus_pattern.subn(focus_replacement, text, count=1)
+          assert focus_count == 1, f"expected one focus handler, replaced {focus_count}"
+          interlude.write_text(text)
           PY
 
       - name: Set up Node.js
