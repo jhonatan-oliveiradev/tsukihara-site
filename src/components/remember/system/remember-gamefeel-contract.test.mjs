@@ -112,6 +112,28 @@ test("Memory Results persist pause-safe metrics and render before continuation",
   assert.match(locales, /resonance: "Resonance"/);
 });
 
+test("Interlude I unlock CTA gains the approved gold fill and luminous hover treatment", () => {
+  const interlude = read("../interludes/interlude-01-scene.tsx");
+
+  assert.match(interlude, /const continueUnlocked = complete && interactive/);
+  assert.match(interlude, /className="remember-interlude__continue"/);
+  assert.match(interlude, /data-unlocked=\{continueUnlocked\}/);
+  assert.match(interlude, /background: continueUnlocked/);
+  assert.match(interlude, /continueHovered/);
+  assert.match(interlude, /boxShadow:/);
+});
+
+test("REMEMBER prevents accidental selection and image dragging without disabling controls", () => {
+  const styles = read("../../../app/remember/remember.css");
+
+  assert.match(styles, /\.remember-root \{[\s\S]*?-webkit-user-select: none/);
+  assert.match(styles, /\.remember-root \{[\s\S]*?user-select: none/);
+  assert.match(styles, /\.remember-root img[\s\S]*?-webkit-user-drag: none/);
+  assert.match(styles, /\.remember-root img[\s\S]*?pointer-events: none/);
+  assert.match(styles, /\.remember-control \{[\s\S]*?pointer-events: auto/);
+  assert.match(styles, /\.remember-fragment__hit \{[\s\S]*?pointer-events: all/);
+});
+
 test("rotated puzzle fragments use their own geometry as the transform origin", () => {
   const fragment = read("../restore/memory-fragment.tsx");
 
