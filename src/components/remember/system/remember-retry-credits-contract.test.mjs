@@ -54,3 +54,12 @@ test("final credits include a bottom-right upward rolling creator easter egg", (
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(styles, /\.remember-credits__roll-track[\s\S]*animation: none/);
 });
+
+test("reduced-motion credits remain fully visible instead of clipping the static list", () => {
+  const styles = read("../../../app/remember/remember-cinematic.css");
+
+  assert.match(
+    styles,
+    /\.remember-credits__roll-viewport\.is-static\s*\{[\s\S]*max-height:\s*none;[\s\S]*overflow:\s*visible;/,
+  );
+});
