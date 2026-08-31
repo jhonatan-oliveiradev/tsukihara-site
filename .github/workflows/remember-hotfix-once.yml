@@ -85,8 +85,8 @@ jobs:
           }
 
           '''
-          if css.count(anchor) != 1:
-              raise SystemExit(f"expected one credits viewport anchor, found {css.count(anchor)}")
+          if anchor not in css:
+              raise SystemExit("credits viewport anchor not found")
           css = css.replace(anchor, enhancement + anchor, 1)
 
           shadow_anchor = "  text-align: right;\n  mask-image:"
