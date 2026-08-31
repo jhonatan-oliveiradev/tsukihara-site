@@ -1,0 +1,105 @@
+name: Temporary Gekkai typecheck hotfix
+
+on:
+  push:
+    branches:
+      - fix/remember-gekkai-type-narrowing
+    paths:
+      - .github/workflows/remember-gekkai-type-narrowing-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  hotfix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/remember-gekkai-type-narrowing
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Confirm the TypeScript regression is reproducible
+        shell: bash
+        run: |
+          set +e
+          npm run build > /tmp/build-before.log 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            echo "Expected the pre-fix build to fail, but it passed."
+            exit 1
+          fi
+
+          grep -F "Property 'stateAAsset' does not exist on type 'MemoryDefinition'" /tmp/build-before.log
+          grep -F "Property 'stateBAsset' does not exist on type 'MemoryDefinition'" /tmp/build-before.log
+
+      - name: Apply discriminant-preserving Gekkai narrowing
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/components/remember/restore/memory-puzzle.tsx')
+          content = path.read_text()
+
+          old_flag = '''  const overlapping = memory.mechanic === "overlapping";
+  const focusActive = overlapping && focusState.status === "active";'''
+          new_flag = '''  const overlappingMemory = memory.mechanic === "overlapping" ? memory : null;
+  const overlapping = overlappingMemory !== null;
+  const focusActive = overlapping && focusState.status === "active";'''
+
+          old_sources = '''            const overlappingFragment =
+              memory.mechanic === "overlapping" ? (fragment as OverlappingFragment) : null;
+            const source = overlappingFragment
+              ? memory.stateAAsset
+              : getFragmentSource(memory, fragment);
+            const alternateSource = overlappingFragment ? memory.stateBAsset : undefined;'''
+          new_sources = '''            const overlappingFragment = overlappingMemory
+              ? (fragment as OverlappingFragment)
+              : null;
+            const source = overlappingMemory
+              ? overlappingMemory.stateAAsset
+              : getFragmentSource(memory, fragment);
+            const alternateSource = overlappingMemory ? overlappingMemory.stateBAsset : undefined;'''
+
+          if old_flag not in content:
+              raise SystemExit('Could not find overlapping flag block')
+          if old_sources not in content:
+              raise SystemExit('Could not find overlapping source block')
+
+          content = content.replace(old_flag, new_flag, 1)
+          content = content.replace(old_sources, new_sources, 1)
+          path.write_text(content)
+          PY
+
+          npx prettier --write src/components/remember/restore/memory-puzzle.tsx
+
+      - name: Verify REMEMBER regression suite
+        run: npm run test:remember
+
+      - name: Verify lint
+        run: npm run lint
+
+      - name: Verify production build
+        run: npm run build
+
+      - name: Commit hotfix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/remember/restore/memory-puzzle.tsx
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: narrow overlapping memory assets for Gekkai"
+          git push origin HEAD:fix/remember-gekkai-type-narrowing
