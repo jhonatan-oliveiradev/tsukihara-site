@@ -63,3 +63,21 @@ test("reduced-motion credits remain fully visible instead of clipping the static
     /\.remember-credits__roll-viewport\.is-static\s*\{[\s\S]*max-height:\s*none;[\s\S]*overflow:\s*visible;/,
   );
 });
+
+test("final credits preserve readable contrast against the global vignette", () => {
+  const styles = read("../../../app/remember/remember-cinematic.css");
+
+  assert.match(styles, /\[data-remember-scene="credits"\] \.remember-root__vignette/);
+  assert.match(styles, /\.remember-credits__credit strong\s*\{[\s\S]*\/ 0\.9[0-9]\)/);
+  assert.match(styles, /\.remember-credits__credit small\s*\{[\s\S]*\/ 0\.[5-9][0-9]\)/);
+});
+
+test("Gekkai reserves Space for Lunar Focus while fragment keyboard restore remains on Enter", () => {
+  const puzzle = read("../restore/memory-puzzle.tsx");
+  const fragment = read("../restore/memory-fragment.tsx");
+
+  assert.match(puzzle, /event\.stopPropagation\(\)/);
+  assert.match(puzzle, /addEventListener\("keydown", handleFocusKey, true\)/);
+  assert.match(puzzle, /removeEventListener\("keydown", handleFocusKey, true\)/);
+  assert.match(fragment, /if \(event\.key !== "Enter" && event\.key !== " "\) return;/);
+});

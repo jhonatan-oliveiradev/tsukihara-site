@@ -1,0 +1,118 @@
+name: Temporary REMEMBER credits and Gekkai hotfix
+
+on:
+  push:
+    branches:
+      - fix/remember-credits-gekkai-space
+    paths:
+      - .github/workflows/remember-hotfix-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/remember-credits-gekkai-space
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply focused fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          puzzle_path = Path("src/components/remember/restore/memory-puzzle.tsx")
+          puzzle = puzzle_path.read_text()
+
+          blocked_selector = 'button, a, input, textarea, select, [contenteditable="true"], [role="button"]'
+          native_selector = 'button, a, input, textarea, select, [contenteditable="true"]'
+          if puzzle.count(blocked_selector) != 1:
+              raise SystemExit(f"expected one Gekkai blocked selector, found {puzzle.count(blocked_selector)}")
+          puzzle = puzzle.replace(blocked_selector, native_selector, 1)
+
+          old_tail = '''    event.preventDefault();
+              activateFocus();
+            };
+
+            window.addEventListener("keydown", handleFocusKey);
+            return () => window.removeEventListener("keydown", handleFocusKey);'''
+          new_tail = '''    event.preventDefault();
+              event.stopPropagation();
+              activateFocus();
+            };
+
+            window.addEventListener("keydown", handleFocusKey, true);
+            return () => window.removeEventListener("keydown", handleFocusKey, true);'''
+          if puzzle.count(old_tail) != 1:
+              raise SystemExit(f"expected one Gekkai keyboard tail, found {puzzle.count(old_tail)}")
+          puzzle_path.write_text(puzzle.replace(old_tail, new_tail, 1))
+
+          css_path = Path("src/app/remember/remember-cinematic.css")
+          css = css_path.read_text()
+          replacements = {
+              "color: rgb(226 200 158 / 0.5);": "color: rgb(226 200 158 / 0.74);",
+              "color: rgb(238 226 208 / 0.32);": "color: rgb(238 226 208 / 0.62);",
+              "color: rgb(239 228 211 / 0.68);": "color: rgb(239 228 211 / 0.94);",
+              "color: rgb(202 169 116 / 0.36);": "color: rgb(202 169 116 / 0.64);",
+          }
+          for before, after in replacements.items():
+              if css.count(before) != 1:
+                  raise SystemExit(f"expected one CSS token: {before!r}, found {css.count(before)}")
+              css = css.replace(before, after, 1)
+
+          anchor = ".remember-credits__roll-viewport {\n"
+          enhancement = '''[data-remember-scene="credits"] .remember-root__vignette {
+            background: radial-gradient(
+              circle at 50% 48%,
+              transparent 44%,
+              rgb(0 0 0 / 0.22) 78%,
+              rgb(0 0 0 / 0.5) 100%
+            );
+          }
+
+          '''
+          if css.count(anchor) != 1:
+              raise SystemExit(f"expected one credits viewport anchor, found {css.count(anchor)}")
+          css = css.replace(anchor, enhancement + anchor, 1)
+
+          shadow_anchor = "  text-align: right;\n  mask-image:"
+          if css.count(shadow_anchor) != 1:
+              raise SystemExit(f"expected one credits text anchor, found {css.count(shadow_anchor)}")
+          css = css.replace(
+              shadow_anchor,
+              "  text-align: right;\n  text-shadow: 0 0.4rem 1.2rem rgb(0 0 0 / 0.95);\n  mask-image:",
+              1,
+          )
+          css_path.write_text(css)
+          PY
+
+      - name: Format changed production files
+        run: npx prettier --write src/components/remember/restore/memory-puzzle.tsx src/app/remember/remember-cinematic.css src/components/remember/system/remember-retry-credits-contract.test.mjs
+
+      - name: REMEMBER regression
+        run: npm run test:remember
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit verified fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/remember/restore/memory-puzzle.tsx src/app/remember/remember-cinematic.css src/components/remember/system/remember-retry-credits-contract.test.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: restore Gekkai Space shortcut and credits contrast"
+          git push origin HEAD:fix/remember-credits-gekkai-space
