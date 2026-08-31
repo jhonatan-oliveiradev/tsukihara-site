@@ -23,6 +23,7 @@ import { KintsugiLunarChapter } from "@/components/experience/kintsugi-lunar-cha
 import { MotherMoonChapter } from "@/components/experience/mother-moon-chapter";
 import { NavLabelSwap } from "@/components/experience/nav-label-swap";
 import { RealmAtlas } from "@/components/experience/realm-atlas";
+import { RememberGateway } from "@/components/experience/remember-gateway";
 import { SoundToggle } from "@/components/shared/sound-toggle";
 import { immersiveCopy, type Locale } from "@/content/immersive-copy";
 
@@ -301,6 +302,9 @@ export function ImmersiveExperience() {
               onToggle={toggleMute}
               className="ix-sound"
             />
+            <Link href="/remember" className="ix-remember-nav">
+              REMEMBER
+            </Link>
             <button
               type="button"
               className="ix-menu"
@@ -321,6 +325,14 @@ export function ImmersiveExperience() {
                 <small lang="ja">{jp}</small>
               </Link>
             ))}
+            <Link
+              href="/remember"
+              className="ix-mobile-menu__remember"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span>06</span>
+              <b>REMEMBER</b>
+            </Link>
           </div>
         )}
 
@@ -331,6 +343,7 @@ export function ImmersiveExperience() {
           <CharacterSpotlight copy={copy} locale={locale} />
           <KintsugiLunarChapter locale={locale} />
           <GameplayChapter locale={locale} />
+          <RememberGateway locale={locale} />
           <CompanionsChapter locale={locale} />
           <BestiaryBossesChapter locale={locale} />
           <MotherMoonChapter locale={locale} />

@@ -267,7 +267,7 @@ export function RememberExperience() {
     saveBeforeLeaving();
     gsap.globalTimeline.resume();
     audio.stopAll();
-    router.push("/");
+    router.push("/#remember");
   }, [audio, router, saveBeforeLeaving]);
 
   const handleToggleMute = useCallback(() => {
