@@ -302,7 +302,9 @@ export function ImmersiveExperience() {
               onToggle={toggleMute}
               className="ix-sound"
             />
-            <Link href="/remember" className="ix-remember-nav">REMEMBER</Link>
+            <Link href="/remember" className="ix-remember-nav">
+              REMEMBER
+            </Link>
             <button
               type="button"
               className="ix-menu"
