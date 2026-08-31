@@ -33,7 +33,7 @@ export function RememberGateway({ locale }: RememberGatewayProps) {
     <section id="remember" className="ix-remember-gateway" data-section>
       <div className="ix-remember-gateway__media" aria-hidden="true">
         <Image
-          src={rememberAssets.menuBackground}
+          src="/remember-experience/assets/images/remember-menu-background.png"
           alt=""
           fill
           sizes="100vw"
