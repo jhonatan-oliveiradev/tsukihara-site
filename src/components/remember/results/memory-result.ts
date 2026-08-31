@@ -65,3 +65,24 @@ export const createMemoryResult = ({
     resonance: resonanceForIntegrity(integrity),
   };
 };
+
+export const chooseBestMemoryResult = (
+  current: MemoryResult | null | undefined,
+  candidate: MemoryResult,
+): MemoryResult => {
+  if (!current) return candidate;
+
+  if (candidate.integrity !== current.integrity) {
+    return candidate.integrity > current.integrity ? candidate : current;
+  }
+
+  if (candidate.completionTime !== current.completionTime) {
+    return candidate.completionTime < current.completionTime ? candidate : current;
+  }
+
+  if (candidate.mistakes !== current.mistakes) {
+    return candidate.mistakes < current.mistakes ? candidate : current;
+  }
+
+  return current;
+};
