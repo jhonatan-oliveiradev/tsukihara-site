@@ -247,19 +247,18 @@ export function MemoryPuzzle({
       const target = event.target;
       if (
         target instanceof Element &&
-        target.closest(
-          'button, a, input, textarea, select, [contenteditable="true"], [role="button"]',
-        )
+        target.closest('button, a, input, textarea, select, [contenteditable="true"]')
       ) {
         return;
       }
 
       event.preventDefault();
+      event.stopPropagation();
       activateFocus();
     };
 
-    window.addEventListener("keydown", handleFocusKey);
-    return () => window.removeEventListener("keydown", handleFocusKey);
+    window.addEventListener("keydown", handleFocusKey, true);
+    return () => window.removeEventListener("keydown", handleFocusKey, true);
   }, [activateFocus, overlapping]);
 
   const focusStatus =

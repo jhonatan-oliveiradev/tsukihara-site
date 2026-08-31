@@ -410,6 +410,15 @@
   }
 }
 
+[data-remember-scene="credits"] .remember-root__vignette {
+  background: radial-gradient(
+    circle at 50% 48%,
+    transparent 44%,
+    rgb(0 0 0 / 0.22) 78%,
+    rgb(0 0 0 / 0.5) 100%
+  );
+}
+
 .remember-credits__roll-viewport {
   position: absolute;
   z-index: 3;
@@ -420,6 +429,7 @@
   overflow: hidden;
   pointer-events: none;
   text-align: right;
+  text-shadow: 0 0.4rem 1.2rem rgb(0 0 0 / 0.95);
   mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
 }
 
@@ -433,7 +443,7 @@
 
 .remember-credits__roll-title {
   margin-bottom: 0.4rem;
-  color: rgb(226 200 158 / 0.5);
+  color: rgb(226 200 158 / 0.74);
   font-size: 0.48rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -446,14 +456,14 @@
 }
 
 .remember-credits__credit small {
-  color: rgb(238 226 208 / 0.32);
+  color: rgb(238 226 208 / 0.62);
   font-size: 0.44rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .remember-credits__credit strong {
-  color: rgb(239 228 211 / 0.68);
+  color: rgb(239 228 211 / 0.94);
   font-family: var(--display, Georgia, serif);
   font-size: clamp(0.72rem, 0.9vw, 0.92rem);
   font-weight: 400;
@@ -462,7 +472,7 @@
 
 .remember-credits__signature {
   margin-top: 0.8rem;
-  color: rgb(202 169 116 / 0.36);
+  color: rgb(202 169 116 / 0.64);
   font-family: var(--display, Georgia, serif);
   font-size: 0.62rem;
   letter-spacing: 0.12em;
