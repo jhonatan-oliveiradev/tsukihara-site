@@ -9,6 +9,17 @@ const loadResult = async () => {
   }
 };
 
+const completedResult = (overrides = {}) => ({
+  completed: true,
+  completedAt: "2026-08-31T12:00:00.000Z",
+  completionTime: 90,
+  mistakes: 1,
+  falseFragments: 0,
+  integrity: 90,
+  resonance: "A",
+  ...overrides,
+});
+
 test("integrity follows the approved mistakes, false-memory, and overtime formula", async () => {
   const result = await loadResult();
 
@@ -81,4 +92,36 @@ test("completed result persists the exact progress metrics before continuation",
       resonance: "B",
     },
   );
+});
+
+test("best result prioritizes integrity, then faster time, then fewer mistakes", async () => {
+  const result = await loadResult();
+  const incumbent = completedResult();
+
+  const higherIntegrity = completedResult({ integrity: 91, completionTime: 150, resonance: "A" });
+  assert.equal(result.chooseBestMemoryResult(incumbent, higherIntegrity), higherIntegrity);
+
+  const lowerIntegrity = completedResult({ integrity: 89, completionTime: 20, resonance: "A" });
+  assert.equal(result.chooseBestMemoryResult(incumbent, lowerIntegrity), incumbent);
+
+  const fasterTie = completedResult({ integrity: 90, completionTime: 80, mistakes: 5 });
+  assert.equal(result.chooseBestMemoryResult(incumbent, fasterTie), fasterTie);
+
+  const fewerMistakesTie = completedResult({ integrity: 90, completionTime: 90, mistakes: 0 });
+  assert.equal(result.chooseBestMemoryResult(incumbent, fewerMistakesTie), fewerMistakesTie);
+
+  const exactTie = completedResult({
+    completedAt: "2026-08-31T12:30:00.000Z",
+    integrity: 90,
+    completionTime: 90,
+    mistakes: 1,
+  });
+  assert.equal(result.chooseBestMemoryResult(incumbent, exactTie), incumbent);
+});
+
+test("the first completed attempt always becomes the best result", async () => {
+  const result = await loadResult();
+  const first = completedResult({ integrity: 73, resonance: "B" });
+
+  assert.equal(result.chooseBestMemoryResult(null, first), first);
 });
