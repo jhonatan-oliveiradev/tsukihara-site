@@ -1,4 +1,5 @@
 name: Temporary REMEMBER retry credits implementation
+# retry after extending the analytics event contract
 
 on:
   push:
