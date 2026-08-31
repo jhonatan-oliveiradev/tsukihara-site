@@ -30,6 +30,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           puzzle_path = Path("src/components/remember/restore/memory-puzzle.tsx")
           puzzle = puzzle_path.read_text()
@@ -40,22 +41,25 @@ jobs:
               raise SystemExit(f"expected one Gekkai blocked selector, found {puzzle.count(blocked_selector)}")
           puzzle = puzzle.replace(blocked_selector, native_selector, 1)
 
-          old_tail = '''    event.preventDefault();
-              activateFocus();
-            };
+          add_before = 'window.addEventListener("keydown", handleFocusKey);'
+          add_after = 'window.addEventListener("keydown", handleFocusKey, true);'
+          if puzzle.count(add_before) != 1:
+              raise SystemExit(f"expected one keydown listener, found {puzzle.count(add_before)}")
+          puzzle = puzzle.replace(add_before, add_after, 1)
 
-            window.addEventListener("keydown", handleFocusKey);
-            return () => window.removeEventListener("keydown", handleFocusKey);'''
-          new_tail = '''    event.preventDefault();
-              event.stopPropagation();
-              activateFocus();
-            };
+          remove_before = 'window.removeEventListener("keydown", handleFocusKey);'
+          remove_after = 'window.removeEventListener("keydown", handleFocusKey, true);'
+          if puzzle.count(remove_before) != 1:
+              raise SystemExit(f"expected one keydown cleanup, found {puzzle.count(remove_before)}")
+          puzzle = puzzle.replace(remove_before, remove_after, 1)
 
-            window.addEventListener("keydown", handleFocusKey, true);
-            return () => window.removeEventListener("keydown", handleFocusKey, true);'''
-          if puzzle.count(old_tail) != 1:
-              raise SystemExit(f"expected one Gekkai keyboard tail, found {puzzle.count(old_tail)}")
-          puzzle_path.write_text(puzzle.replace(old_tail, new_tail, 1))
+          pattern = re.compile(
+              r'(const handleFocusKey = \(event: globalThis\.KeyboardEvent\) => \{[\s\S]*?event\.preventDefault\(\);\n)(\s+activateFocus\(\);)',
+          )
+          puzzle, count = pattern.subn(r'\1      event.stopPropagation();\n\2', puzzle, count=1)
+          if count != 1:
+              raise SystemExit(f"expected one Gekkai preventDefault/activateFocus sequence, found {count}")
+          puzzle_path.write_text(puzzle)
 
           css_path = Path("src/app/remember/remember-cinematic.css")
           css = css_path.read_text()
@@ -96,11 +100,17 @@ jobs:
           css_path.write_text(css)
           PY
 
-      - name: Format changed production files
+      - name: Format changed files
         run: npx prettier --write src/components/remember/restore/memory-puzzle.tsx src/app/remember/remember-cinematic.css src/components/remember/system/remember-retry-credits-contract.test.mjs
+
+      - name: Hero regression
+        run: npm run test:hero
 
       - name: REMEMBER regression
         run: npm run test:remember
+
+      - name: Check formatting
+        run: npm run format:check
 
       - name: Lint
         run: npm run lint
