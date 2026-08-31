@@ -1,0 +1,509 @@
+from pathlib import Path
+import re
+
+
+def replace_once(content: str, old: str, new: str, label: str) -> str:
+    count = content.count(old)
+    if count != 1:
+        raise SystemExit(f"{label}: expected exactly one match, found {count}")
+    return content.replace(old, new, 1)
+
+
+path = Path("src/components/remember/remember-experience.tsx")
+content = path.read_text()
+content = replace_once(
+    content,
+    'import { createMemoryResult } from "@/components/remember/results/memory-result";',
+    'import {\n  chooseBestMemoryResult,\n  createMemoryResult,\n} from "@/components/remember/results/memory-result";',
+    "memory result import",
+)
+content = replace_once(
+    content,
+    '  type MemoryProgress,\n  type RememberSaveV1,',
+    '  type MemoryProgress,\n  type MemoryResult,\n  type RememberSaveV1,',
+    "memory result type import",
+)
+content = replace_once(
+    content,
+    'type MemoryProgressMetrics = Partial<\n  Pick<MemoryProgress, "elapsedMs" | "mistakes" | "falseFragments">\n>;\n',
+    'type MemoryProgressMetrics = Partial<\n  Pick<MemoryProgress, "elapsedMs" | "mistakes" | "falseFragments">\n>;\n\ntype MemoryAttemptOutcome = "first" | "new-best" | "best-kept" | null;\n',
+    "attempt outcome type",
+)
+content = replace_once(
+    content,
+    '  const [preloadProgress, setPreloadProgress] = useState(() =>\n    createPreloadProgress(0, initialAssetManifest.critical.length),\n  );\n',
+    '  const [preloadProgress, setPreloadProgress] = useState(() =>\n    createPreloadProgress(0, initialAssetManifest.critical.length),\n  );\n  const [memoryAttemptKey, setMemoryAttemptKey] = useState(0);\n  const [latestAttemptResult, setLatestAttemptResult] = useState<MemoryResult | null>(null);\n  const [memoryAttemptOutcome, setMemoryAttemptOutcome] = useState<MemoryAttemptOutcome>(null);\n',
+    "attempt state",
+)
+content = replace_once(
+    content,
+    '        const save = createNewRememberSave(new Date().toISOString());\n        memoryElapsedMsRef.current = 0;',
+    '        const save = createNewRememberSave(new Date().toISOString());\n        setLatestAttemptResult(null);\n        setMemoryAttemptOutcome(null);\n        setMemoryAttemptKey((attempt) => attempt + 1);\n        memoryElapsedMsRef.current = 0;',
+    "new game attempt reset",
+)
+content = replace_once(
+    content,
+    '      () => {\n        if (isMemoryStage(save.currentStage)) {\n          memoryElapsedMsRef.current = save.memoryProgress[save.currentStage]?.elapsedMs ?? 0;',
+    '      () => {\n        setLatestAttemptResult(null);\n        setMemoryAttemptOutcome(null);\n        if (isMemoryStage(save.currentStage)) {\n          memoryElapsedMsRef.current = save.memoryProgress[save.currentStage]?.elapsedMs ?? 0;',
+    "continue save attempt reset",
+)
+pattern = re.compile(
+    r'  const handleRestorationComplete = useCallback\(\(\) => \{[\s\S]*?\n  \}, \[activeMemory\.id, activeMemory\.parSeconds, mutateSave, state\.restoredFragmentIds\]\);'
+)
+replacement = '''  const handleRestorationComplete = useCallback(() => {
+    const completedAt = new Date().toISOString();
+    const completionTime = Math.max(0, memoryElapsedMsRef.current / 1000);
+    const saveBeforeCompletion = saveRef.current;
+    const previousProgress = saveBeforeCompletion?.memoryProgress[activeMemory.id];
+    const previousBest = saveBeforeCompletion?.memories[activeMemory.id] ?? null;
+    const progress = createMemoryProgress(state.restoredFragmentIds, previousProgress, {
+      elapsedMs: memoryElapsedMsRef.current,
+    });
+    const result = createMemoryResult({
+      progress,
+      completionTime,
+      parSeconds: activeMemory.parSeconds,
+      completedAt,
+    });
+    const bestResult = chooseBestMemoryResult(previousBest, result);
+    const attemptOutcome: MemoryAttemptOutcome = !previousBest
+      ? "first"
+      : bestResult === result
+        ? "new-best"
+        : "best-kept";
+
+    mutateSave((save) => ({
+      ...save,
+      updatedAt: completedAt,
+      completedStages: save.completedStages.includes(activeMemory.id)
+        ? save.completedStages
+        : [...save.completedStages, activeMemory.id],
+      memoryProgress: {
+        ...save.memoryProgress,
+        [activeMemory.id]: progress,
+      },
+      memories: {
+        ...save.memories,
+        [activeMemory.id]: bestResult,
+      },
+    }));
+
+    setLatestAttemptResult(result);
+    setMemoryAttemptOutcome(attemptOutcome);
+    trackRememberEvent("remember_restore_completed", {
+      realm: activeMemory.id,
+      integrity: result.integrity,
+      resonance: result.resonance,
+    });
+    dispatch({ type: "MARK_MEMORY_RESTORED", memoryId: activeMemory.id });
+  }, [activeMemory.id, activeMemory.parSeconds, mutateSave, state.restoredFragmentIds]);'''
+content, count = pattern.subn(replacement, content, count=1)
+if count != 1:
+    raise SystemExit(f"restoration completion: expected one block, found {count}")
+content = replace_once(
+    content,
+    '      () => {\n        dispatch({ type: "CONTINUE" });',
+    '      () => {\n        setLatestAttemptResult(null);\n        setMemoryAttemptOutcome(null);\n        dispatch({ type: "CONTINUE" });',
+    "stage transition attempt clear",
+)
+old_restart = '''  const handleRestartMemory = useCallback(() => {
+    if (!isMemoryStage(state.currentStage)) return;
+    memoryElapsedMsRef.current = 0;
+    clockMemoryIdRef.current = state.currentStage;
+    mutateSave((save) => ({
+      ...save,
+      updatedAt: new Date().toISOString(),
+      memoryProgress: {
+        ...save.memoryProgress,
+        [state.currentStage]: createMemoryProgress([]),
+      },
+    }));
+    dispatch({ type: "RESTART_MEMORY" });
+    gsap.globalTimeline.resume();
+    void audio.restoreMemoryLevel();
+  }, [audio, mutateSave, state.currentStage]);'''
+new_restart = '''  const restartActiveMemoryAttempt = useCallback(() => {
+    if (!isMemoryStage(state.currentStage)) return;
+    memoryElapsedMsRef.current = 0;
+    clockMemoryIdRef.current = state.currentStage;
+    setLatestAttemptResult(null);
+    setMemoryAttemptOutcome(null);
+    setMemoryAttemptKey((attempt) => attempt + 1);
+    mutateSave((save) => ({
+      ...save,
+      updatedAt: new Date().toISOString(),
+      memoryProgress: {
+        ...save.memoryProgress,
+        [state.currentStage]: createMemoryProgress([]),
+      },
+    }));
+    dispatch({ type: "RESTART_MEMORY" });
+    gsap.globalTimeline.resume();
+    void audio.restoreMemoryLevel();
+  }, [audio, mutateSave, state.currentStage]);
+
+  const handleRestartMemory = restartActiveMemoryAttempt;
+
+  const handleRetryMemoryResult = useCallback(() => {
+    if (
+      state.scene !== "memory" ||
+      state.restorationPhase !== "restored" ||
+      transitionState !== "idle"
+    ) {
+      return;
+    }
+    trackRememberEvent("remember_memory_retry", { realm: activeMemory.id });
+    restartActiveMemoryAttempt();
+  }, [
+    activeMemory.id,
+    restartActiveMemoryAttempt,
+    state.restorationPhase,
+    state.scene,
+    transitionState,
+  ]);'''
+content = replace_once(content, old_restart, new_restart, "memory restart handler")
+content = replace_once(
+    content,
+    '          memoryElapsedMsRef.current = 0;\n          clockMemoryIdRef.current = memoryId;\n          mutateSave((currentSave) => ({',
+    '          memoryElapsedMsRef.current = 0;\n          clockMemoryIdRef.current = memoryId;\n          setLatestAttemptResult(null);\n          setMemoryAttemptOutcome(null);\n          setMemoryAttemptKey((attempt) => attempt + 1);\n          mutateSave((currentSave) => ({',
+    "archive replay attempt reset",
+)
+content = replace_once(
+    content,
+    '  const activeMemoryResult = storedSave?.memories[activeMemory.id] ?? null;',
+    '  const activeMemoryBestResult = storedSave?.memories[activeMemory.id] ?? null;\n  const activeMemoryResult = latestAttemptResult ?? activeMemoryBestResult;',
+    "active memory results",
+)
+content = replace_once(
+    content,
+    '            key={activeMemory.id}',
+    '            key={`${activeMemory.id}:${memoryAttemptKey}`}',
+    "attempt remount key",
+)
+content = replace_once(
+    content,
+    '            memoryResult={activeMemoryResult}\n            reducedMotion={reducedMotion}',
+    '            memoryResult={activeMemoryResult}\n            bestMemoryResult={activeMemoryBestResult}\n            attemptOutcome={memoryAttemptOutcome}\n            reducedMotion={reducedMotion}',
+    "result props",
+)
+content = replace_once(
+    content,
+    '            onRestored={handleRestored}\n            onContinue={() => void handleContinue()}',
+    '            onRestored={handleRestored}\n            onRetry={handleRetryMemoryResult}\n            onContinue={() => void handleContinue()}',
+    "retry prop",
+)
+path.write_text(content)
+
+path = Path("src/components/remember/scenes/restore-scene.tsx")
+content = path.read_text()
+content = replace_once(
+    content,
+    '  memoryResult?: MemoryResult | null;\n  reducedMotion: boolean;',
+    '  memoryResult?: MemoryResult | null;\n  bestMemoryResult?: MemoryResult | null;\n  attemptOutcome?: "first" | "new-best" | "best-kept" | null;\n  reducedMotion: boolean;',
+    "restore result props type",
+)
+content = replace_once(
+    content,
+    '  onRestored: () => void;\n  onContinue: () => void;',
+    '  onRestored: () => void;\n  onRetry: () => void;\n  onContinue: () => void;',
+    "restore retry callback type",
+)
+content = replace_once(
+    content,
+    '  memoryResult = null,\n  reducedMotion,',
+    '  memoryResult = null,\n  bestMemoryResult = null,\n  attemptOutcome = null,\n  reducedMotion,',
+    "restore result destructure",
+)
+content = replace_once(
+    content,
+    '  onRestored,\n  onContinue,',
+    '  onRestored,\n  onRetry,\n  onContinue,',
+    "restore retry destructure",
+)
+content = replace_once(
+    content,
+    '''          </div>
+        </aside>
+      ) : null}''',
+    '''          </div>
+          {attemptOutcome === "new-best" ? (
+            <span className="remember-memory-result__record is-new">{copy.newBest}</span>
+          ) : null}
+          {attemptOutcome === "best-kept" && bestMemoryResult ? (
+            <span className="remember-memory-result__record">
+              {copy.bestMaintained} · {copy.bestRecord} {bestMemoryResult.resonance} ·{" "}
+              {Math.round(bestMemoryResult.integrity)}%
+            </span>
+          ) : null}
+        </aside>
+      ) : null}''',
+    "restore record feedback",
+)
+content = replace_once(
+    content,
+    '''        {restored ? (
+          <button type="button" className="remember-restore__continue" onClick={onContinue}>
+            <span>{copy.continue}</span>
+            <i aria-hidden="true" />
+          </button>
+        ) : (''',
+    '''        {restored ? (
+          <div className="remember-restore__result-actions">
+            <button type="button" className="remember-restore__retry" onClick={onRetry}>
+              {copy.retryMemory}
+            </button>
+            <button type="button" className="remember-restore__continue" onClick={onContinue}>
+              <span>{copy.continue}</span>
+              <i aria-hidden="true" />
+            </button>
+          </div>
+        ) : (''',
+    "restore result actions",
+)
+path.write_text(content)
+
+path = Path("src/components/remember/content/remember-locales.ts")
+content = path.read_text()
+content = replace_once(
+    content,
+    '    resonance: string;\n    time: string;\n  };',
+    '    resonance: string;\n    time: string;\n    retryMemory: string;\n    newBest: string;\n    bestMaintained: string;\n    bestRecord: string;\n  };',
+    "memory locale type",
+)
+content = replace_once(
+    content,
+    '    cta: string;\n    replay: string;\n  };',
+    '    cta: string;\n    replay: string;\n    creditsLabel: string;\n    creditRoles: readonly string[];\n  };',
+    "credits locale type",
+)
+content = replace_once(
+    content,
+    '      time: "Tempo",\n    },',
+    '      time: "Tempo",\n      retryMemory: "REPETIR MEMÓRIA",\n      newBest: "NOVO MELHOR RESULTADO",\n      bestMaintained: "MELHOR REGISTRO MANTIDO",\n      bestRecord: "MELHOR",\n    },',
+    "PT memory retry copy",
+)
+content = replace_once(
+    content,
+    '      replay: "REPETIR A EXPERIÊNCIA",\n    },',
+    '      replay: "REPETIR A EXPERIÊNCIA",\n      creditsLabel: "CRÉDITOS",\n      creditRoles: [\n        "Direção Criativa",\n        "Direção de Arte",\n        "Game Design",\n        "Narrativa",\n        "UX / UI",\n        "Desenvolvimento",\n        "Motion & VFX",\n        "QA",\n        "Restaurador Oficial de Memórias",\n      ],\n    },',
+    "PT credits copy",
+)
+content = replace_once(
+    content,
+    '      time: "Time",\n    },',
+    '      time: "Time",\n      retryMemory: "RETRY MEMORY",\n      newBest: "NEW BEST RESULT",\n      bestMaintained: "BEST RECORD KEPT",\n      bestRecord: "BEST",\n    },',
+    "EN memory retry copy",
+)
+content = replace_once(
+    content,
+    '      replay: "EXPERIENCE AGAIN",\n    },',
+    '      replay: "EXPERIENCE AGAIN",\n      creditsLabel: "CREDITS",\n      creditRoles: [\n        "Creative Direction",\n        "Art Direction",\n        "Game Design",\n        "Narrative",\n        "UX / UI",\n        "Development",\n        "Motion & VFX",\n        "QA",\n        "Official Memory Restorer",\n      ],\n    },',
+    "EN credits copy",
+)
+path.write_text(content)
+
+path = Path("src/components/remember/scenes/credits-scene.tsx")
+content = path.read_text()
+content = replace_once(
+    content,
+    'type CreditsSceneProps = {',
+    'const CREATOR_NAME = "JHONATAN OLIVEIRA";\n\ntype CreditsSceneProps = {',
+    "creator constant",
+)
+content = replace_once(
+    content,
+    '''      </div>
+    </section>
+  );''',
+    '''      </div>
+
+      <aside
+        className={["remember-credits__roll-viewport", reducedMotion && "is-static"]
+          .filter(Boolean)
+          .join(" ")}
+        aria-label={copy.creditsLabel}
+      >
+        <div className="remember-credits__roll-track">
+          <span className="remember-credits__roll-title">{copy.creditsLabel}</span>
+          {copy.creditRoles.map((role) => (
+            <div className="remember-credits__credit" key={role}>
+              <small>{role}</small>
+              <strong>JHONATAN OLIVEIRA</strong>
+            </div>
+          ))}
+          <span className="remember-credits__signature" aria-hidden="true">
+            月原 · {CREATOR_NAME}
+          </span>
+        </div>
+      </aside>
+    </section>
+  );''',
+    "credits roll markup",
+)
+path.write_text(content)
+
+path = Path("src/app/remember/remember-results.css")
+content = path.read_text()
+content += '''
+
+.remember-memory-result__record {
+  color: rgb(230 215 191 / 0.42);
+  font-size: 0.46rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.remember-memory-result__record.is-new {
+  color: rgb(226 190 128 / 0.88);
+  text-shadow: 0 0 1.6rem rgb(214 167 91 / 0.18);
+}
+
+.remember-restore__result-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(1rem, 2vw, 1.8rem);
+}
+
+.remember-restore__retry {
+  border: 0;
+  border-bottom: 1px solid rgb(226 207 177 / 0.2);
+  padding: 0.55rem 0.1rem;
+  background: transparent;
+  color: rgb(235 221 200 / 0.48);
+  font: inherit;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    text-shadow 180ms ease;
+}
+
+.remember-restore__retry:hover,
+.remember-restore__retry:focus-visible {
+  border-color: rgb(226 190 128 / 0.58);
+  color: rgb(240 224 198 / 0.84);
+  text-shadow: 0 0 1.2rem rgb(213 167 93 / 0.18);
+}
+
+@media (max-width: 900px) {
+  .remember-restore__result-actions {
+    flex-wrap: wrap;
+    gap: 0.7rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-restore__retry {
+    transition: none;
+  }
+}
+'''
+path.write_text(content)
+
+path = Path("src/app/remember/remember-cinematic.css")
+content = path.read_text()
+content += '''
+
+.remember-credits__roll-viewport {
+  position: absolute;
+  z-index: 3;
+  right: max(2.2rem, calc(env(safe-area-inset-right) + 1.4rem));
+  bottom: max(1.6rem, calc(env(safe-area-inset-bottom) + 1rem));
+  width: min(18rem, 24vw);
+  height: clamp(8rem, 24vh, 14rem);
+  overflow: hidden;
+  pointer-events: none;
+  text-align: right;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+
+.remember-credits__roll-track {
+  display: grid;
+  justify-items: end;
+  gap: 1.05rem;
+  animation: remember-credits-roll 28s linear 1.8s infinite;
+  will-change: transform;
+}
+
+.remember-credits__roll-title {
+  margin-bottom: 0.4rem;
+  color: rgb(226 200 158 / 0.5);
+  font-size: 0.48rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.remember-credits__credit {
+  display: grid;
+  justify-items: end;
+  gap: 0.18rem;
+}
+
+.remember-credits__credit small {
+  color: rgb(238 226 208 / 0.32);
+  font-size: 0.44rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.remember-credits__credit strong {
+  color: rgb(239 228 211 / 0.68);
+  font-family: var(--display, Georgia, serif);
+  font-size: clamp(0.72rem, 0.9vw, 0.92rem);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.remember-credits__signature {
+  margin-top: 0.8rem;
+  color: rgb(202 169 116 / 0.36);
+  font-family: var(--display, Georgia, serif);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+@keyframes remember-credits-roll {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.remember-credits__roll-viewport.is-static {
+  height: auto;
+  max-height: 12rem;
+  mask-image: none;
+}
+
+.remember-credits__roll-viewport.is-static .remember-credits__roll-track {
+  animation: none;
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .remember-credits__roll-viewport {
+    right: max(1rem, calc(env(safe-area-inset-right) + 0.7rem));
+    bottom: max(1rem, calc(env(safe-area-inset-bottom) + 0.7rem));
+    width: min(13rem, 42vw);
+    height: 7.5rem;
+  }
+
+  .remember-credits__credit strong {
+    font-size: 0.66rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remember-credits__roll-track {
+    animation: none;
+    transform: none;
+  }
+}
+'''
+path.write_text(content)
