@@ -183,11 +183,7 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
       </mesh>
       <mesh position={[0, 0, 0.01]}>
         <ringGeometry
-          args={[
-            ECLIPSE_MOON.rimInnerRadius,
-            ECLIPSE_MOON.rimOuterRadius,
-            ECLIPSE_MOON.segments,
-          ]}
+          args={[ECLIPSE_MOON.rimInnerRadius, ECLIPSE_MOON.rimOuterRadius, ECLIPSE_MOON.segments]}
         />
         <meshBasicMaterial
           color={ECLIPSE_MOON.rimColor}
