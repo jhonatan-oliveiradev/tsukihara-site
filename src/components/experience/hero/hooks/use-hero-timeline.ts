@@ -299,10 +299,12 @@ export function useHeroTimeline(rootRef: RefObject<HTMLElement | null>) {
       };
     }
 
-    const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+    const refreshFrame = reduced
+      ? undefined
+      : window.requestAnimationFrame(() => ScrollTrigger.refresh());
 
     return () => {
-      window.cancelAnimationFrame(refreshFrame);
+      if (refreshFrame !== undefined) window.cancelAnimationFrame(refreshFrame);
       removePointerListeners?.();
       trigger?.kill();
       timeline.kill();

@@ -3,11 +3,14 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { createEclipseMoonReconstruction } from "@/components/experience/eclipse-moon-reconstruction";
+import { useReducedMotion } from "@/components/experience/use-reduced-motion";
 import { sampleCameraPath } from "@/experience/kage-port/scroll-path";
 
 const INK = new THREE.Color("#040609");
 const VERMILION = new THREE.Color("#b42027");
 const AMBER = new THREE.Color("#d9985c");
+const ECLIPSE_MOON = createEclipseMoonReconstruction();
 
 function pageProgress() {
   const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
@@ -170,16 +173,33 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
   return (
     <group ref={group} position={[4.8, 4.5, -18]}>
       <mesh ref={halo} scale={1.3}>
-        <circleGeometry args={[2.55, 128]} />
-        <meshBasicMaterial color={VERMILION} transparent opacity={0.12} depthWrite={false} />
+        <circleGeometry args={[ECLIPSE_MOON.haloRadius, ECLIPSE_MOON.segments]} />
+        <meshBasicMaterial
+          color={VERMILION}
+          transparent
+          opacity={ECLIPSE_MOON.haloOpacity}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 0, 0.01]}>
+        <ringGeometry
+          args={[ECLIPSE_MOON.rimInnerRadius, ECLIPSE_MOON.rimOuterRadius, ECLIPSE_MOON.segments]}
+        />
+        <meshBasicMaterial
+          color={ECLIPSE_MOON.rimColor}
+          transparent
+          opacity={ECLIPSE_MOON.rimOpacity}
+          depthWrite={false}
+          toneMapped={false}
+        />
       </mesh>
       <mesh>
-        <circleGeometry args={[1.9, 128]} />
-        <meshBasicMaterial color="#c03337" toneMapped={false} />
+        <circleGeometry args={[ECLIPSE_MOON.diskRadius, ECLIPSE_MOON.segments]} />
+        <meshBasicMaterial color={ECLIPSE_MOON.diskColor} toneMapped={false} />
       </mesh>
       <mesh ref={shadow} position={[-4.2, 0.08, 0.025]}>
-        <circleGeometry args={[1.93, 128]} />
-        <meshBasicMaterial color="#05070a" />
+        <circleGeometry args={[ECLIPSE_MOON.shadowRadius, ECLIPSE_MOON.segments]} />
+        <meshBasicMaterial color={ECLIPSE_MOON.shadowColor} />
       </mesh>
     </group>
   );
@@ -277,7 +297,13 @@ function PointerEmbers() {
   );
 }
 
-function Director({ fogRef }: { fogRef: React.RefObject<THREE.FogExp2 | null> }) {
+function Director({
+  fogRef,
+  reducedMotion,
+}: {
+  fogRef: React.RefObject<THREE.FogExp2 | null>;
+  reducedMotion: boolean;
+}) {
   const progress = useRef(0);
   const world = useRef<THREE.Group>(null);
   const { camera } = useThree();
@@ -311,15 +337,19 @@ function Director({ fogRef }: { fogRef: React.RefObject<THREE.FogExp2 | null> })
       <Torii position={[4.1, -1.25, -11.6]} scale={0.42} opacity={0.3} />
       <Lantern x={-2.8} z={-4.7} phase={0.2} />
       <Lantern x={2.8} z={-4.7} phase={1.7} />
-      <PetalField count={44} z={-12} speed={0.08} opacity={0.18} tint="#d9a8b4" />
-      <PetalField count={34} z={-6} speed={0.15} opacity={0.28} tint="#d8abb7" />
-      <PetalField count={24} z={-2.3} speed={0.27} opacity={0.42} tint="#b92e36" />
-      <PointerEmbers />
+      {!reducedMotion && (
+        <>
+          <PetalField count={44} z={-12} speed={0.08} opacity={0.18} tint="#d9a8b4" />
+          <PetalField count={34} z={-6} speed={0.15} opacity={0.28} tint="#d8abb7" />
+          <PetalField count={24} z={-2.3} speed={0.27} opacity={0.42} tint="#b92e36" />
+          <PointerEmbers />
+        </>
+      )}
     </group>
   );
 }
 
-function SceneContents() {
+function SceneContents({ reducedMotion }: { reducedMotion: boolean }) {
   const fogRef = useRef<THREE.FogExp2>(null);
 
   return (
@@ -329,20 +359,23 @@ function SceneContents() {
       <ambientLight intensity={0.24} color="#6e7b8e" />
       <directionalLight position={[-4, 8, 3]} intensity={0.8} color="#8296b4" />
       <pointLight position={[0, 2.6, -8.2]} intensity={2.1} distance={18} color="#8e141a" />
-      <Director fogRef={fogRef} />
+      <Director fogRef={fogRef} reducedMotion={reducedMotion} />
     </>
   );
 }
 
 export function WorldCanvas() {
+  const reducedMotion = useReducedMotion();
+
   return (
     <div className="world-canvas" aria-hidden="true">
       <Canvas
-        dpr={[1, 1.75]}
+        frameloop={reducedMotion ? "demand" : "always"}
+        dpr={reducedMotion ? 1 : [1, 1.75]}
         camera={{ position: [0, 1.2, 11.8], fov: 36, near: 0.2, far: 120 }}
         gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
       >
-        <SceneContents />
+        <SceneContents reducedMotion={reducedMotion} />
       </Canvas>
     </div>
   );
