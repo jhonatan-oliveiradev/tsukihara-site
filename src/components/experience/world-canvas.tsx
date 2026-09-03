@@ -3,12 +3,14 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import { createEclipseMoonReconstruction } from "@/components/experience/eclipse-moon-reconstruction";
 import { useReducedMotion } from "@/components/experience/use-reduced-motion";
 import { sampleCameraPath } from "@/experience/kage-port/scroll-path";
 
 const INK = new THREE.Color("#040609");
 const VERMILION = new THREE.Color("#b42027");
 const AMBER = new THREE.Color("#d9985c");
+const ECLIPSE_MOON = createEclipseMoonReconstruction();
 
 function pageProgress() {
   const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
@@ -171,16 +173,37 @@ function EclipseMoon({ progress }: { progress: React.MutableRefObject<number> })
   return (
     <group ref={group} position={[4.8, 4.5, -18]}>
       <mesh ref={halo} scale={1.3}>
-        <circleGeometry args={[2.55, 128]} />
-        <meshBasicMaterial color={VERMILION} transparent opacity={0.12} depthWrite={false} />
+        <circleGeometry args={[ECLIPSE_MOON.haloRadius, ECLIPSE_MOON.segments]} />
+        <meshBasicMaterial
+          color={VERMILION}
+          transparent
+          opacity={ECLIPSE_MOON.haloOpacity}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 0, 0.01]}>
+        <ringGeometry
+          args={[
+            ECLIPSE_MOON.rimInnerRadius,
+            ECLIPSE_MOON.rimOuterRadius,
+            ECLIPSE_MOON.segments,
+          ]}
+        />
+        <meshBasicMaterial
+          color={ECLIPSE_MOON.rimColor}
+          transparent
+          opacity={ECLIPSE_MOON.rimOpacity}
+          depthWrite={false}
+          toneMapped={false}
+        />
       </mesh>
       <mesh>
-        <circleGeometry args={[1.9, 128]} />
-        <meshBasicMaterial color="#c03337" toneMapped={false} />
+        <circleGeometry args={[ECLIPSE_MOON.diskRadius, ECLIPSE_MOON.segments]} />
+        <meshBasicMaterial color={ECLIPSE_MOON.diskColor} toneMapped={false} />
       </mesh>
       <mesh ref={shadow} position={[-4.2, 0.08, 0.025]}>
-        <circleGeometry args={[1.93, 128]} />
-        <meshBasicMaterial color="#05070a" />
+        <circleGeometry args={[ECLIPSE_MOON.shadowRadius, ECLIPSE_MOON.segments]} />
+        <meshBasicMaterial color={ECLIPSE_MOON.shadowColor} />
       </mesh>
     </group>
   );
