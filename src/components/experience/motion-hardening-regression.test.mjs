@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const worldCanvasPath = fileURLToPath(new URL("./world-canvas.tsx", import.meta.url));
 const reducedMotionPath = fileURLToPath(new URL("./use-reduced-motion.ts", import.meta.url));
+const moonReconstructionPath = fileURLToPath(
+  new URL("./eclipse-moon-reconstruction.ts", import.meta.url),
+);
 const heroTimelinePath = fileURLToPath(
   new URL("./hero/hooks/use-hero-timeline.ts", import.meta.url),
 );
@@ -28,4 +31,16 @@ test("hero reduced-motion path does not schedule a ScrollTrigger refresh", () =>
     source,
     /const refreshFrame = reduced\s*\? undefined\s*:\s*window\.requestAnimationFrame/,
   );
+});
+
+test("procedural eclipse moon is driven by a single-view reconstruction contract", () => {
+  assert.equal(existsSync(moonReconstructionPath), true);
+
+  const reconstructionSource = readFileSync(moonReconstructionPath, "utf8");
+  const worldSource = readFileSync(worldCanvasPath, "utf8");
+
+  assert.match(reconstructionSource, /createEclipseMoonReconstruction/);
+  assert.match(reconstructionSource, /single-front-view/);
+  assert.match(worldSource, /createEclipseMoonReconstruction/);
+  assert.match(worldSource, /<ringGeometry/);
 });
